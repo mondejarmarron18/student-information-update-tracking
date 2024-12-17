@@ -12,16 +12,13 @@ import { MdNavigateNext } from "react-icons/md";
 import { SignInFormProps } from "./schema";
 import useSignInForm from "./useSignInForm";
 import formFields from "./formFields";
+import { FormProps } from "@/types/form.type";
 
-type Props = {
-  className?: string;
-};
-
-const SignInForm = (props: Props) => {
-  const form = useSignInForm();
+const SignInForm = (props: FormProps<SignInFormProps>) => {
+  const { form } = useSignInForm();
 
   const onSubmit = (values: SignInFormProps) => {
-    console.log(values);
+    props.onSubmit(values);
   };
 
   return (
@@ -44,7 +41,11 @@ const SignInForm = (props: Props) => {
         ))}
 
         <Button type="submit" className="mt-4">
-          Continue <MdNavigateNext />
+          {props.onSubmitLabel || (
+            <>
+              Continue <MdNavigateNext />
+            </>
+          )}
         </Button>
       </form>
     </Form>

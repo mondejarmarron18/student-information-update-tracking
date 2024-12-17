@@ -7,74 +7,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { MdNavigateNext } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import PasswordValidator from "@/components/common/PasswordValidator";
-import { allowedLength, isValidPassword } from "@/utils/validator";
+import { isValidPassword } from "@/utils/validator";
+import { RegisterFormProps } from "./schema";
+import useRegisterForm from "./useRegisterForm";
 import { useState } from "react";
+import formFields from "./formFields";
+import { FormProps } from "@/types/form.type";
 
-type Props = {
-  className?: string;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
-};
+const RegisterForm = (props: FormProps<RegisterFormProps>) => {
+  const { form } = useRegisterForm();
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-const formSchema = z
-  .object({
-    email: z.string().email("Please enter a valid email"),
-    password: z
-      .string()
-      .min(allowedLength, "Password must be at least 6 characters long"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
-
-type FieldNames = z.infer<typeof formSchema>;
-
-const formFields: {
-  name: keyof FieldNames;
-  label: string;
-  type: "email" | "password";
-  placeholder: string;
-}[] = [
-  {
-    name: "email",
-    label: "Email",
-    type: "email",
-    placeholder: "jude.cruz.au@phinmaed.com",
-  },
-  {
-    name: "password",
-    label: "Password",
-    type: "password",
-    placeholder: "******",
-  },
-  {
-    name: "confirmPassword",
-    label: "Confirm Password",
-    type: "password",
-    placeholder: "******",
-  },
-];
-
-const RegisterForm = (props: Props) => {
-  const form = useForm<FieldNames>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
-  const [passswordError, setPasswordError] = useState<string | null>(null);
-  const errors = form.formState.errors;
-
-  const onSubmit = (values: FieldNames) => {
+  const onSubmit = (values: RegisterFormProps) => {
     const isPasswordMatch = values.password === values.confirmPassword;
     const isValidPass = isValidPassword(values.password);
 
@@ -82,7 +30,7 @@ const RegisterForm = (props: Props) => {
       return setPasswordError("Invalid password");
     }
 
-    console.log(values);
+    props.onSubmit(values);
   };
 
   return (
@@ -103,15 +51,10 @@ const RegisterForm = (props: Props) => {
                   <Input
                     type={formField.type}
                     placeholder={formField.placeholder}
-                    className={cn({
-                      "border-red-500": errors[formField.name],
-                    })}
                     {...field}
                   />
                 </FormControl>
-                <FormMessage>
-                  {errors[formField.name] && errors[formField.name]?.message}
-                </FormMessage>
+                <FormMessage />
                 {formField.name === "password" && (
                   <PasswordValidator password={form.watch("password")} />
                 )}
@@ -120,9 +63,13 @@ const RegisterForm = (props: Props) => {
           />
         ))}
 
-        {passswordError && <p className="text-red-500">{passswordError}</p>}
+        {passwordError && <p className="text-red-500">{passwordError}</p>}
         <Button type="submit" className="mt-2">
-          Next <MdNavigateNext />
+          {props.onSubmitLabel || (
+            <>
+              Next <MdNavigateNext />
+            </>
+          )}
         </Button>
       </form>
     </Form>

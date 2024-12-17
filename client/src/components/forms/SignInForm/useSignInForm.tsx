@@ -10,8 +10,12 @@ const useSignInForm = () => {
       password: "",
     },
   });
+  const errors = form.formState.errors;
 
-  return form;
+  return {
+    form,
+    errors,
+  };
 };
 
 export default useSignInForm;

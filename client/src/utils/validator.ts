@@ -1,5 +1,6 @@
 export const allowedSpecialCharacters = `@#$%^&*_-`;
 export const allowedLength = 8;
+export const allowedEmailDomains = ["phinmaed.com"];
 
 export const hasSpecialCharacter = (val: string) => {
   const specialCharacters = new RegExp(`[${allowedSpecialCharacters}]`);
@@ -23,6 +24,28 @@ export const hasNumber = (val: string) => {
 
 export const hasLength = (val: string) => {
   return val.length >= allowedLength;
+};
+
+export const isNumber = (val: string) => {
+  const number = /^[0-9]+$/;
+  return number.test(val);
+};
+
+export const isValidEmail = (val: string) => {
+  const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return email.test(val);
+};
+
+export const hasAllowedEmailDomain = (val: `${string}@${string}`) => {
+  if (isValidEmail(val) === false) return false;
+
+  const emailDomain = val.split("@")[1];
+
+  return allowedEmailDomains.includes(emailDomain);
+};
+
+export const isAuthenticated = () => {
+  return localStorage.getItem("token") !== null;
 };
 
 export const isValidPassword = (password: string) => {
