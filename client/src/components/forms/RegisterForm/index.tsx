@@ -13,6 +13,9 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { MdNavigateNext } from "react-icons/md";
 import { cn } from "@/lib/utils";
+import PasswordValidator from "@/components/common/PasswordValidator";
+import { allowedLength, isValidPassword } from "@/utils/validator";
+import { useState } from "react";
 
 type Props = {
   className?: string;
@@ -22,7 +25,9 @@ type Props = {
 const formSchema = z
   .object({
     email: z.string().email("Please enter a valid email"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
+    password: z
+      .string()
+      .min(allowedLength, "Password must be at least 6 characters long"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -30,10 +35,10 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
-type FieldNames = keyof typeof formSchema._type;
+type FieldNames = z.infer<typeof formSchema>;
 
 const formFields: {
-  name: FieldNames;
+  name: keyof FieldNames;
   label: string;
   type: "email" | "password";
   placeholder: string;
@@ -42,7 +47,7 @@ const formFields: {
     name: "email",
     label: "Email",
     type: "email",
-    placeholder: "you@phinmaed.com",
+    placeholder: "jude.cruz.au@phinmaed.com",
   },
   {
     name: "password",
@@ -59,16 +64,24 @@ const formFields: {
 ];
 
 const RegisterForm = (props: Props) => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FieldNames>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
+  const [passswordError, setPasswordError] = useState<string | null>(null);
   const errors = form.formState.errors;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: FieldNames) => {
+    const isPasswordMatch = values.password === values.confirmPassword;
+    const isValidPass = isValidPassword(values.password);
+
+    if (!isValidPass || !isPasswordMatch) {
+      return setPasswordError("Invalid password");
+    }
+
     console.log(values);
   };
 
@@ -99,11 +112,15 @@ const RegisterForm = (props: Props) => {
                 <FormMessage>
                   {errors[formField.name] && errors[formField.name]?.message}
                 </FormMessage>
+                {formField.name === "password" && (
+                  <PasswordValidator password={form.watch("password")} />
+                )}
               </FormItem>
             )}
           />
         ))}
 
+        {passswordError && <p className="text-red-500">{passswordError}</p>}
         <Button type="submit" className="mt-2">
           Next <MdNavigateNext />
         </Button>
