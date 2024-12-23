@@ -1,11 +1,8 @@
+import { FormField } from "@/types/form.type";
 import { SignInFormProps } from "./schema";
 
-type Fields = {
+type Fields = FormField & {
   name: keyof SignInFormProps;
-  label: string;
-  type: "email" | "password";
-  placeholder: string;
-  hideError?: boolean;
 };
 
 const formFields: Fields[] = [

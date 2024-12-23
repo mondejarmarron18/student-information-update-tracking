@@ -1,4 +1,5 @@
 export const allowedSpecialCharacters = `@#$%^&*_-`;
+export const mobileNumberRegex = /^\+[0-9]{1,3}[0-9]{7,15}$/;
 export const allowedLength = 8;
 export const allowedEmailDomains = ["phinmaed.com"];
 
@@ -46,6 +47,10 @@ export const hasAllowedEmailDomain = (val: `${string}@${string}`) => {
 
 export const isAuthenticated = () => {
   return localStorage.getItem("token") !== null;
+};
+
+export const isMobileNumber = (val: string) => {
+  return mobileNumberRegex.test(val);
 };
 
 export const isValidPassword = (password: string) => {

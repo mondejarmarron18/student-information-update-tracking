@@ -1,11 +1,11 @@
+import { FormField } from "@/types/form.type";
 import { RegisterFormProps } from "./schema";
 
-const formFields: {
+type Fields = FormField & {
   name: keyof RegisterFormProps;
-  label: string;
-  type: "email" | "password";
-  placeholder: string;
-}[] = [
+};
+
+const formFields: Fields[] = [
   {
     name: "email",
     label: "Email",

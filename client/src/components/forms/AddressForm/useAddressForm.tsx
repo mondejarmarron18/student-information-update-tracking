@@ -1,10 +1,10 @@
-import { useForm } from "react-hook-form";
-import formSchema, { SignInFormProps } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import defaultValues from "./defaultValues";
+import formSchema, { AddressFormProps } from "./schema";
 
-const useSignInForm = () => {
-  const form = useForm<SignInFormProps>({
+const useAddressForm = () => {
+  const form = useForm<AddressFormProps>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
@@ -16,4 +16,4 @@ const useSignInForm = () => {
   };
 };
 
-export default useSignInForm;
+export default useAddressForm;

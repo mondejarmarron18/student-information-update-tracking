@@ -5,14 +5,6 @@ type Props = {
   password: string;
 };
 
-const RenderIcon = (props: { satisfied: boolean }) => {
-  if (props.satisfied) {
-    return <span className="text-green-500">&#10004;</span>;
-  }
-
-  return <span className="text-red-500">&#10006;</span>;
-};
-
 const conditions = [
   {
     label: `Must have at least one special character: ${passwordValidator.allowedSpecialCharacters}`,
@@ -36,14 +28,22 @@ const conditions = [
   },
 ];
 
+const RenderIcon = (props: { satisfied: boolean }) => {
+  if (props.satisfied) {
+    return <span className="text-green-500">&#10004;</span>;
+  }
+
+  return <span className="text-red-500">&#10006;</span>;
+};
+
 const PasswordValidator = (props: Props) => {
   return (
-    <div className="mt-2">
+    <div>
       {conditions.map(({ label, validate }) => {
         const satisfied = validate(props.password);
 
         return (
-          <div className="flex gap-2 items-center">
+          <div key={label} className="flex gap-2 items-center">
             <RenderIcon satisfied={satisfied} />
             <p
               className={cn("text-sm text-gray-500", {

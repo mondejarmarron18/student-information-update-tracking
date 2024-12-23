@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MdNavigateNext } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import PasswordValidator from "@/components/common/PasswordValidator";
 import { isValidPassword } from "@/utils/validator";
@@ -37,7 +36,7 @@ const RegisterForm = (props: FormProps<RegisterFormProps>) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("flex flex-col gap-2", props.className)}
+        className={cn("flex flex-col gap-6", props.className)}
       >
         {formFields.map((formField) => (
           <FormField
@@ -65,11 +64,7 @@ const RegisterForm = (props: FormProps<RegisterFormProps>) => {
 
         {passwordError && <p className="text-red-500">{passwordError}</p>}
         <Button type="submit" className="mt-2">
-          {props.onSubmitLabel || (
-            <>
-              Next <MdNavigateNext />
-            </>
-          )}
+          {props.onSubmitLabel || "Submit"}
         </Button>
       </form>
     </Form>

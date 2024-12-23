@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MdNavigateNext } from "react-icons/md";
 import { SignInFormProps } from "./schema";
 import useSignInForm from "./useSignInForm";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
+import { cn } from "@/lib/utils";
 
 const SignInForm = (props: FormProps<SignInFormProps>) => {
   const { form } = useSignInForm();
@@ -23,9 +23,13 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={props.className}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={cn("flex flex-col gap-6", props.className)}
+      >
         {formFields.map((formField) => (
           <FormField
+            key={formField.name}
             control={form.control}
             name={formField.name}
             render={({ field }) => (
@@ -41,11 +45,7 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
         ))}
 
         <Button type="submit" className="mt-4">
-          {props.onSubmitLabel || (
-            <>
-              Continue <MdNavigateNext />
-            </>
-          )}
+          {props.onSubmitLabel || "Submit"}
         </Button>
       </form>
     </Form>

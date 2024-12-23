@@ -7,16 +7,28 @@ export type FormProps<Value> = {
 export type FormField = {
   name: string;
   label: string;
-  type:
-    | "email"
-    | "password"
-    | "text"
-    | "number"
-    | "date"
-    | "time"
-    | "checkbox"
-    | "radio"
-    | "select";
-  placeholder: string;
   hideError?: boolean;
-};
+  placeholder: string;
+  optional?: boolean;
+} & (
+  | {
+      type:
+        | "email"
+        | "password"
+        | "text"
+        | "number"
+        | "date"
+        | "time"
+        | "checkbox"
+        | "tel"
+        | "number";
+    }
+  | {
+      type: "select" | "radio";
+      options: {
+        label: string;
+        value: string;
+        tooltip?: string;
+      }[];
+    }
+);
