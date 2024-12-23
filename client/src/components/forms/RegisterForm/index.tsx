@@ -63,9 +63,27 @@ const RegisterForm = (props: FormProps<RegisterFormProps>) => {
         ))}
 
         {passwordError && <p className="text-red-500">{passwordError}</p>}
-        <Button type="submit" className="mt-2">
-          {props.onSubmitLabel || "Submit"}
-        </Button>
+
+        <div className="flex flex-col gap-6">
+          <Button className="w-full">
+            {props.onSubmitLabel || "Continue"}
+          </Button>
+          {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <span className="relative z-10 bg-background px-2 text-muted-foreground">
+              Or sign-up with
+            </span>
+          </div>
+          <Button type="button" variant="outline" className="w-full">
+            <IoLogoGoogle /> Sign-up with Google
+          </Button> */}
+        </div>
+
+        <div className="text-center text-sm">
+          Already have an account?{" "}
+          <a href="/" className="underline underline-offset-4">
+            Login
+          </a>
+        </div>
       </form>
     </Form>
   );

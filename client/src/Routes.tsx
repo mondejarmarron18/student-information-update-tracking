@@ -1,40 +1,40 @@
 import { createBrowserRouter } from "react-router";
-import Register from "./pages/Register";
-import SignIn from "./pages/SignIn";
-import UserProfile from "./pages/UserProfile";
-import Address from "./pages/Address";
-import StudentGuardian from "./pages/StudentGuardian";
-import AcademicProfile from "./pages/AcedemicProfile";
+import SuspenseWrapper from "./components/layouts/SuspenseWrapper";
+import { lazy } from "react";
+import Error from "./pages/Error";
+
+const SignIn = lazy(() => import("./pages/SignIn"));
+const Register = lazy(() => import("./pages/Register"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
+const Address = lazy(() => import("./pages/Address"));
+const StudentGuardian = lazy(() => import("./pages/StudentGuardian"));
+const AcademicProfile = lazy(() => import("./pages/AcedemicProfile"));
 
 const routes = createBrowserRouter([
   {
     path: "/",
-    element: <div>Home</div>,
+    element: SuspenseWrapper(SignIn),
   },
   {
-    path: "/login",
-    element: <SignIn />,
-  },
-  {
-    path: "/register",
-    element: <Register />,
-    errorElement: <div>404</div>,
+    path: "/sign-up",
+    element: SuspenseWrapper(Register),
+    errorElement: <Error />,
   },
   {
     path: "/user-profile",
-    element: <UserProfile />,
+    element: SuspenseWrapper(UserProfile),
   },
   {
     path: "/address",
-    element: <Address />,
+    element: SuspenseWrapper(Address),
   },
   {
     path: "/student-guardian",
-    element: <StudentGuardian />,
+    element: SuspenseWrapper(StudentGuardian),
   },
   {
     path: "/academic-profile",
-    element: <AcademicProfile />,
+    element: SuspenseWrapper(AcademicProfile),
   },
 ]);
 
