@@ -17,7 +17,6 @@ const formFields: Fields[] = [
     label: "Password",
     type: "password",
     placeholder: "******",
-    hideError: true,
   },
 ];
 

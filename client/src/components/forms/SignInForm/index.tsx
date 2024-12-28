@@ -13,13 +13,20 @@ import useSignInForm from "./useSignInForm";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 const SignInForm = (props: FormProps<SignInFormProps>) => {
   const { form } = useSignInForm();
+  const navigate = useNavigate();
+
+  console.log(form.watch());
 
   const onSubmit = (values: SignInFormProps) => {
     props.onSubmit(values);
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/forgot-password", { state: { email: form.watch("email") } });
   };
 
   return (
@@ -35,18 +42,19 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
             name={formField.name}
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="flex w-full justify-between items-center">
-                  {formField.label}
-
+                <div className="flex w-full justify-between items-center">
+                  <FormLabel>{formField.label}</FormLabel>
                   {formField.name === "password" && (
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm underline-offset-4 hover:underline"
+                    <Button
+                      onClick={handleForgotPassword}
+                      variant="link"
+                      type="button"
+                      className="dark:text-white text-black"
                     >
                       Forgot your password?
-                    </Link>
+                    </Button>
                   )}
-                </FormLabel>
+                </div>
                 <FormControl>
                   <Input placeholder={formField.placeholder} {...field} />
                 </FormControl>

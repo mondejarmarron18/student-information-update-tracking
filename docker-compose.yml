@@ -1,0 +1,33 @@
+services:
+  db:
+    container_name: spius_db
+    image: mongo:7.0-jammy
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+    env_file:
+      - ./server/.env
+    networks:
+      - spius
+  api:
+    container_name: spius_api
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes:
+      - ./server:/app
+      - /server/node_modules
+    ports:
+      - 5000:${PORT}
+    env_file:
+      - ./server/.env
+    networks:
+      - spius
+    depends_on:
+      - db
+networks:
+  spius:
+    driver: bridge
+volumes:
+  mongo_data:
