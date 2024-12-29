@@ -25,8 +25,6 @@ const config = {
     secretExpiresIn: _("JWT_SECRET_EXPIRES_IN"),
     refreshSecret: _("JWT_REFRESH_SECRET"),
     refreshSecretExpiresIn: _("JWT_REFRESH_SECRET_EXPIRES_IN"),
-    verificationSecret: _("JWT_VERIFICATION_SECRET"),
-    verificationSecretExpiresIn: _("JWT_VERIFICATION_SECRET_EXPIRES_IN"),
   },
 };
 

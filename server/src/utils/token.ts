@@ -26,15 +26,3 @@ export const generateRefreshToken = (data: IUser): string => {
 export const verifyRefreshToken = (token: string): Partial<IUser> => {
   return jwt.verify(token, config.jwt.refreshSecret as string) as IUser;
 };
-
-export const generateVerificationToken = (data: IUser) => {
-  const plainData = JSON.parse(JSON.stringify(data));
-
-  return jwt.sign(plainData, config.jwt.verificationSecret as string, {
-    expiresIn: config.jwt.verificationSecretExpiresIn,
-  });
-};
-
-export const verifyVerificationToken = (token: string): Partial<IUser> => {
-  return jwt.verify(token, config.jwt.verificationSecret as string) as IUser;
-};

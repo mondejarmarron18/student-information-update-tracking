@@ -1,101 +1,87 @@
-import { x8tAsync, x8tSync } from "x8t";
-import {
-  generateToken,
-  generateVerificationToken,
-  verifyVerificationToken,
-} from "../../../utils/token";
+import { x8tAsync } from "x8t";
+import { generateToken } from "../../../utils/token";
 import RoleService from "../../role/roleService";
 import { IUser } from "../userModel";
 import UserRepository from "../userRepository";
 import bcrypt from "bcrypt";
 import { sendMail } from "../../../utils/email";
 import config from "../../../utils/config";
-import { formatJwtExpires } from "../../../utils";
+import hbs from "../../../utils/hbs";
+import _, { result } from "lodash";
+import { IVerificationCode } from "../../verificationCode/verificationCodeModel";
+import VerificationCodeService from "../../verificationCode/verificationCodeService";
 
 export default class UserService {
   userRepository: UserRepository;
   roleService: RoleService;
+  verificationCodeService: VerificationCodeService;
 
   constructor() {
     this.userRepository = new UserRepository();
     this.roleService = new RoleService();
+    this.verificationCodeService = new VerificationCodeService();
   }
 
   createUser = async (params: Pick<IUser, "email" | "password" | "roleId">) => {
-    const isEmailExist = await this.userRepository.isUserEmailExists(
-      params.email
+    const existingUser = await this.userRepository.getUserByEmail(params.email);
+    let user = existingUser;
+
+    // Check if user already exists
+    if (!user) {
+      const isRoleExist = await this.roleService.isRoleIdExist(params.roleId);
+
+      if (!isRoleExist) throw new Error("Role not found");
+
+      const newUser = await x8tAsync(this.userRepository.createUser(params));
+
+      if (newUser.error) throw newUser.error;
+      if (!newUser.result) throw new Error("User creation failed");
+
+      user = newUser.result;
+    }
+
+    if (user?.verifiedAt) throw new Error("Email already exists");
+
+    const verificationCode = await x8tAsync(
+      this.verificationCodeService.generateVerificationCode(user._id)
     );
 
-    if (isEmailExist) {
-      throw new Error("Email already exist");
+    if (verificationCode.error || !verificationCode.result) {
+      console.log("Verification code creation failed:", verificationCode.error);
+      throw new Error("Verification code creation failed");
     }
 
-    const isRoleExist = await this.roleService.isRoleIdExist(params.roleId);
+    const { _id: verificationCodeId } = verificationCode.result;
 
-    if (!isRoleExist) {
-      throw new Error("Role not found");
-    }
+    await this.sendVerificationEmail({ email: user.email }, verificationCodeId);
 
-    const { result, error } = await x8tAsync(
-      this.userRepository.createUser(params)
-    );
+    return user;
+  };
 
-    if (error !== null) {
-      throw error;
-    }
-
-    if (!result) {
-      throw new Error("User creation failed");
-    }
-
-    const verificationToken = generateVerificationToken(result);
-
+  sendVerificationEmail = async (
+    params: Pick<IUser, "email">,
+    verificationCode: IVerificationCode["_id"]
+  ) => {
     const { error: sendMailError } = await sendMail({
       to: params.email,
       subject: "Account Verification",
-      html: `
-        <p>Hi there,</p>
-
-    <p>Thank you for signing up for <strong>${
-      config.appName
-    }</strong>! We're excited to have you on board.</p>
-
-    <p>To complete your registration and activate your account, please verify your email address by clicking the link below:</p>
-
-    <p><a href="${
-      config.clientUrl
-    }/verify-email/${verificationToken}">Verify Your Email</a></p>
-
-    <p>If you didn’t sign up for <strong>${
-      config.appName
-    }</strong>, please ignore this email. If you have any questions or concerns, feel free to reach out to us at <a href="mailto:[Support Email]">Support Team</a>.</p>
-
-    <p><em>Note:</em> This link will expire in ${formatJwtExpires(
-      config.jwt.verificationSecretExpiresIn as string
-    )}, so make sure to verify your email as soon as possible.</p>
-
-    <hr />
-
-    <p>Best regards,</p>
-    <p>The <strong>${config.appName}</strong> Team</p>
-    <p><a href="${config.clientUrl}">${config.clientUrl?.replace(
-        /(http|https):\/\//,
-        ""
-      )}</a></p>
-
-    <p><small>You are receiving this email because you signed up for <strong>${
-      config.appName
-    }</strong>. If you no longer wish to receive emails from us, please <a href="${
-        config.clientUrl
-      }/unsubscribe">unsubscribe</a>.</small></p>
-      `,
+      html: await hbs("email", {
+        verificationUrl: `${config.clientUrl}/verify-email/${verificationCode}`,
+        supportEmail: config.smtp.sender,
+        appName: config.appName,
+        unsubscribeUrl: `${config.clientUrl}/unsubscribe/${verificationCode}`,
+        expireIn: "24 hours",
+        website: {
+          domain: config.clientUrl?.replace(/(http|https):\/\//, ""),
+          url: config.clientUrl,
+        },
+      }),
     });
 
     if (sendMailError !== null) {
+      console.log("Failed to send verification email:", sendMailError);
       throw new Error("Failed to send verification email");
     }
-
-    return result;
   };
 
   getUserByEmail = (email: IUser["email"]) => {
@@ -110,11 +96,11 @@ export default class UserService {
     return this.userRepository.getUsers();
   };
 
-  isUserExist = (email: IUser["email"]) => {
+  isUserExists = (email: IUser["email"]) => {
     return this.userRepository.getUserByEmail(email);
   };
 
-  isUserIdExist = (id: IUser["_id"]) => {
+  isUserIdExists = (id: IUser["_id"]) => {
     return this.userRepository.getUserById(id);
   };
 
@@ -126,7 +112,7 @@ export default class UserService {
     id: IUser["_id"],
     password: IUser["password"]
   ) => {
-    const isUserExist = await this.isUserIdExist(id);
+    const isUserExist = await this.userRepository.isUserIdExists(id);
 
     if (!isUserExist) {
       throw new Error("User not found");
@@ -136,7 +122,7 @@ export default class UserService {
   };
 
   loginUser = async (params: Pick<IUser, "email" | "password">) => {
-    const user = await this.getUserByEmail(params.email);
+    const user = await this.userRepository.getUserByEmail(params.email);
 
     if (!user) {
       throw new Error("Email not found");
@@ -161,25 +147,29 @@ export default class UserService {
     return token;
   };
 
-  verifyUser = async (verificationToken: string) => {
-    const user = verifyVerificationToken(verificationToken);
+  verifyUser = async (id: IVerificationCode["_id"]): Promise<IUser> => {
+    const verificationCode =
+      await this.verificationCodeService.getValidVerificationCode(id);
+    const isVerified = await x8tAsync(
+      this.userRepository.isUserVerified(verificationCode.userId)
+    );
 
-    if (!user._id) {
-      throw new Error("Invalid verification token");
-    }
-
-    const verifiedUser = await this.getUserById(user._id);
-
-    if (!verifiedUser) {
-      throw new Error("User not found");
-    }
-
-    if (verifiedUser?.verifiedAt) {
+    if (isVerified.error) throw isVerified.error;
+    if (isVerified.result) {
       throw new Error("User is already verified");
     }
 
-    console.log(user);
+    const verifyUser = await x8tAsync(
+      this.userRepository.verifyUser(verificationCode.userId)
+    );
 
-    return this.userRepository.verifyUser(user._id);
+    if (verifyUser.error) throw verifyUser.error;
+    if (!verifyUser.result) {
+      throw new Error("User not found");
+    }
+
+    console.log({ verifyUser });
+
+    return verifyUser.result;
   };
 }

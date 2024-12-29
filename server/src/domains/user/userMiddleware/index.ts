@@ -37,7 +37,7 @@ export default class UserMiddleware {
 
   verifyUser = (req: Request, res: Response, next: NextFunction) => {
     const validate = z.object({
-      verificationToken: z.string().nonempty("Verification token is required"),
+      verificationCode: z.string().nonempty("Verification code is required"),
     });
 
     const { error } = validate.safeParse(req.params);

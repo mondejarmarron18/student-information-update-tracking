@@ -55,11 +55,20 @@ export default class UserRepository {
     return this.userModel.exists({ _id: id });
   };
 
+  isUserVerified = (id: IUser["_id"]) => {
+    return this.userModel.exists({ _id: id, verifiedAt: { $ne: null } });
+  };
+
   verifyUser = (id: IUser["_id"]) => {
-    return this.userModel.findByIdAndUpdate(id, {
-      $set: {
-        verifiedAt: new Date(),
+    return this.userModel.findByIdAndUpdate(
+      {
+        _id: id,
       },
-    });
+      {
+        $set: {
+          verifiedAt: new Date(),
+        },
+      }
+    );
   };
 }

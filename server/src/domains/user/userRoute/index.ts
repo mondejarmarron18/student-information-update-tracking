@@ -10,7 +10,7 @@ userRoute.get("/", userController.getUsers);
 userRoute.post("/", userMiddleware.createUser, userController.createUser);
 userRoute.post("/token", userMiddleware.loginUser, userController.loginUser);
 userRoute.get(
-  "/verify-email/:verificationToken",
+  "/verify-email/:verificationCode",
   userMiddleware.verifyUser,
   userController.verifyUser
 );

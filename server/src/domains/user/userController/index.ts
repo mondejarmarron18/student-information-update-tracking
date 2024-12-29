@@ -3,6 +3,7 @@ import { IUser } from "../userModel";
 import UserService from "../userService";
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
+import { convertToObjectId } from "../../../utils/mongooseUtil";
 
 export default class UserController {
   userService: UserService;
@@ -16,7 +17,7 @@ export default class UserController {
       this.userService.createUser(req.body)
     );
 
-    if (error !== null) {
+    if (error !== null || !result) {
       console.error("Error creating user:", error);
 
       if (error instanceof MongooseError || error instanceof Error) {
@@ -28,7 +29,7 @@ export default class UserController {
       return;
     }
 
-    res.status(201).send({ data: result });
+    res.status(204).send();
   };
 
   getUsers = async (req: Request, res: Response) => {
@@ -64,15 +65,27 @@ export default class UserController {
   };
 
   verifyUser = async (req: Request, res: Response) => {
-    const { result, error } = await x8tAsync(
-      this.userService.verifyUser(req.params.verificationToken)
+    const verificationCode = convertToObjectId(req.params.verificationCode);
+
+    if (verificationCode.error) {
+      res.status(400).send({ error: verificationCode.error });
+      return;
+    }
+
+    if (!verificationCode.id) {
+      res.status(400).send({ error: "Invalid verification code" });
+      return;
+    }
+
+    const user = await x8tAsync(
+      this.userService.verifyUser(verificationCode.id)
     );
 
-    if (error !== null) {
-      console.error("Error verifying user:", error);
+    if (user.error) {
+      console.error("Error verifying user:", user.error);
 
-      if (error instanceof Error || error instanceof MongooseError) {
-        res.status(400).send({ error: error.message });
+      if (user.error instanceof Error || user.error instanceof MongooseError) {
+        res.status(400).send({ error: user.error.message });
         return;
       }
 
@@ -80,6 +93,6 @@ export default class UserController {
       return;
     }
 
-    res.status(200).send(result);
+    res.status(204).send();
   };
 }
