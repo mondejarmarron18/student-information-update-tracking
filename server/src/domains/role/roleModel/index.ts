@@ -36,4 +36,6 @@ roleSchema.pre("save", function (next) {
   next();
 });
 
-export default model<IRole>("role", roleSchema);
+const RoleModel = model<IRole>("role", roleSchema);
+
+export default RoleModel;

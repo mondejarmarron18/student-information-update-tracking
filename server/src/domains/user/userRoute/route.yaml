@@ -1,0 +1,44 @@
+/users:
+  get:
+    summary: Get users
+    security:
+      - bearerAuth: []
+    tags: [Users]
+    responses:
+      200:
+        description:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+  post:
+    summary: Create user
+    tags: [Users]
+    consumes: application/json
+    parameters:
+      - in: body
+        name: user
+        schema:
+          type: object
+          required:
+            - email:
+            - password:
+          properties:
+            roleId:
+              type: string
+              format: uuid
+            email:
+              type: string
+              format: email
+            password:
+              type: string
+              format: password
+    responses:
+      204:
+        description: No content
+      400:
+        $ref: "#/components/schemas/Error400"
+      404:
+        $ref: "#/components/schemas/Error404"
+      500:
+        $ref: "#/components/schemas/Error500"

@@ -1,0 +1,24 @@
+components:
+  schemas:
+    UserProfile:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: The user's first name
+        lastName:
+          type: string
+          description: The user's last name
+        email:
+          type: string
+          description: The user's email address
+          format: email
+        dateOfBirth:
+          type: string
+          description: The user's date of birth
+          format: date
+      required:
+        - firstName
+        - lastName
+        - email
+    

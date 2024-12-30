@@ -56,7 +56,9 @@ verificationCodeSchema.pre("save", async function (next) {
   next();
 });
 
-export default model<IVerificationCode>(
+const VerificationCodeModel = model<IVerificationCode>(
   "verificationCode",
   verificationCodeSchema
 );
+
+export default VerificationCodeModel;

@@ -18,4 +18,8 @@ stop:
 	@echo "Stopping server ${service}"
 	docker compose --env-file ./server/.env stop ${service}
 
-.PHONY: dev prod stop log down
+db:
+	@echo "Running db"
+	docker exec -it spius_db bash -c 'mongosh -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin $$MONGO_INITDB_DATABASE'
+
+.PHONY: dev prod stop log down db
