@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
-import contactMethods, {
+import {
+  contactMethodsValue,
   ContactMethodsValue,
 } from "../userProfileConstant/contactMethods";
 
@@ -63,7 +64,13 @@ const userProfileSchema = new Schema<IUserProfile>({
   },
   contactMethods: {
     type: [Number],
-    unique: true,
+    enum: contactMethodsValue,
+    validate: {
+      validator: (cms: ContactMethodsValue[]) => {
+        return cms.every((cm) => contactMethodsValue.includes(cm));
+      },
+      message: "Invalid contact method",
+    },
   },
   address: {
     current: addressSchema,

@@ -1,0 +1,41 @@
+/user-profiles:
+  get:
+    summary: Get user profiles
+    tags: [User Profiles]
+    security:
+      - bearerAuth: []
+    parameters:
+      - $ref: "#/components/parameters/q"
+      - $ref: "#/components/parameters/sort"
+      - $ref: "#/components/parameters/order"
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/page"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/_id"
+                - $ref: "#/components/schemas/UserProfile"
+      401:
+        - $ref: "#/components/responses/unauthorized"
+  post:
+    summary: Create user profile
+    tags: [User Profiles]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserProfile"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"

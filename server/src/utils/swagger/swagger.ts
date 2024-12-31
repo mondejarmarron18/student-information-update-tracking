@@ -15,4 +15,7 @@ export const swaggerOptions: swaggerJSDoc.Options = {
 };
 
 export const swaggerDoc = swaggerJSDoc(swaggerOptions);
-export const swaggerSetup = swaggerUI.setup(swaggerDoc);
+export const swaggerSetup = swaggerUI.setup(swaggerDoc, {
+  customSiteTitle: config.appName || "API Documentation",
+  customCss: ".topbar { display: none; };",
+});

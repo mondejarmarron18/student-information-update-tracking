@@ -1,0 +1,54 @@
+components:
+  schemas:
+    Address:
+      type: object
+      properties:
+        country:
+          type: string
+        region:
+          type: string
+        city:
+          type: string
+        barangay:
+          type: string
+        street:
+          type: string
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        nameExtension:
+          type: string
+        phoneNumber:
+          type: string
+        contactMethods:
+          type: array
+          items:
+            type: number
+            enum: [0, 1, 2]
+          example: [0, 1, 2]
+          description: "0 = email, 1 = phone number, 2 = facebook"
+        address:
+          type: object
+          properties:
+            current:
+              $ref: "#/components/schemas/Address"
+            permanent:
+              $ref: "#/components/schemas/Address"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time

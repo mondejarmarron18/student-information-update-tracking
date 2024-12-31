@@ -5,7 +5,49 @@ components:
       name: Authorization
       in: header
       bearerFormat: JWT
+  parameters:
+    q:
+      name: q
+      in: query
+      description: "Search term"
+      schema:
+        type: string
+    sort:
+      name: sort
+      in: query
+      description: "Sort by field"
+      schema:
+        type: string
+        default: createdAt
+    order:
+      name: order
+      in: query
+      description: "Sort order"
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: desc
+    limit:
+      name: limit
+      in: query
+      description: "Limit per page"
+      schema:
+        type: integer
+        default: 10
+    page:
+      name: page
+      in: query
+      description: "Page number"
+      schema:
+        type: integer
+        default: 1
   schemas:
+    _id:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: uuid
     Error:
       type: object
       properties:
@@ -54,7 +96,6 @@ components:
               error:
                 type: string
     CustomError:
-    
       properties:
         error:
           type: array
@@ -72,4 +113,16 @@ components:
                 items:
                   type: string
               message:
+                type: string
+  responses:
+    unauthorized:
+      description: "Unauthorized request"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+              error:
                 type: string
