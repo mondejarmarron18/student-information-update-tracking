@@ -12,15 +12,11 @@
       - $ref: "#/components/parameters/page"
     responses:
       200:
-        description: OK
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: "#/components/schemas/_id"
-                - $ref: "#/components/schemas/UserProfile"
+        $ref: "#/components/responses/getUserProfiles"
       401:
-        - $ref: "#/components/responses/unauthorized"
+        $ref: "#/components/responses/unauthorized"
+      404:
+        $ref: "#/components/responses/notFound"
   post:
     summary: Create user profile
     tags: [User Profiles]
@@ -29,13 +25,13 @@
     requestBody:
       required: true
       content:
-        application/json:
+        application/x-www-form-urlencoded:
           schema:
-            $ref: "#/components/schemas/UserProfile"
+            $ref: "#/components/schemas/userProfile"
     responses:
       200:
         description: OK
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserProfile"
+              $ref: "#/components/schemas/userProfile"

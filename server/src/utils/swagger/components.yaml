@@ -47,12 +47,45 @@ components:
       properties:
         _id:
           type: string
-          format: uuid
+    userId:
+      type:
+      properties:
+        userId:
+          type: string
+    date:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+    responseSuccess:
+      type: object
+      properties:
+        status:
+          type: integer
+          default: 200
+        message:
+          type: string
+          default: OK
+        data:
+          type: object
     Error:
       type: object
       properties:
-        error:
+        status:
+          type: integer
+        message:
           type: string
+        description:
+          type: string
+        details:
+          type: object
     Error404:
       description: Not Found
       content:
@@ -115,14 +148,68 @@ components:
               message:
                 type: string
   responses:
-    unauthorized:
-      description: "Unauthorized request"
+    success:
+      description: "OK"
       content:
         application/json:
           schema:
             type: object
             properties:
+              status:
+                type: integer
+                description: HTTP status code
+                default: 200
+              message:
+                type: string
+                description: Success message
+                default: OK
               data:
                 type: object
-              error:
+                description: Response data
+                default: {}
+    unauthorized:
+      description: "Unauthorized"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                description: HTTP status code
+                default: 401
+              message:
                 type: string
+                description: Error message
+                default: Unauthorized
+              description:
+                type: string
+                description: Error description
+                default: "You are not authorized to perform this action."
+              details:
+                type: object
+                description: Error details
+                default: null
+    notFound:
+      description: "Not Found"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                description: HTTP status code
+                default: 404
+              message:
+                type: string
+                description: Error message
+                default: Not Found
+              description:
+                type: string
+                description: Error description
+                default: "The requested resource was not found."
+              details:
+                type: object
+                description: Error details
+                default: null

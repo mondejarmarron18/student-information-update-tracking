@@ -1,6 +1,6 @@
 components:
   schemas:
-    Address:
+    address:
       type: object
       properties:
         country:
@@ -13,42 +13,52 @@ components:
           type: string
         street:
           type: string
-    UserProfile:
-      type: object
-      properties:
-        userId:
-          type: string
-          format: uuid
-        firstName:
-          type: string
-        middleName:
-          type: string
-        lastName:
-          type: string
-        nameExtension:
-          type: string
-        phoneNumber:
-          type: string
-        contactMethods:
-          type: array
-          items:
-            type: number
-            enum: [0, 1, 2]
-          example: [0, 1, 2]
-          description: "0 = email, 1 = phone number, 2 = facebook"
-        address:
-          type: object
+    userProfile:
+      allOf:
+        - $ref: "#/components/schemas/_id"
+        - $ref: "#/components/schemas/userId"
+        - type: object
           properties:
-            current:
-              $ref: "#/components/schemas/Address"
-            permanent:
-              $ref: "#/components/schemas/Address"
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        deletedAt:
-          type: string
-          format: date-time
+            firstName:
+              type: string
+            middleName:
+              type: string
+            lastName:
+              type: string
+            nameExtension:
+              type: string
+            phoneNumber:
+              type: string
+            contactMethods:
+              type: array
+              items:
+                type: number
+                enum: [0, 1, 2]
+              description: |
+                - `0`: Email
+                - `1`: Phon Call
+                - `2`: SMS
+              example: [0, 1, 2]
+            address:
+              type: object
+              properties:
+                current:
+                  $ref: "#/components/schemas/address"
+                permanent:
+                  $ref: "#/components/schemas/address"
+        - $ref: "#/components/schemas/date"
+
+  responses:
+    getUserProfiles:
+      description: OK
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/responseSuccess"
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/userProfile"
