@@ -1,5 +1,5 @@
 import { x8tAsync } from "x8t";
-import { generateToken } from "../../../utils/token";
+import { generateRefreshToken, generateToken } from "../../../utils/token";
 import RoleService from "../../role/roleService";
 import { IUser } from "../userModel";
 import UserRepository from "../userRepository";
@@ -7,9 +7,10 @@ import bcrypt from "bcrypt";
 import { sendMail } from "../../../utils/email";
 import config from "../../../utils/config";
 import hbs from "../../../utils/hbs";
-import _, { result } from "lodash";
+import _ from "lodash";
 import { IVerificationCode } from "../../verificationCode/verificationCodeModel";
 import VerificationCodeService from "../../verificationCode/verificationCodeService";
+import CustomError from "../../../utils/CustomError";
 
 export default class UserService {
   userRepository: UserRepository;
@@ -42,28 +43,34 @@ export default class UserService {
 
     if (user?.verifiedAt) throw new Error("Email already exists");
 
-    const verificationCode = await x8tAsync(
-      this.verificationCodeService.generateVerificationCode(user._id)
-    );
+    const verificationCode = await this.generateVerificationCode(user._id);
 
-    if (verificationCode.error || !verificationCode.result) {
-      console.log("Verification code creation failed:", verificationCode.error);
-      throw new Error("Verification code creation failed");
-    }
-
-    const { _id: verificationCodeId } = verificationCode.result;
-
-    await this.sendVerificationEmail({ email: user.email }, verificationCodeId);
+    await this.sendVerificationEmail(user.email, verificationCode);
 
     return user;
   };
 
+  generateVerificationCode = async (userId: IVerificationCode["userId"]) => {
+    const verificationCode = await x8tAsync(
+      this.verificationCodeService.generateVerificationCode(userId)
+    );
+
+    if (verificationCode.error || !verificationCode.result?.id) {
+      console.log("Verification code creation failed:", verificationCode.error);
+      CustomError.internalServerError({
+        details: verificationCode.error,
+      });
+    }
+
+    return verificationCode.result!._id;
+  };
+
   sendVerificationEmail = async (
-    params: Pick<IUser, "email">,
+    email: IUser["email"],
     verificationCode: IVerificationCode["_id"]
   ) => {
     const { error: sendMailError } = await sendMail({
-      to: params.email,
+      to: email,
       subject: "Account Verification",
       html: await hbs("email", {
         verificationUrl: `${config.clientUrl}/verify-email/${verificationCode}`,
@@ -78,9 +85,9 @@ export default class UserService {
       }),
     });
 
-    if (sendMailError !== null) {
+    if (sendMailError) {
       console.log("Failed to send verification email:", sendMailError);
-      throw new Error("Failed to send verification email");
+      CustomError.internalServerError({ details: sendMailError });
     }
   };
 
@@ -135,16 +142,25 @@ export default class UserService {
     }
 
     if (!user.verifiedAt) {
-      throw new Error("User is not verified");
+      const verificationCode = await this.generateVerificationCode(user._id);
+
+      await this.sendVerificationEmail(user.email, verificationCode);
+
+      CustomError.unverifiedAccount();
     }
 
-    const token = generateToken(user);
+    const userWithoutPassword = _.omit(user, "password");
+    const token = generateToken(userWithoutPassword);
+    const refreshToken = generateRefreshToken(userWithoutPassword);
 
-    if (!token) {
-      throw new Error("Failed to generate token");
+    if (!token || !refreshToken) {
+      CustomError.internalServerError();
     }
 
-    return token;
+    return {
+      token,
+      refreshToken,
+    };
   };
 
   verifyUser = async (id: IVerificationCode["_id"]): Promise<IUser> => {
@@ -167,8 +183,6 @@ export default class UserService {
     if (!verifyUser.result) {
       throw new Error("User not found");
     }
-
-    console.log({ verifyUser });
 
     return verifyUser.result;
   };

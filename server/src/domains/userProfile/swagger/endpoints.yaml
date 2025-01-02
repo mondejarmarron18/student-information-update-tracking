@@ -25,13 +25,17 @@
     requestBody:
       required: true
       content:
-        application/x-www-form-urlencoded:
+        application/json:
           schema:
             $ref: "#/components/schemas/userProfile"
     responses:
       200:
-        description: OK
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/userProfile"
+        $ref: "#/components/responses/getUserProfiles"
+      400:
+        $ref: "#/components/responses/badRequest"
+      401:
+        $ref: "#/components/responses/unauthorized"
+      404:
+        $ref: "#/components/responses/notFound"
+      500:
+        $ref: "#/components/responses/internalServerError"

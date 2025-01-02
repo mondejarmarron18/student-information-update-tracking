@@ -4,6 +4,9 @@ import UserService from "../userService";
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import CustomError from "../../../utils/CustomError";
+import CustomResponse from "../../../utils/CustomResponse";
+import customErrors from "../../../constants/customErrors";
 
 export default class UserController {
   userService: UserService;
@@ -49,8 +52,11 @@ export default class UserController {
       this.userService.loginUser(req.body)
     );
 
-    if (error !== null) {
-      console.error("Error logging in user:", error);
+    if (error) {
+      if (error instanceof CustomError) {
+        console.log("Error logging in user:", error);
+        return CustomResponse.sendError(res, error);
+      }
 
       if (error instanceof Error || error instanceof MongooseError) {
         res.status(400).send({ error: error.message });
@@ -61,20 +67,30 @@ export default class UserController {
       return;
     }
 
-    res.status(200).send(result);
+    if (!result?.token || !result?.refreshToken) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.internalServerError,
+        details: "Failed to generate tokens",
+      });
+    }
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
+
+    res.status(200).send(result.token);
   };
 
   verifyUser = async (req: Request, res: Response) => {
     const verificationCode = convertToObjectId(req.params.verificationCode);
 
-    if (verificationCode.error) {
-      res.status(400).send({ error: verificationCode.error });
-      return;
-    }
-
-    if (!verificationCode.id) {
-      res.status(400).send({ error: "Invalid verification code" });
-      return;
+    if (verificationCode.error || !verificationCode.id) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: verificationCode.error || "Invalid verification code",
+      });
     }
 
     const user = await x8tAsync(
@@ -84,13 +100,18 @@ export default class UserController {
     if (user.error) {
       console.error("Error verifying user:", user.error);
 
-      if (user.error instanceof Error || user.error instanceof MongooseError) {
-        res.status(400).send({ error: user.error.message });
-        return;
+      if (user.error instanceof CustomError) {
+        return CustomResponse.sendError(res, user.error);
       }
 
-      res.status(500).send({ error: "Internal server error" });
-      return;
+      if (user.error instanceof Error || user.error instanceof MongooseError) {
+        return CustomResponse.sendError(res, {
+          ...customErrors.badRequest,
+          details: user.error.message,
+        });
+      }
+
+      return CustomResponse.sendError(res, customErrors.internalServerError);
     }
 
     res.status(204).send();

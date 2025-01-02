@@ -66,3 +66,28 @@
         $ref: "#/components/schemas/Error404"
       500:
         $ref: "#/components/schemas/Error500"
+
+/users/verify-email/{verificationCode}:
+  get:
+    summary: Verify email
+    tags: [Users]
+    parameters:
+      - in: path
+        name: verificationCode
+        schema:
+          type: string
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          plain/text:
+            schema:
+              type: string
+              example: "Email verified"
+      400:
+        $ref: "#/components/schemas/Error400"
+      404:
+        $ref: "#/components/schemas/Error404"
+      500:
+        $ref: "#/components/schemas/Error500"

@@ -2,7 +2,7 @@ import { model, Schema, Types } from "mongoose";
 import {
   contactMethodsValue,
   ContactMethodsValue,
-} from "../userProfileConstant/contactMethods";
+} from "../../../constants/contactMethods";
 
 export interface IAddress {
   country: String;
@@ -19,6 +19,7 @@ export interface IUserProfile {
   middleName: String;
   lastName: String;
   nameExtension: String;
+  dateOfBirth: Date;
   phoneNumber: String;
   contactMethods: ContactMethodsValue[];
   address: {
@@ -30,19 +31,25 @@ export interface IUserProfile {
   deletedAt: Date;
 }
 
-export const addressSchema = new Schema<IAddress>({
-  country: String,
-  region: String,
-  city: String,
-  barangay: String,
-  street: String,
-});
+export const addressSchema = new Schema<IAddress>(
+  {
+    country: String,
+    region: String,
+    city: String,
+    barangay: String,
+    street: String,
+  },
+  {
+    _id: false,
+  }
+);
 
 const userProfileSchema = new Schema<IUserProfile>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "user",
     required: true,
+    unique: true,
   },
   firstName: {
     type: String,
@@ -57,6 +64,10 @@ const userProfileSchema = new Schema<IUserProfile>({
   },
   nameExtension: {
     type: String,
+  },
+  dateOfBirth: {
+    type: Date,
+    required: true,
   },
   phoneNumber: {
     type: String,

@@ -4,6 +4,7 @@ import routes from "./routes";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
+import cookieParser from "cookie-parser";
 
 const app = Express();
 const port = config.port;
@@ -11,6 +12,7 @@ const port = config.port;
 app.use(morgan("dev"));
 app.use(Express.json());
 app.use(cors({ origin: "*" }));
+app.use(cookieParser());
 app.use(routes);
 
 mongoose

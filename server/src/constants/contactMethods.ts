@@ -5,6 +5,7 @@ const contactMethods = {
 } as const;
 
 export const contactMethodsValue = Object.values(contactMethods);
+export const contactMethodsKey = Object.keys(contactMethods);
 
 export type ContactMethods = keyof typeof contactMethods;
 export type ContactMethodsValue = (typeof contactMethods)[ContactMethods];

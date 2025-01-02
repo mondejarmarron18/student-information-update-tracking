@@ -162,54 +162,62 @@ components:
               message:
                 type: string
                 description: Success message
-                default: OK
+              accessToken:
+                type: string
+                description: New access token if old access token is expired
               data:
                 type: object
                 description: Response data
-                default: {}
+    badRequest:
+      description: "Error: Bad Request"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  status:
+                    example: 400
+                  message:
+                    example: "Bad Request"
+              - $ref: "#/components/schemas/Error"
     unauthorized:
-      description: "Unauthorized"
+      description: "Error: Unauthorized"
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: integer
-                description: HTTP status code
-                default: 401
-              message:
-                type: string
-                description: Error message
-                default: Unauthorized
-              description:
-                type: string
-                description: Error description
-                default: "You are not authorized to perform this action."
-              details:
-                type: object
-                description: Error details
-                default: null
+            allOf:
+              - type: object
+                properties:
+                  status:
+                    example: 401
+                  message:
+                    example: "Unauthorized"
+              - $ref: "#/components/schemas/Error"
     notFound:
-      description: "Not Found"
+      description: "Error: Not Found"
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              status:
-                type: integer
-                description: HTTP status code
-                default: 404
-              message:
-                type: string
-                description: Error message
-                default: Not Found
-              description:
-                type: string
-                description: Error description
-                default: "The requested resource was not found."
-              details:
-                type: object
-                description: Error details
-                default: null
+            allOf:
+              - type: object
+                properties:
+                  status:
+                    example: 404
+                  message:
+                    example: "Not Found"
+              - $ref: "#/components/schemas/Error"
+
+    internalServerError:
+      description: "Error: Internal Server Error"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  status:
+                    example: 500
+                  message:
+                    example: "Internal Server Error"
+              - $ref: "#/components/schemas/Error"

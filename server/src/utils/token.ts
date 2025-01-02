@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import { IUser } from "../domains/user/userModel";
 import config from "./config";
-import { x8tSync } from "x8t";
 
-export const generateToken = (data: IUser): string => {
+export const generateToken = (data: Omit<IUser, "password">): string => {
   const plainData = JSON.parse(JSON.stringify(data));
 
   return jwt.sign(plainData, config.jwt.secret as string, {
@@ -11,11 +10,11 @@ export const generateToken = (data: IUser): string => {
   });
 };
 
-export const verifyToken = (token: string): Partial<IUser> => {
+export const verifyToken = (token: string): Omit<IUser, "password"> | null => {
   return jwt.verify(token, config.jwt.secret as string) as IUser;
 };
 
-export const generateRefreshToken = (data: IUser): string => {
+export const generateRefreshToken = (data: Omit<IUser, "password">): string => {
   const plainData = JSON.parse(JSON.stringify(data));
 
   return jwt.sign(plainData, config.jwt.refreshSecret as string, {
@@ -23,6 +22,8 @@ export const generateRefreshToken = (data: IUser): string => {
   });
 };
 
-export const verifyRefreshToken = (token: string): Partial<IUser> => {
+export const verifyRefreshToken = (
+  token: string
+): Omit<IUser, "password"> | null => {
   return jwt.verify(token, config.jwt.refreshSecret as string) as IUser;
 };

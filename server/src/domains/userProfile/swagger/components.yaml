@@ -14,39 +14,37 @@ components:
         street:
           type: string
     userProfile:
-      allOf:
-        - $ref: "#/components/schemas/_id"
-        - $ref: "#/components/schemas/userId"
-        - type: object
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        nameExtension:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        phoneNumber:
+          type: string
+        contactMethods:
+          type: array
+          items:
+            type: number
+            enum: [1, 2, 3]
+          description: |
+            - `1`: Email
+            - `2`: Phon Call
+            - `3`: SMS
+        address:
+          type: object
           properties:
-            firstName:
-              type: string
-            middleName:
-              type: string
-            lastName:
-              type: string
-            nameExtension:
-              type: string
-            phoneNumber:
-              type: string
-            contactMethods:
-              type: array
-              items:
-                type: number
-                enum: [0, 1, 2]
-              description: |
-                - `0`: Email
-                - `1`: Phon Call
-                - `2`: SMS
-              example: [0, 1, 2]
-            address:
-              type: object
-              properties:
-                current:
-                  $ref: "#/components/schemas/address"
-                permanent:
-                  $ref: "#/components/schemas/address"
-        - $ref: "#/components/schemas/date"
+            current:
+              $ref: "#/components/schemas/address"
+            permanent:
+              $ref: "#/components/schemas/address"
 
   responses:
     getUserProfiles:
@@ -61,4 +59,8 @@ components:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/userProfile"
+                      allOf:
+                        - $ref: "#/components/schemas/_id"
+                        - $ref: "#/components/schemas/userId"
+                        - $ref: "#/components/schemas/userProfile"
+                        - $ref: "#/components/schemas/date"

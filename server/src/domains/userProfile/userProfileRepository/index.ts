@@ -19,18 +19,28 @@ export default class UserProfileRepository {
     return this.userProfileModel.findById(id);
   };
 
+  isUserProfileUserIdExists = (userId: IUserProfile["userId"]) => {
+    return this.userProfileModel.exists({ userId });
+  };
+
   getUserProfiles = () => {
-    return this.userProfileModel.find();
+    return this.userProfileModel.find({
+      deletedAt: null,
+    });
   };
 
   updateUserProfile = (
-    id: IUserProfile["_id"],
     params: Omit<IUserProfile, "createdAt" | "updatedAt" | "deletedAt">
   ) => {
-    return this.userProfileModel.findByIdAndUpdate(id, {
-      $set: {
-        ...params,
+    return this.userProfileModel.findByIdAndUpdate(
+      {
+        _id: params._id,
       },
-    });
+      {
+        $set: {
+          ...params,
+        },
+      }
+    );
   };
 }
