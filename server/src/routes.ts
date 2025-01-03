@@ -12,4 +12,11 @@ routes.use("/users", userRoute);
 routes.use("/user-profiles", userProfileRoute);
 routes.use("/docs", swaggerServe, swaggerSetup);
 
+routes.get("/crontab", (req, res) => {
+  console.log("Cron job executed");
+  res.send({
+    message: "Cron job executed successfully",
+  });
+});
+
 export default routes;

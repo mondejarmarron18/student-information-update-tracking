@@ -111,3 +111,4 @@ userProfileSchema.pre("save", function (next) {
 const UserProfileModel = model<IUserProfile>("userProfile", userProfileSchema);
 
 export default UserProfileModel;
+

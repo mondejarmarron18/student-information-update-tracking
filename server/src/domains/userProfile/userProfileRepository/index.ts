@@ -1,4 +1,3 @@
-import { TypeOf } from "zod";
 import userProfileModel, { IUserProfile } from "../userProfileModel";
 import UserProfileModel from "../userProfileModel";
 
@@ -40,6 +39,9 @@ export default class UserProfileRepository {
         $set: {
           ...params,
         },
+      },
+      {
+        new: true,
       }
     );
   };
