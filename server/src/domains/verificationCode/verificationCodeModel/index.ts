@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { IUser } from "../../user/userModel";
+import { schemaName } from "../../../constants/schemaName";
 
 export interface IVerificationCode {
   _id: Types.ObjectId;
@@ -57,7 +58,7 @@ verificationCodeSchema.pre("save", async function (next) {
 });
 
 const VerificationCodeModel = model<IVerificationCode>(
-  "verificationCode",
+  schemaName.VERIFICATION_CODE,
   verificationCodeSchema
 );
 

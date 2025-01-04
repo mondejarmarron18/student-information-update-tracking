@@ -1,4 +1,4 @@
-const updateRequestStatus = {
+export const updateRequestStatus = {
   pending: 1,
   approved: 2,
   rejected: 3,
@@ -10,5 +10,3 @@ export const updateRequestStatusKeys = Object.keys(updateRequestStatus);
 export type UpdateRequestStatusKey = keyof typeof updateRequestStatus;
 export type UpdateRequestStatusValue =
   (typeof updateRequestStatus)[UpdateRequestStatusKey];
-
-export default updateRequestStatus;

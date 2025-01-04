@@ -3,6 +3,7 @@ import {
   contactMethodsValue,
   ContactMethodsValue,
 } from "../../../constants/contactMethods";
+import { schemaName } from "../../../constants/schemaName";
 
 export interface IAddress {
   country: String;
@@ -108,7 +109,9 @@ userProfileSchema.pre("save", function (next) {
   next();
 });
 
-const UserProfileModel = model<IUserProfile>("userProfile", userProfileSchema);
+const UserProfileModel = model<IUserProfile>(
+  schemaName.USER_PROFILE,
+  userProfileSchema
+);
 
 export default UserProfileModel;
-

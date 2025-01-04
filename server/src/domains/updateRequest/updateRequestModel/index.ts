@@ -1,16 +1,16 @@
 import { model, Schema, Types } from "mongoose";
-import {
-  UpdateRequestStatusValue,
-  updateRequestStatusValues,
-} from "../../../constants/updateRequestStatus";
+
 import UserProfileModel, {
   IUserProfile,
 } from "../../userProfile/userProfileModel";
 import AcadProfileModel, {
   IAcadProfile,
 } from "../../acadProfile/acadProfileModel";
-
-const contentTypes = ["userPrfile", "acadProfile"] as const;
+import {
+  UpdateRequestStatusValue,
+  updateRequestStatusValues,
+} from "../../../constants/updateRequestStatus";
+import { schemaName, schemaNameValues } from "../../../constants/schemaName";
 
 export type IUpdateRequest = {
   userId: Types.ObjectId;
@@ -20,8 +20,20 @@ export type IUpdateRequest = {
   reviewedAt: Date;
   requestedAt: Date;
 } & (
-  | { contentType: "userProfile"; content: IUserProfile }
-  | { contentType: "acadProfile"; content: IAcadProfile }
+  | {
+      contentType: typeof schemaName.USER_PROFILE;
+      content: {
+        previous: IUserProfile;
+        current: IUserProfile;
+      };
+    }
+  | {
+      contentType: typeof schemaName.ACAD_PROFILE;
+      content: {
+        previous: IAcadProfile;
+        current: IAcadProfile;
+      };
+    }
 );
 
 const updateRequestSchema = new Schema<IUpdateRequest>(
@@ -48,18 +60,8 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
     },
     contentType: {
       type: String,
-      enum: contentTypes,
+      enum: schemaNameValues,
       required: true,
-    },
-    content: {
-      previous: {
-        type: Schema.Types.Mixed,
-        required: true,
-      },
-      current: {
-        type: Schema.Types.Mixed,
-        required: true,
-      },
     },
     requestedAt: {
       type: Date,
@@ -68,15 +70,14 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
     reviewedAt: {
       type: Date,
     },
+    
   },
   {
     discriminatorKey: "contentType",
   }
 );
 
-updateRequestSchema.discriminator("userProfile", UserProfileModel.schema);
-updateRequestSchema.discriminator("acadProfile", AcadProfileModel.schema);
-
+// Hooks
 updateRequestSchema.pre("save", function (next) {
   if (!this.isNew && this.isModified("reviewStatus")) {
     this.reviewedAt = new Date();
@@ -85,9 +86,43 @@ updateRequestSchema.pre("save", function (next) {
   next();
 });
 
+// Models
 const UpdateRequestModel = model<IUpdateRequest>(
-  "updateRequest",
+  schemaName.UPDATE_REQUEST,
   updateRequestSchema
+);
+
+// Discriminators
+UpdateRequestModel.discriminator(
+  schemaName.USER_PROFILE,
+  new Schema({
+    content: {
+      previous: {
+        type: UserProfileModel.schema,
+        required: true,
+      },
+      current: {
+        type: UserProfileModel.schema,
+        required: true,
+      },
+    },
+  })
+);
+
+UpdateRequestModel.discriminator(
+  schemaName.ACAD_PROFILE,
+  new Schema({
+    content: {
+      previous: {
+        type: AcadProfileModel.schema,
+        required: true,
+      },
+      current: {
+        type: AcadProfileModel.schema,
+        required: true,
+      },
+    },
+  })
 );
 
 export default UpdateRequestModel;

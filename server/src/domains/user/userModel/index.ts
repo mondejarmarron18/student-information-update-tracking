@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import bcrypt from "bcrypt";
+import { schemaName } from "../../../constants/schemaName";
 
 export interface IUser {
   _id: Types.ObjectId;
@@ -51,6 +52,6 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-const UserModel = model<IUser>("user", userSchema);
+const UserModel = model<IUser>(schemaName.USER, userSchema);
 
 export default UserModel;

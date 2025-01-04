@@ -1,4 +1,5 @@
 import { model, Schema, Types } from "mongoose";
+import { schemaName } from "../../../constants/schemaName";
 
 export interface IAcadProfile {
   _id: Types.ObjectId;
@@ -73,6 +74,9 @@ acadProfileSchema.pre("save", function (next) {
   next();
 });
 
-const AcadProfileModel = model<IAcadProfile>("acadProfile", acadProfileSchema);
+const AcadProfileModel = model<IAcadProfile>(
+  schemaName.ACAD_PROFILE,
+  acadProfileSchema
+);
 
 export default AcadProfileModel;
