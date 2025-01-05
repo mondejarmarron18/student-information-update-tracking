@@ -1,3 +1,4 @@
+import mongoose, { mongo } from "mongoose";
 import AcadProfileModel, { IAcadProfile } from "../acadProfileModel";
 
 export default class AcadProfileRepository {

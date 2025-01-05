@@ -1,5 +1,4 @@
 import { model, Schema, Types } from "mongoose";
-
 import UserProfileModel, {
   IUserProfile,
 } from "../../userProfile/userProfileModel";
@@ -11,6 +10,15 @@ import {
   updateRequestStatusValues,
 } from "../../../constants/updateRequestStatus";
 import { schemaName, schemaNameValues } from "../../../constants/schemaName";
+import updateRequestContentSchema from "./updateRequesContentSchema";
+
+export type IUpdateRequestContent<ContentType, Content> = {
+  contentType: ContentType;
+  content: {
+    previous: Content;
+    current: Content;
+  };
+};
 
 export type IUpdateRequest = {
   userId: Types.ObjectId;
@@ -20,20 +28,8 @@ export type IUpdateRequest = {
   reviewedAt: Date;
   requestedAt: Date;
 } & (
-  | {
-      contentType: typeof schemaName.USER_PROFILE;
-      content: {
-        previous: IUserProfile;
-        current: IUserProfile;
-      };
-    }
-  | {
-      contentType: typeof schemaName.ACAD_PROFILE;
-      content: {
-        previous: IAcadProfile;
-        current: IAcadProfile;
-      };
-    }
+  | IUpdateRequestContent<typeof schemaName.USER_PROFILE, IAcadProfile>
+  | IUpdateRequestContent<typeof schemaName.ACAD_PROFILE, IUserProfile>
 );
 
 const updateRequestSchema = new Schema<IUpdateRequest>(
@@ -70,7 +66,6 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
     reviewedAt: {
       type: Date,
     },
-    
   },
   {
     discriminatorKey: "contentType",
@@ -95,34 +90,12 @@ const UpdateRequestModel = model<IUpdateRequest>(
 // Discriminators
 UpdateRequestModel.discriminator(
   schemaName.USER_PROFILE,
-  new Schema({
-    content: {
-      previous: {
-        type: UserProfileModel.schema,
-        required: true,
-      },
-      current: {
-        type: UserProfileModel.schema,
-        required: true,
-      },
-    },
-  })
+  updateRequestContentSchema(UserProfileModel.schema)
 );
 
 UpdateRequestModel.discriminator(
   schemaName.ACAD_PROFILE,
-  new Schema({
-    content: {
-      previous: {
-        type: AcadProfileModel.schema,
-        required: true,
-      },
-      current: {
-        type: AcadProfileModel.schema,
-        required: true,
-      },
-    },
-  })
+  updateRequestContentSchema(AcadProfileModel.schema)
 );
 
 export default UpdateRequestModel;

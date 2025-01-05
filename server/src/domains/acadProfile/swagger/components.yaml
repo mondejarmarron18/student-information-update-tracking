@@ -1,0 +1,41 @@
+components:
+  schemas:
+    guardian:
+      type: object
+      properties:
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        nameExtension:
+          type: string
+        relationship:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+    acadProfile:
+      type: object
+      properties:
+        learnerReferenceNumber:
+          type: string
+        yearLevel:
+          type: number
+          default: 1
+          description: |
+            - `1`: First Year
+            - `2`: Second Year
+            - `3`: Third Year
+            - `4`: Fourth Year
+            - `5`: Fifth Year
+        course:
+          type: string
+        specialization:
+          type: string
+        guardians:
+          type: array
+          items:
+            $ref: "#/components/schemas/guardian"

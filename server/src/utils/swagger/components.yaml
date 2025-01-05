@@ -72,7 +72,6 @@ components:
           default: 200
         message:
           type: string
-          default: OK
         data:
           type: object
     Error:

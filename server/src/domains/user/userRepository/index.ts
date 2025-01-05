@@ -7,7 +7,7 @@ export default class UserRepository {
     this.userModel = userModel;
   }
 
-  createUser = (params: Pick<IUser, "email" | "password" | "roleId">) => {
+  createUser = async (params: Pick<IUser, "email" | "password" | "roleId">) => {
     return this.userModel.create(params);
   };
 

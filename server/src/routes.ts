@@ -4,19 +4,17 @@ import userRoute from "./domains/user/userRoute";
 import { serve as swaggerServe } from "swagger-ui-express";
 import { swaggerSetup } from "./utils/swagger/swagger";
 import userProfileRoute from "./domains/userProfile/userProfileRoute";
+import acadProfileRoute from "./domains/acadProfile/acadProfileRoute";
 
 const routes = Router();
 
+// Routes
 routes.use("/roles", roleRoute);
 routes.use("/users", userRoute);
 routes.use("/user-profiles", userProfileRoute);
-routes.use("/docs", swaggerServe, swaggerSetup);
+routes.use("/academic-profiles", acadProfileRoute);
 
-routes.get("/crontab", (req, res) => {
-  console.log("Cron job executed");
-  res.send({
-    message: "Cron job executed successfully",
-  });
-});
+// Documentation route
+routes.use("/docs", swaggerServe, swaggerSetup);
 
 export default routes;

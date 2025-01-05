@@ -4,7 +4,7 @@ import { IAcadProfile } from "../acadProfileModel";
 import AcadProfileRepository from "../acadProfileRepository";
 
 export default class AcadProfileService {
-  acadProfileRepository: AcadProfileRepository;
+  private acadProfileRepository: AcadProfileRepository;
 
   constructor() {
     this.acadProfileRepository = new AcadProfileRepository();

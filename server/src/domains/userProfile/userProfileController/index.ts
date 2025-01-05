@@ -72,7 +72,6 @@ export default class UserProfileController {
       status: 201,
       message: "User profile created successfully",
       data: result,
-      accessToken: req.accessToken,
     });
   };
 }

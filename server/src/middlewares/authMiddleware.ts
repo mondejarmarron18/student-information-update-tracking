@@ -1,49 +1,47 @@
+import { x8tSync } from "x8t";
 import customErrors from "../constants/customErrors";
 import { IMiddlware } from "../types/middleware";
 import CustomResponse from "../utils/CustomResponse";
 import { generateToken, verifyRefreshToken, verifyToken } from "../utils/token";
+import { TokenExpiredError } from "jsonwebtoken";
 
 const authMiddleware: IMiddlware = (req, res, next) => {
-  const token = req.headers.authorization?.replace("Bearer ", "");
-
-  if (!token) {
-    return CustomResponse.sendError(res, customErrors.unauthorized);
-  }
+  const token = req.headers.authorization?.replace("Bearer", "").trim();
 
   // Try to verify the access token
-  const verifiedToken = verifyToken(token);
+  const verifiedToken = x8tSync(() => verifyToken(token || ""));
 
-  if (!verifiedToken) {
-    // If access token is invalid, check for a valid refresh token
+  if (verifiedToken.error || !verifiedToken.result) {
+    const isTokenExpired = verifiedToken.error instanceof TokenExpiredError;
+
+    if (!isTokenExpired) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
       return CustomResponse.sendError(res, customErrors.unauthorized);
     }
 
-    // Verify refresh token
-    const verifiedRefreshToken = verifyRefreshToken(refreshToken);
+    // Try to verify the refresh token
+    const verifiedRefreshToken = x8tSync(() =>
+      verifyRefreshToken(refreshToken)
+    );
 
-    if (!verifiedRefreshToken) {
+    if (verifiedRefreshToken.error || !verifiedRefreshToken.result) {
       return CustomResponse.sendError(res, customErrors.unauthorized);
     }
 
-    // Generate a new access token using the refresh token's verified data
-    const newAccessToken = generateToken(verifiedRefreshToken);
-
-    if (!newAccessToken) {
-      return CustomResponse.sendError(res, customErrors.unauthorized);
-    }
-
-    // Attach the new access token and user info to the request
-    req.user = verifiedRefreshToken;
-    req.accessToken = newAccessToken;
+    req.accessToken = generateToken(verifiedRefreshToken.result);
+    req.user = verifiedRefreshToken.result;
 
     return next();
   }
+  req.accessToken = token;
 
   // If access token is valid, just attach the user info to the request
-  req.user = verifiedToken;
+  req.user = verifiedToken.result;
 
   next();
 };

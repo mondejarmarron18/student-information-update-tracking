@@ -7,6 +7,7 @@ import { convertToObjectId } from "../../../utils/mongooseUtil";
 import CustomError from "../../../utils/CustomError";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
+import tokens, { refreshTokenCookieOptions } from "../../../constants/tokens";
 
 export default class UserController {
   userService: UserService;
@@ -16,35 +17,28 @@ export default class UserController {
   }
 
   createUser = async (req: Request, res: Response) => {
-    const { result, error } = await x8tAsync(
-      this.userService.createUser(req.body)
-    );
+    const createdUser = await x8tAsync(this.userService.createUser(req.body));
 
-    if (error !== null || !result) {
-      console.error("Error creating user:", error);
-
-      if (error instanceof MongooseError || error instanceof Error) {
-        res.status(400).send({ error: error.message });
-        return;
-      }
-
-      res.status(500).send({ error: "Internal server error" });
-      return;
+    if (createdUser.error) {
+      return CustomResponse.sendHandledError(res, createdUser.error);
     }
 
-    res.status(204).send();
+    CustomResponse.sendSuccess(res, {
+      status: 201,
+      message: "User created successfully",
+      data: createdUser.result,
+    });
   };
 
   getUsers = async (req: Request, res: Response) => {
     const { result, error } = await x8tAsync(this.userService.getUsers());
 
-    if (error !== null) {
-      console.error("Error getting users:", error);
-      res.status(500).send({ error: "Internal server error" });
-      return;
-    }
+    if (error) return CustomResponse.sendHandledError(res, error);
 
-    res.status(200).send({ data: result });
+    CustomResponse.sendSuccess(res, {
+      message: "Users retrieved successfully",
+      data: result,
+    });
   };
 
   loginUser = async (req: Request, res: Response) => {
@@ -52,20 +46,7 @@ export default class UserController {
       this.userService.loginUser(req.body)
     );
 
-    if (error) {
-      if (error instanceof CustomError) {
-        console.log("Error logging in user:", error);
-        return CustomResponse.sendError(res, error);
-      }
-
-      if (error instanceof Error || error instanceof MongooseError) {
-        res.status(400).send({ error: error.message });
-        return;
-      }
-
-      res.status(500).send({ error: "Internal server error" });
-      return;
-    }
+    if (error) return CustomResponse.sendHandledError(res, error);
 
     if (!result?.token || !result?.refreshToken) {
       return CustomResponse.sendError(res, {
@@ -74,13 +55,28 @@ export default class UserController {
       });
     }
 
-    res.cookie("refreshToken", result.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
+    res.cookie(
+      tokens.REFRESH_TOKEN,
+      result.refreshToken,
+      refreshTokenCookieOptions
+    );
 
-    res.status(200).send(result.token);
+    CustomResponse.sendSuccess(res, {
+      message: "Access Token",
+      data: result.token,
+    });
+  };
+
+  logoutUser = async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    res.clearCookie(tokens.REFRESH_TOKEN, refreshTokenCookieOptions);
+
+    CustomResponse.sendSuccess(res);
   };
 
   verifyUser = async (req: Request, res: Response) => {
@@ -114,6 +110,6 @@ export default class UserController {
       return CustomResponse.sendError(res, customErrors.internalServerError);
     }
 
-    res.status(204).send();
+    CustomResponse.sendSuccess(res);
   };
 }

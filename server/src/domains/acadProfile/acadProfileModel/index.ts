@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { schemaName } from "../../../constants/schemaName";
+import guardianSchema, { IGuardian } from "./guardianSchema";
 
 export interface IAcadProfile {
   _id: Types.ObjectId;
@@ -8,12 +9,7 @@ export interface IAcadProfile {
   yearLevel: number;
   course: string;
   specialization: string;
-  guardians: {
-    name: string;
-    relationship: string;
-    email: string;
-    phoneNumber: string;
-  }[];
+  guardians: IGuardian[];
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
@@ -44,15 +40,9 @@ const acadProfileSchema = new Schema<IAcadProfile>({
     required: true,
   },
   guardians: {
-    type: [
-      {
-        name: String,
-        relationship: String,
-        email: String,
-        phoneNumber: String,
-      },
-    ],
+    type: [guardianSchema],
     required: true,
+    min: 1,
   },
   createdAt: {
     type: Date,

@@ -1,56 +1,79 @@
-import { Response } from "express";
+import { response, Response } from "express";
 import CustomError, { ICustomError } from "./CustomError";
 import { MongooseError } from "mongoose";
 import customErrors from "../constants/customErrors";
 import { ZodError } from "zod";
+import { JsonWebTokenError } from "jsonwebtoken";
 
 interface IReponseSuccess {
   status?: number;
-  accessToken?: string;
   message: string;
-  data: unknown | null;
+  data?: unknown;
 }
 
 export default class CustomResponse {
-  static sendSuccess = (res: Response, data: IReponseSuccess) => {
-    const status = data?.status || 200;
+  static sendSuccess = (res: Response, reponse?: IReponseSuccess) => {
+    console.log({ res: res.locals.accessToken });
+    if (!response) {
+      res.status(204).send();
+      return;
+    }
+
+    const status = reponse?.status || 200;
+    const data = reponse?.data || null;
 
     res.status(status).send({
-      ...data,
+      ...reponse,
+      data,
       status,
     });
   };
 
-  static sendError = (res: Response, error: unknown) => {
-    if (error instanceof CustomError) {
-      const { status, message, description, details } = error;
+  static sendError = (res: Response, error: ICustomError) => {
+    const { status, message, description, details } = error;
 
-      res.status(status).send({
-        status,
-        message,
-        description,
-        details,
-      });
-      return;
+    res.status(error.status).send({
+      status,
+      message,
+      description,
+      details,
+    });
+  };
+
+  static sendHandledError = (res: Response, error: unknown) => {
+    if (error instanceof CustomError) {
+      return CustomResponse.sendError(res, error);
     }
 
-    if (error instanceof Error || error instanceof MongooseError) {
-      res.status(400).send({
+    if (error instanceof Error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.internalServerError,
+        details: error.message,
+      });
+    }
+
+    if (error instanceof MongooseError) {
+      return CustomResponse.sendError(res, {
         ...customErrors.badRequest,
         details: error.message,
       });
-      return;
     }
 
     if (error instanceof ZodError) {
-      res.status(400).send({
+      return CustomResponse.sendError(res, {
         ...customErrors.badRequest,
         details: error.issues.map((issue) => issue.message),
       });
-      return;
     }
 
-    res.status(500).send({
+    if (error instanceof JsonWebTokenError) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.unauthorized,
+        details: error.message,
+      });
+    }
+
+    CustomResponse.sendError(res, {
       ...customErrors.internalServerError,
       details: error,
     });
