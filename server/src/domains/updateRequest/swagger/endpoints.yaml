@@ -6,7 +6,18 @@
     tags: [Update Requests]
     responses:
       200:
-        $ref: "#/components/responses/updateRequest"
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccess"
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/updateRequestDataResponse"
       400:
         $ref: "#/components/responses/badRequest"
       404:
@@ -19,11 +30,15 @@
     security:
       - bearerAuth: []
     requestBody:
-      required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/updateRequest"
+            allOf:
+              - $ref: "#/components/schemas/updateRequest"
+              - type: object
+                properties:
+                  content:
+                    $ref: "#/components/schemas/updateRequestContent/properties/content/properties/current"
     responses:
       200:
         description: OK
@@ -73,8 +88,49 @@
         $ref: "#/components/responses/unauthorized"
       500:
         $ref: "#/components/responses/internalServerError"
-  patch:
-    summary: Get update request
+
+/update-requests/{id}/approve:
+  post:
+    summary: Approve update request
+    tags: [Update Requests]
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reviewComment:
+                $ref: "#/components/schemas/updateRequest/properties/reviewComment"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccess"
+                - type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/updateRequestDataResponse"
+      400:
+        $ref: "#/components/responses/badRequest"
+      404:
+        $ref: "#/components/responses/unauthorized"
+      500:
+        $ref: "#/components/responses/internalServerError"
+
+/update-requests/{id}/reject:
+  post:
+    summary: Reject update request
     tags: [Update Requests]
     security:
       - bearerAuth: []
@@ -91,12 +147,10 @@
           schema:
             type: object
             properties:
-              reviewStatus:
-                $ref: "#/components/schemas/updateRequest/properties/reviewStatus"
               reviewComment:
                 $ref: "#/components/schemas/updateRequest/properties/reviewComment"
             required:
-              - reviewStatus
+              - reviewComment
     responses:
       200:
         description: OK

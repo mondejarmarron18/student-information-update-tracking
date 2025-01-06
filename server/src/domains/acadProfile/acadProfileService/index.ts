@@ -59,20 +59,25 @@ export default class AcadProfileService {
     return acadProfile;
   };
 
-  updateAcadProfile = async (
-    params: Omit<IAcadProfile, "createdAt" | "updatedAt" | "deletedAt">
-  ) => {
-    const isAcadProfileExists =
-      await this.acadProfileRepository.isAcadProfileUserIdExists(params.userId);
+  getAcadProfileByUserId = async (userId: IAcadProfile["userId"]) => {
+    const acadProfile = await this.acadProfileRepository.getAcadProfileByUserId(
+      userId
+    );
 
-    if (!isAcadProfileExists) {
-      CustomError.alreadyExists({
-        description: "User's academic profile does not exist",
+    if (!acadProfile) {
+      CustomError.notFound({
+        details: "User's academic profile not found",
       });
     }
 
+    return acadProfile;
+  };
+
+  updateAcadProfileByUserId = async (
+    params: Omit<IAcadProfile, "createdAt" | "updatedAt" | "deletedAt">
+  ) => {
     const acadProfile = await x8tAsync(
-      this.acadProfileRepository.updateAcadProfile(params)
+      this.acadProfileRepository.updateAcadProfileByUserId(params)
     );
 
     if (acadProfile.error) {
@@ -82,7 +87,9 @@ export default class AcadProfileService {
     }
 
     if (!acadProfile.result) {
-      CustomError.internalServerError();
+      CustomError.notFound({
+        details: "User's academic profile not found",
+      });
     }
 
     return acadProfile.result;
@@ -91,9 +98,9 @@ export default class AcadProfileService {
   deleteAcadProfile = async (id: IAcadProfile["_id"]) => {
     const isAcadProfileExists = await this.isAcadProfileUserIdExists(id);
 
-    if (isAcadProfileExists) {
+    if (!isAcadProfileExists) {
       CustomError.alreadyExists({
-        details: "User's academic profile already exists",
+        description: "User's academic profile does not exist",
       });
     }
 

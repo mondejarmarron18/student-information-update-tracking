@@ -37,7 +37,7 @@ export default class UpdateRequestController {
 
     CustomResponse.sendSuccess(res, {
       status: 201,
-      message: "Update request created successfully",
+      message: "Update Request Created",
       data: updateRequest.result,
     });
   };
@@ -53,7 +53,7 @@ export default class UpdateRequestController {
 
     CustomResponse.sendSuccess(res, {
       status: 200,
-      message: "Update requests fetched successfully",
+      message: "Update Requests",
       data: updateRequests.result,
     });
   };
@@ -85,7 +85,7 @@ export default class UpdateRequestController {
 
     CustomResponse.sendSuccess(res, {
       status: 200,
-      message: "Update request fetched successfully",
+      message: "Update Request",
       data: updateRequest.result,
     });
   };
@@ -97,11 +97,21 @@ export default class UpdateRequestController {
       return CustomResponse.sendHandledError(res, customErrors.unauthorized);
     }
 
+    const convertedId = convertToObjectId(req.params.id);
+
+    if (!convertedId.id || convertedId.error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        description: convertedId.error || "Invalid update request ID",
+      });
+    }
+
     const updateRequest = await x8tAsync(
       this.updateRequestService.reviewUpdateRequest({
-        ...req.body,
+        _id: convertedId.id,
         reviewerId,
         reviewStatus: updateRequestStatus.approved,
+        reviewComment: req.body.reviewComment,
       })
     );
 
@@ -111,7 +121,7 @@ export default class UpdateRequestController {
 
     return CustomResponse.sendSuccess(res, {
       status: 200,
-      message: `Update request has been approved successfully`,
+      message: `Update Request Rejected`,
       data: updateRequest.result,
     });
   };
@@ -123,11 +133,21 @@ export default class UpdateRequestController {
       return CustomResponse.sendHandledError(res, customErrors.unauthorized);
     }
 
+    const convertedId = convertToObjectId(req.params.id);
+
+    if (!convertedId.id || convertedId.error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        description: convertedId.error || "Invalid update request ID",
+      });
+    }
+
     const updateRequest = await x8tAsync(
       this.updateRequestService.reviewUpdateRequest({
-        ...req.body,
+        _id: convertedId.id,
         reviewerId,
         reviewStatus: updateRequestStatus.rejected,
+        reviewComment: req.body.reviewComment,
       })
     );
 
@@ -137,7 +157,7 @@ export default class UpdateRequestController {
 
     return CustomResponse.sendSuccess(res, {
       status: 200,
-      message: `Update request has been rejected successfully`,
+      message: `Update Request Rejected`,
       data: updateRequest.result,
     });
   };

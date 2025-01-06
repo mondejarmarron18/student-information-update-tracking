@@ -1,5 +1,5 @@
 import { x8tAsync } from "x8t";
-import { IUpdateRequest } from "../updateRequestModel";
+import { IUpdateRequest, IUpdateRequestContent } from "../updateRequestModel";
 import updateRequestRepository from "../updateRequestRepository";
 import CustomError from "../../../utils/CustomError";
 import {
@@ -9,6 +9,9 @@ import {
 
 import AcadProfileService from "../../acadProfile/acadProfileService";
 import UserProfileService from "../../userProfile/userProfileService";
+import { IUserProfile } from "../../userProfile/userProfileModel";
+import { IAcadProfile } from "../../acadProfile/acadProfileModel";
+import { Types } from "mongoose";
 
 export default class UpdateRequestService {
   private updateRequestRepository: updateRequestRepository;
@@ -22,9 +25,30 @@ export default class UpdateRequestService {
   }
 
   createUpdateRequest = async (
-    params: Pick<IUpdateRequest, "requesterId" | "contentType" | "content">
+    params: Pick<IUpdateRequest, "requesterId" | "contentType"> & {
+      content: IUpdateRequest["content"]["current"];
+    }
   ) => {
     const { requesterId, contentType, content } = params;
+    let previousContent: IUserProfile | IAcadProfile | null = null;
+
+    if (contentType === updateRequestContentType.ACAD_PROFILE) {
+      previousContent = await this.acadProfileService.getAcadProfileByUserId(
+        requesterId
+      );
+    }
+
+    if (contentType === updateRequestContentType.USER_PROFILE) {
+      previousContent = await this.userProfileService.getUserProfileByUserId(
+        requesterId
+      );
+    }
+
+    if (!previousContent) {
+      return CustomError.notFound({
+        description: "Update request previous content not found",
+      });
+    }
 
     const hasPendingRequest = await x8tAsync(
       this.updateRequestRepository.hasPendingUpdateRequest({
@@ -51,7 +75,13 @@ export default class UpdateRequestService {
       this.updateRequestRepository.createUpdateRequest({
         requesterId,
         contentType,
-        content,
+        content: {
+          previous: previousContent,
+          current: {
+            ...content,
+            userId: previousContent.userId,
+          },
+        } as IUpdateRequest["content"],
       })
     );
 
@@ -109,21 +139,20 @@ export default class UpdateRequestService {
   ) => {
     const { _id, reviewerId, reviewStatus, reviewComment } = params;
 
-    const isUpdateRequestExists = await x8tAsync(
-      this.updateRequestRepository.isUpdateRequestExists(_id)
+    const isAlreadyReviewed = await x8tAsync(
+      this.updateRequestRepository.isAlreadyReviewed(_id)
     );
 
-    if (isUpdateRequestExists.error) {
+    if (isAlreadyReviewed.error) {
       CustomError.badRequest({
-        description: "Failed to check update request existence",
-        details: isUpdateRequestExists.error,
+        details: isAlreadyReviewed.error,
       });
     }
 
     // Update request not found
-    if (!isUpdateRequestExists.result) {
-      CustomError.notFound({
-        description: "Update request not found",
+    if (isAlreadyReviewed.result) {
+      CustomError.alreadyExists({
+        description: "Update request already reviewed",
       });
     }
 
@@ -152,16 +181,17 @@ export default class UpdateRequestService {
 
     // Update Acad Profile
     if (contentType === updateRequestContentType.ACAD_PROFILE) {
+      const acadProfile = updateRequest.result.content.current;
+
+      acadProfile.userId = updateRequest.result.requesterId;
+
       const updateAcadProfile = await x8tAsync(
-        this.acadProfileService.updateAcadProfile({
-          ...updateRequest.result.content.current,
-          userId: updateRequest.result.requesterId,
-        })
+        this.acadProfileService.updateAcadProfileByUserId(acadProfile)
       );
 
       if (updateAcadProfile.error) {
         CustomError.badRequest({
-          description: "Failed to update acad profile",
+          description: "Failed to update academic profile",
           details: updateAcadProfile.error,
         });
       }
@@ -169,11 +199,12 @@ export default class UpdateRequestService {
 
     // Update User Profile
     if (contentType === updateRequestContentType.USER_PROFILE) {
+      const userProfile = updateRequest.result.content.current;
+
+      userProfile.userId = updateRequest.result.requesterId;
+
       const updateUserProfile = await x8tAsync(
-        this.userProfileService.updateUserProfile({
-          ...updateRequest.result.content.current,
-          userId: updateRequest.result.requesterId,
-        })
+        this.userProfileService.updateUserProfileByUserId(userProfile)
       );
 
       if (updateUserProfile.error) {

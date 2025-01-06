@@ -1,18 +1,17 @@
 import { model, Schema, Types } from "mongoose";
-import UserProfileModel, {
-  IUserProfile,
-} from "../../userProfile/userProfileModel";
-import AcadProfileModel, {
-  IAcadProfile,
-} from "../../acadProfile/acadProfileModel";
+import { IUserProfile } from "../../userProfile/userProfileModel";
+import { IAcadProfile } from "../../acadProfile/acadProfileModel";
 import {
   updateRequestContentType,
   updateRequestContentTypeValues,
   UpdateRequestStatusValue,
   updateRequestStatusValues,
 } from "../../../constants/updateRequest";
-import { schemaName, schemaNameValues } from "../../../constants/schemaName";
-import updateRequestContentSchema from "./updateRequesContentSchema";
+import { schemaName } from "../../../constants/schemaName";
+import {
+  acadProfileContentSchema,
+  userProfileContentSchema,
+} from "./updateRequestContentSchema";
 
 export type IUpdateRequestContent<ContentType, Content> = {
   contentType: ContentType;
@@ -51,10 +50,9 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
     reviewerId: {
       type: Schema.Types.ObjectId,
       ref: "user",
-      required: true,
       validate: {
-        validator: function (value) {
-          return value !== this.requesterId;
+        validator: function (val: Types.ObjectId) {
+          return val.toString() !== this.requesterId.toString();
         },
         message: "Reviewer cannot be the same as requester",
       },
@@ -67,7 +65,6 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
     },
     reviewComment: {
       type: String,
-      required: true,
     },
     contentType: {
       type: String,
@@ -105,12 +102,12 @@ const UpdateRequestModel = model<IUpdateRequest>(
 // Discriminators
 UpdateRequestModel.discriminator(
   updateRequestContentType.USER_PROFILE,
-  updateRequestContentSchema(UserProfileModel.schema)
+  userProfileContentSchema
 );
 
 UpdateRequestModel.discriminator(
   updateRequestContentType.ACAD_PROFILE,
-  updateRequestContentSchema(AcadProfileModel.schema)
+  acadProfileContentSchema
 );
 
 export default UpdateRequestModel;

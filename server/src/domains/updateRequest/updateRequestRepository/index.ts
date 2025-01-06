@@ -44,9 +44,18 @@ export default class updateRequestRepository {
       "_id" | "reviewerId" | "reviewComment" | "reviewStatus"
     >
   ) => {
-    return this.updateRequestModel.findByIdAndUpdate(params._id, {
-      $set: params,
-    });
+    return this.updateRequestModel.findOneAndUpdate(
+      {
+        _id: params._id,
+        reviewStatus: updateRequestStatus.pending,
+      },
+      {
+        $set: params,
+      },
+      {
+        new: true,
+      }
+    );
   };
 
   isAlreadyReviewed = (id: IUpdateRequest["_id"]) => {

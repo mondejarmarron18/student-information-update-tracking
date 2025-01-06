@@ -1,6 +1,7 @@
 import { Router } from "express";
 import UpdateRequestController from "../updateRequestController";
 import authMiddleware from "../../../middlewares/authMiddleware";
+import UpdateRequestMiddleware from "../updateRequestMiddleware";
 
 const updateRequestRoute = Router();
 const updateRequestController = new UpdateRequestController();
@@ -17,15 +18,15 @@ updateRequestRoute.get(
 );
 updateRequestRoute.post(
   "/",
-  [authMiddleware],
+  [authMiddleware, UpdateRequestMiddleware.createUpdateRequest],
   updateRequestController.createUpdateRequest
 );
-updateRequestRoute.put(
+updateRequestRoute.post(
   "/:id/approve",
   [authMiddleware],
   updateRequestController.approveUpdateRequest
 );
-updateRequestRoute.put(
+updateRequestRoute.post(
   "/:id/reject",
   [authMiddleware],
   updateRequestController.rejectUpdateRequest

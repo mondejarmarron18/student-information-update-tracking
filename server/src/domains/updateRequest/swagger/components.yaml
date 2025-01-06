@@ -1,24 +1,8 @@
 components:
   schemas:
-    updateRequest:
+    updateRequestContent:
       type: object
       properties:
-        reviewStatus:
-          type: integer
-          default: 1
-          example: 1
-          description: |
-            Review status
-              - `1`: Pending
-              - `2`: Approved
-              - `3`: Rejected
-        contentType:
-          type: string
-          description: |
-            Content type
-              - `acadProfile`: Academic profile
-              - `userProfile`: User profile
-          example: acadProfile
         content:
           type: object
           description: Update request content
@@ -39,9 +23,19 @@ components:
               oneOf:
                 - $ref: "#/components/schemas/acadProfile"
                 - $ref: "#/components/schemas/userProfile"
-        reviewComment:
+    updateRequest:
+      type: object
+      properties:
+        contentType:
           type: string
-          description: Review comment
+          description: |
+            Content type
+              - `acadProfileContent`: Academic profile
+              - `userProfileContent`: User profile
+          example: "acadProfileContent"
+          enum:
+            - acadProfileContent
+            - userProfileContent
     updateRequestDataResponse:
       allOf:
         - $ref: "#/components/schemas/_id"
@@ -53,9 +47,22 @@ components:
             reviewerId:
               type: string
               description: Reviewer ID
+            reviewStatus:
+              type: integer
+              default: 1
+              example: 1
+              description: |
+                Review status
+                  - `1`: Pending
+                  - `2`: Approved
+                  - `3`: Rejected
         - $ref: "#/components/schemas/updateRequest"
+        - $ref: "#/components/schemas/updateRequestContent"
         - type: object
           properties:
+            reviewComment:
+              type: string
+              description: Review comment
             requestedAt:
               type: string
               format: date-time

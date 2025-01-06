@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import { IUserProfile } from "../userProfileModel";
 import UserProfileRepository from "../userProfileRepository";
 import CustomError from "../../../utils/CustomError";
+import { x8tAsync } from "x8t";
 
 export default class UserProfileService {
   userProfileRepository: UserProfileRepository;
@@ -33,19 +34,51 @@ export default class UserProfileService {
     return this.userProfileRepository.getUserProfileById(id);
   };
 
-  updateUserProfile = (
+  getUserProfileByUserId = (userId: IUserProfile["userId"]) => {
+    return this.userProfileRepository.getUserProfileByUserId(userId);
+  };
+
+  updateUserProfile = async (
     params: Omit<IUserProfile, "createdAt" | "updatedAt" | "deletedAt">
   ) => {
-    const isUserIdExists = this.userProfileRepository.isUserProfileUserIdExists(
-      params.userId
+    const userProfile = await x8tAsync(
+      this.userProfileRepository.updateUserProfile(params)
     );
 
-    if (!isUserIdExists) {
-      CustomError.alreadyExists({
-        description: "User's profile does not exist",
+    if (userProfile.error) {
+      CustomError.badRequest({
+        details: userProfile.error,
       });
     }
 
-    return this.userProfileRepository.updateUserProfile(params);
+    if (!userProfile.result) {
+      CustomError.notFound({
+        details: "User's profile does not exist",
+      });
+    }
+
+    return userProfile.result;
+  };
+
+  updateUserProfileByUserId = async (
+    params: Omit<IUserProfile, "createdAt" | "updatedAt" | "deletedAt">
+  ) => {
+    const userProfile = await x8tAsync(
+      this.userProfileRepository.updateUserProfileByUserId(params)
+    );
+
+    if (userProfile.error) {
+      CustomError.badRequest({
+        details: userProfile.error,
+      });
+    }
+
+    if (!userProfile.result) {
+      CustomError.notFound({
+        details: "User's profile does not exist",
+      });
+    }
+
+    return userProfile.result;
   };
 }
