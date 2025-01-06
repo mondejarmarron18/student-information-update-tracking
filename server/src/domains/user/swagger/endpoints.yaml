@@ -13,8 +13,14 @@
               type: array
               items:
                 allOf:
-                  - $ref: "#/components/schemas/_id"
-                  - $ref: "#/components/schemas/userProfile"
+                  - $ref: "#/components/schemas/responseSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        allOf:
+                          - $ref: "#/components/schemas/_id"
+                          - $ref: "#/components/schemas/user"
+                          - $ref: "#/components/schemas/date"
   post:
     summary: Create user
     tags: [Users]
@@ -23,16 +29,16 @@
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/User"
-      responses:
+            $ref: "#/components/schemas/user"
+    responses:
       204:
         description: No content
       400:
-        $ref: "#/components/schemas/Error400"
+        $ref: "#/components/responses/badRequest"
       404:
-        $ref: "#/components/schemas/Error404"
+        $ref: "#/components/responses/unauthorized"
       500:
-        $ref: "#/components/schemas/Error500"
+        $ref: "#/components/responses/internalServerError"
 
 /users/login:
   post:
@@ -59,13 +65,22 @@
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserToken"
+              type: object
+              properties:
+                status:
+                  type: integer
+                  example: 200
+                data:
+                  $ref: "#/components/schemas/accessToken"
+                message:
+                  type: string
+                  example: "Access Token"
       400:
-        $ref: "#/components/schemas/Error400"
+        $ref: "#/components/responses/badRequest"
       404:
-        $ref: "#/components/schemas/Error404"
+        $ref: "#/components/responses/unauthorized"
       500:
-        $ref: "#/components/schemas/Error500"
+        $ref: "#/components/responses/internalServerError"
 
 /users/logout:
   post:
@@ -77,11 +92,11 @@
       204:
         description: No content
       400:
-        $ref: "#/components/schemas/Error400"
+        $ref: "#/components/responses/badRequest"
       404:
-        $ref: "#/components/schemas/Error404"
+        $ref: "#/components/responses/unauthorized"
       500:
-        $ref: "#/components/schemas/Error500"
+        $ref: "#/components/responses/internalServerError"
 
 /users/verify-email/{verificationCode}:
   get:
@@ -102,8 +117,8 @@
               type: string
               example: "Email verified"
       400:
-        $ref: "#/components/schemas/Error400"
+        $ref: "#/components/responses/badRequest"
       404:
-        $ref: "#/components/schemas/Error404"
+        $ref: "#/components/responses/unauthorized"
       500:
-        $ref: "#/components/schemas/Error500"
+        $ref: "#/components/responses/internalServerError"

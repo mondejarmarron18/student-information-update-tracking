@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { IUser } from "../domains/user/userModel";
 import config from "./config";
+import { Request } from "express";
 
 export const generateToken = (data: Omit<IUser, "password">): string => {
   const { exp, iat, nbf, ...plainData } = JSON.parse(JSON.stringify(data));
@@ -26,4 +27,8 @@ export const verifyRefreshToken = (
   token: string
 ): Omit<IUser, "password"> | null => {
   return jwt.verify(token, config.jwt.refreshSecret as string) as IUser;
+};
+
+export const getAccessToken = (req: Request) => {
+  return req.headers.authorization?.replace("Bearer", "").trim();
 };

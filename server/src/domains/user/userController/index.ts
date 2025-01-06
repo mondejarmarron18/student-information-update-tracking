@@ -1,4 +1,4 @@
-import { x8tAsync } from "x8t";
+import { x8tAsync, x8tSync } from "x8t";
 import { IUser } from "../userModel";
 import UserService from "../userService";
 import { Request, Response } from "express";
@@ -8,6 +8,7 @@ import CustomError from "../../../utils/CustomError";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
 import tokens, { refreshTokenCookieOptions } from "../../../constants/tokens";
+import { getAccessToken, verifyToken } from "../../../utils/token";
 
 export default class UserController {
   userService: UserService;

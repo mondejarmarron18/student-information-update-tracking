@@ -1,0 +1,66 @@
+components:
+  schemas:
+    updateRequest:
+      type: object
+      properties:
+        reviewStatus:
+          type: integer
+          default: 1
+          example: 1
+          description: |
+            Review status
+              - `1`: Pending
+              - `2`: Approved
+              - `3`: Rejected
+        contentType:
+          type: string
+          description: |
+            Content type
+              - `acadProfile`: Academic profile
+              - `userProfile`: User profile
+          example: acadProfile
+        content:
+          type: object
+          description: Update request content
+          properties:
+            previous:
+              description: |
+                Previous content
+                  - `acadProfile`: Academic profile
+                  - `userProfile`: User profile
+              oneOf:
+                - $ref: "#/components/schemas/acadProfile"
+                - $ref: "#/components/schemas/userProfile"
+            current:
+              description: |
+                Current content
+                  - `userProfile`: User profile
+                  - `acadProfile`: Academic profile
+              oneOf:
+                - $ref: "#/components/schemas/acadProfile"
+                - $ref: "#/components/schemas/userProfile"
+        reviewComment:
+          type: string
+          description: Review comment
+    updateRequestDataResponse:
+      allOf:
+        - $ref: "#/components/schemas/_id"
+        - type: object
+          properties:
+            requesterId:
+              type: string
+              description: Requester ID
+            reviewerId:
+              type: string
+              description: Reviewer ID
+        - $ref: "#/components/schemas/updateRequest"
+        - type: object
+          properties:
+            requestedAt:
+              type: string
+              format: date-time
+              description: Requested at
+            reviewedAt:
+              type: string
+              format: date-time
+              description: Reviewed at

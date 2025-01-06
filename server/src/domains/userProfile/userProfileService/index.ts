@@ -36,6 +36,16 @@ export default class UserProfileService {
   updateUserProfile = (
     params: Omit<IUserProfile, "createdAt" | "updatedAt" | "deletedAt">
   ) => {
+    const isUserIdExists = this.userProfileRepository.isUserProfileUserIdExists(
+      params.userId
+    );
+
+    if (!isUserIdExists) {
+      CustomError.alreadyExists({
+        description: "User's profile does not exist",
+      });
+    }
+
     return this.userProfileRepository.updateUserProfile(params);
   };
 }

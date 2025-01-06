@@ -10,22 +10,13 @@
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Role"
+              allOf:
+                - $ref: "#/components/schemas/_id"
+                - $ref: "#/components/schemas/role"
+                - $ref: "#/components/schemas/date"
       400:
-        description: Bad Request
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Error"
+        $ref: "#/components/responses/badRequest"
       404:
-        description: Not Found
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Error"
+        $ref: "#/components/responses/unauthorized"
       500:
-        description: Internal Server Error
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Error"
+        $ref: "#/components/responses/internalServerError"

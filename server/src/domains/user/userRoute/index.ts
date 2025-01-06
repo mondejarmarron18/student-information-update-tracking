@@ -10,7 +10,7 @@ const userMiddleware = new UserMiddleware();
 userRoute.get("/", [authMiddleware], userController.getUsers);
 userRoute.post("/", userMiddleware.createUser, userController.createUser);
 userRoute.post("/login", userMiddleware.loginUser, userController.loginUser);
-userRoute.post("/logout", userController.logoutUser);
+userRoute.post("/logout", [authMiddleware], userController.logoutUser);
 userRoute.get(
   "/verify-email/:verificationCode",
   userMiddleware.verifyUser,

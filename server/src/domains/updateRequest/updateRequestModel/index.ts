@@ -6,9 +6,11 @@ import AcadProfileModel, {
   IAcadProfile,
 } from "../../acadProfile/acadProfileModel";
 import {
+  updateRequestContentType,
+  updateRequestContentTypeValues,
   UpdateRequestStatusValue,
   updateRequestStatusValues,
-} from "../../../constants/updateRequestStatus";
+} from "../../../constants/updateRequest";
 import { schemaName, schemaNameValues } from "../../../constants/schemaName";
 import updateRequestContentSchema from "./updateRequesContentSchema";
 
@@ -21,28 +23,41 @@ export type IUpdateRequestContent<ContentType, Content> = {
 };
 
 export type IUpdateRequest = {
-  userId: Types.ObjectId;
-  reviewedById: Types.ObjectId;
+  _id: Types.ObjectId;
+  requesterId: Types.ObjectId;
+  reviewerId: Types.ObjectId;
   reviewStatus: UpdateRequestStatusValue;
   reviewComment: string;
   reviewedAt: Date;
   requestedAt: Date;
 } & (
-  | IUpdateRequestContent<typeof schemaName.USER_PROFILE, IAcadProfile>
-  | IUpdateRequestContent<typeof schemaName.ACAD_PROFILE, IUserProfile>
+  | IUpdateRequestContent<
+      typeof updateRequestContentType.ACAD_PROFILE,
+      IAcadProfile
+    >
+  | IUpdateRequestContent<
+      typeof updateRequestContentType.USER_PROFILE,
+      IUserProfile
+    >
 );
 
 const updateRequestSchema = new Schema<IUpdateRequest>(
   {
-    userId: {
+    requesterId: {
       type: Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
-    reviewedById: {
+    reviewerId: {
       type: Schema.Types.ObjectId,
       ref: "user",
       required: true,
+      validate: {
+        validator: function (value) {
+          return value !== this.requesterId;
+        },
+        message: "Reviewer cannot be the same as requester",
+      },
     },
     reviewStatus: {
       type: Number,
@@ -56,7 +71,7 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
     },
     contentType: {
       type: String,
-      enum: schemaNameValues,
+      enum: updateRequestContentTypeValues,
       required: true,
     },
     requestedAt: {
@@ -89,12 +104,12 @@ const UpdateRequestModel = model<IUpdateRequest>(
 
 // Discriminators
 UpdateRequestModel.discriminator(
-  schemaName.USER_PROFILE,
+  updateRequestContentType.USER_PROFILE,
   updateRequestContentSchema(UserProfileModel.schema)
 );
 
 UpdateRequestModel.discriminator(
-  schemaName.ACAD_PROFILE,
+  updateRequestContentType.ACAD_PROFILE,
   updateRequestContentSchema(AcadProfileModel.schema)
 );
 

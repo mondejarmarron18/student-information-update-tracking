@@ -1,6 +1,6 @@
 components:
   schemas:
-    User:
+    user:
       type: object
       properties:
         roleId:
@@ -13,9 +13,3 @@ components:
         password:
           type: string
           format: password
-    UserToken:
-      type: object
-      properties:
-        token:
-          type: string
-          description: JWT token

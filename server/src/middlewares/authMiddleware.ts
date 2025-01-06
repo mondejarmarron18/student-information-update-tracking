@@ -2,11 +2,16 @@ import { x8tSync } from "x8t";
 import customErrors from "../constants/customErrors";
 import { IMiddlware } from "../types/middleware";
 import CustomResponse from "../utils/CustomResponse";
-import { generateToken, verifyRefreshToken, verifyToken } from "../utils/token";
+import {
+  generateToken,
+  getAccessToken,
+  verifyRefreshToken,
+  verifyToken,
+} from "../utils/token";
 import { TokenExpiredError } from "jsonwebtoken";
 
 const authMiddleware: IMiddlware = (req, res, next) => {
-  const token = req.headers.authorization?.replace("Bearer", "").trim();
+  const token = getAccessToken(req);
 
   // Try to verify the access token
   const verifiedToken = x8tSync(() => verifyToken(token || ""));
@@ -33,14 +38,13 @@ const authMiddleware: IMiddlware = (req, res, next) => {
       return CustomResponse.sendError(res, customErrors.unauthorized);
     }
 
-    req.accessToken = generateToken(verifiedRefreshToken.result);
+    res.locals.accessToken = generateToken(verifiedRefreshToken.result);
     req.user = verifiedRefreshToken.result;
 
     return next();
   }
-  req.accessToken = token;
 
-  // If access token is valid, just attach the user info to the request
+  res.locals.accessToken = null;
   req.user = verifiedToken.result;
 
   next();

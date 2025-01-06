@@ -65,9 +65,9 @@ export default class AcadProfileService {
     const isAcadProfileExists =
       await this.acadProfileRepository.isAcadProfileUserIdExists(params.userId);
 
-    if (isAcadProfileExists) {
+    if (!isAcadProfileExists) {
       CustomError.alreadyExists({
-        details: "User's academic profile already exists",
+        description: "User's academic profile does not exist",
       });
     }
 

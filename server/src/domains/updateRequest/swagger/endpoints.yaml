@@ -1,0 +1,117 @@
+/update-requests:
+  get:
+    summary: Get update requests
+    security:
+      - bearerAuth: []
+    tags: [Update Requests]
+    responses:
+      200:
+        $ref: "#/components/responses/updateRequest"
+      400:
+        $ref: "#/components/responses/badRequest"
+      404:
+        $ref: "#/components/responses/unauthorized"
+      500:
+        $ref: "#/components/responses/internalServerError"
+  post:
+    summary: Create update request
+    tags: [Update Requests]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/updateRequest"
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccess"
+                - type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/updateRequestDataResponse"
+      400:
+        $ref: "#/components/responses/badRequest"
+      404:
+        $ref: "#/components/responses/unauthorized"
+      500:
+        $ref: "#/components/responses/internalServerError"
+
+/update-requests/{id}:
+  get:
+    summary: Get update request
+    tags: [Update Requests]
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccess"
+                - type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/updateRequestDataResponse"
+      400:
+        $ref: "#/components/responses/badRequest"
+      404:
+        $ref: "#/components/responses/unauthorized"
+      500:
+        $ref: "#/components/responses/internalServerError"
+  patch:
+    summary: Get update request
+    tags: [Update Requests]
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reviewStatus:
+                $ref: "#/components/schemas/updateRequest/properties/reviewStatus"
+              reviewComment:
+                $ref: "#/components/schemas/updateRequest/properties/reviewComment"
+            required:
+              - reviewStatus
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccess"
+                - type: object
+                  properties:
+                    data:
+                      $ref: "#/components/schemas/updateRequestDataResponse"
+      400:
+        $ref: "#/components/responses/badRequest"
+      404:
+        $ref: "#/components/responses/unauthorized"
+      500:
+        $ref: "#/components/responses/internalServerError"

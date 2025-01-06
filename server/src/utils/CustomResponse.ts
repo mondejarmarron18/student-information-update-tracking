@@ -13,20 +13,25 @@ interface IReponseSuccess {
 
 export default class CustomResponse {
   static sendSuccess = (res: Response, reponse?: IReponseSuccess) => {
-    console.log({ res: res.locals.accessToken });
     if (!response) {
       res.status(204).send();
       return;
     }
 
-    const status = reponse?.status || 200;
-    const data = reponse?.data || null;
+    const finalResponse: Required<IReponseSuccess> & { accessToken?: string } =
+      {
+        status: reponse?.status || 200,
+        message: reponse?.message || "Success",
+        data: reponse?.data || null,
+      };
 
-    res.status(status).send({
-      ...reponse,
-      data,
-      status,
-    });
+    const accessToken = res.locals.accessToken;
+
+    if (accessToken) {
+      finalResponse.accessToken = accessToken;
+    }
+
+    res.status(finalResponse.status).send(finalResponse);
   };
 
   static sendError = (res: Response, error: ICustomError) => {
