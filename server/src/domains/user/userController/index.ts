@@ -113,4 +113,17 @@ export default class UserController {
 
     CustomResponse.sendSuccess(res);
   };
+
+  getOwnUser = async (req: Request, res: Response) => {
+    const user = req.user;
+
+    if (!user) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      message: "User retrieved successfully",
+      data: user,
+    });
+  };
 }

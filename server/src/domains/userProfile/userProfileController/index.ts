@@ -43,7 +43,6 @@ export default class UserProfileController {
   };
 
   createUserProfile: IControllerFunction = async (req, res) => {
-    console.log(req.user);
     const { result, error } = await x8tAsync(
       this.userProfileService.createUserProfile({
         ...req.body,
@@ -71,6 +70,25 @@ export default class UserProfileController {
     CustomResponse.sendSuccess(res, {
       status: 201,
       message: "User profile created successfully",
+      data: result,
+    });
+  };
+
+  getOwnUserProfile: IControllerFunction = async (req, res) => {
+    const user = req.user;
+
+    if (!user) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    const { result, error } = await x8tAsync(
+      this.userProfileService.getUserProfileByUserId(user._id)
+    );
+
+    if (error) return CustomResponse.sendHandledError(res, error);
+
+    CustomResponse.sendSuccess(res, {
+      message: "User Profile",
       data: result,
     });
   };

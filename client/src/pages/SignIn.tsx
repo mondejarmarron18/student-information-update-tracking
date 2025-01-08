@@ -1,27 +1,39 @@
 import SignInForm from "@/components/forms/SignInForm";
-import { reset, setUser } from "@/features/users/useSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { SignInFormProps } from "@/components/forms/SignInForm/schema";
+import { routePaths } from "@/Routes";
+import api from "@/utils/api";
+import cookie from "@/utils/cookie";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 
 const SignIn = () => {
-  const { data: user } = useAppSelector((state) => state.user);
-  const dispath = useAppDispatch();
+  const navigate = useNavigate();
+  const { mutateAsync, isSuccess, isPending } = useMutation({
+    mutationFn: (data: SignInFormProps) => api.post("/users/login", data),
+  });
 
-  const handleSetUser = () => {
-    dispath(setUser({ id: "1", email: "test" }));
-  };
+  useEffect(() => {
+    const accessToken = cookie.accessToken.get();
 
-  const handleResetUser = () => {
-    dispath(reset());
+    if (accessToken) {
+      navigate(routePaths.userProfile);
+    }
+  }, [isSuccess, navigate]);
+
+  const handleLogin = async (data: SignInFormProps) => {
+    const { data: accessToken } = await mutateAsync(data);
+
+    if (accessToken) {
+      cookie.accessToken.set(accessToken);
+    }
   };
 
   return (
     <div className="flex h-full flex-col justify-center items-center p-4">
-      {user.email}
-      <button onClick={handleSetUser}>Add</button>
-      <button onClick={handleResetUser}>Reset</button>
       <div className="w-full max-w-md">
         <h1 className="text-3xl font-bold mb-4">SignIn</h1>
-        <SignInForm onSubmit={(val) => console.log(val)} />
+        <SignInForm onSubmit={handleLogin} onSubmitLoading={isPending} />
       </div>
     </div>
   );

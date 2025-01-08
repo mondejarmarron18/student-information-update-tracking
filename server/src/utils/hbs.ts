@@ -20,7 +20,6 @@ const hbs = async (file: string, data: UnknownObject) => {
   );
 
   if (error !== null || result === null) {
-    console.log("Error rendering template:", error);
     return `<html>
       <body>
         <h1>We're sorry, but we encountered an issue with sending the email.</h1>

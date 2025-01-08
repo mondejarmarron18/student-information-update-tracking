@@ -72,6 +72,7 @@ const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
                                 content={option.tooltip}
                                 trigger={
                                   <Button
+                                    type="button"
                                     variant="ghost"
                                     className="w-fit p-1 h-fit rounded-full"
                                   >

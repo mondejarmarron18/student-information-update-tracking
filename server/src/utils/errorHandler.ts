@@ -7,8 +7,6 @@ import { ZodError } from "zod";
 
 const ErrorResponse = (res: Response, error: unknown) => {
   if (error) {
-    console.log(error);
-
     if (error instanceof CustomError) {
       return CustomResponse.sendError(res, error);
     }

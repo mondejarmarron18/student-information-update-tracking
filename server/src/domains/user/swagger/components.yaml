@@ -10,6 +10,3 @@ components:
           type: string
           format: email
           description: Email provided by the school
-        password:
-          type: string
-          format: password

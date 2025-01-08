@@ -4,12 +4,12 @@
     tags: [User Profiles]
     security:
       - bearerAuth: []
-    parameters:
-      - $ref: "#/components/parameters/q"
-      - $ref: "#/components/parameters/sort"
-      - $ref: "#/components/parameters/order"
-      - $ref: "#/components/parameters/limit"
-      - $ref: "#/components/parameters/page"
+    # parameters:
+    #   - $ref: "#/components/parameters/q"
+    #   - $ref: "#/components/parameters/sort"
+    #   - $ref: "#/components/parameters/order"
+    #   - $ref: "#/components/parameters/limit"
+    #   - $ref: "#/components/parameters/page"
     responses:
       200:
         $ref: "#/components/responses/getUserProfiles"
@@ -30,7 +30,29 @@
             $ref: "#/components/schemas/userProfile"
     responses:
       200:
-        $ref: "#/components/responses/getUserProfiles"
+        $ref: "#/components/responses/userProfile"
+      400:
+        $ref: "#/components/responses/badRequest"
+      401:
+        $ref: "#/components/responses/unauthorized"
+      404:
+        $ref: "#/components/responses/notFound"
+      500:
+        $ref: "#/components/responses/internalServerError"
+
+/user-profiles/me:
+  get:
+    summary: Get own user profile
+    tags: [User Profiles]
+    security:
+      - bearerAuth: []
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/responses/userProfile"
       400:
         $ref: "#/components/responses/badRequest"
       401:

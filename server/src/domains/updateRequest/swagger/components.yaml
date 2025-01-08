@@ -21,8 +21,9 @@ components:
                   - `userProfile`: User profile
                   - `acadProfile`: Academic profile
               oneOf:
-                - $ref: "#/components/schemas/acadProfile"
                 - $ref: "#/components/schemas/userProfile"
+                - $ref: "#/components/schemas/acadProfile"
+
     updateRequest:
       type: object
       properties:
@@ -32,7 +33,7 @@ components:
             Content type
               - `acadProfileContent`: Academic profile
               - `userProfileContent`: User profile
-          example: "acadProfileContent"
+          example: "userProfileContent"
           enum:
             - acadProfileContent
             - userProfileContent

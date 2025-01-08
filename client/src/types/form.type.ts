@@ -1,7 +1,10 @@
+import { ReactNode } from "react";
+
 export type FormProps<Value> = {
   className?: string;
   onSubmit: (values: Value) => void;
-  onSubmitLabel?: string;
+  onSubmitLabel?: ReactNode;
+  onSubmitLoading?: boolean;
 };
 
 export type FormField = {

@@ -16,6 +16,7 @@ import _ from "lodash";
 import { IVerificationCode } from "../../verificationCode/verificationCodeModel";
 import VerificationCodeService from "../../verificationCode/verificationCodeService";
 import CustomError from "../../../utils/CustomError";
+import { Request } from "express";
 
 export default class UserService {
   userRepository: UserRepository;
@@ -61,9 +62,9 @@ export default class UserService {
     );
 
     if (verificationCode.error || !verificationCode.result?.id) {
-      console.log("Verification code creation failed:", verificationCode.error);
       CustomError.internalServerError({
-        details: verificationCode.error,
+        details:
+          verificationCode.error || "Failed to generate verification code",
       });
     }
 
@@ -91,7 +92,6 @@ export default class UserService {
     });
 
     if (sendMailError) {
-      console.log("Failed to send verification email:", sendMailError);
       CustomError.internalServerError({ details: sendMailError });
     }
   };
@@ -134,7 +134,9 @@ export default class UserService {
   };
 
   loginUser = async (params: Pick<IUser, "email" | "password">) => {
-    const user = await this.userRepository.getUserByEmail(params.email);
+    const user = await this.userRepository
+      .getUserByEmail(params.email)
+      .populate("roleId");
 
     if (!user) {
       throw new Error("Email not found");
@@ -154,7 +156,11 @@ export default class UserService {
       CustomError.unverifiedAccount();
     }
 
-    const userWithoutPassword = _.omit(user, "password");
+    const userWithoutPassword = _.omit(
+      user.toJSON(),
+      "password"
+    ) as unknown as Request["user"];
+
     const token = generateToken(userWithoutPassword);
     const refreshToken = generateRefreshToken(userWithoutPassword);
 

@@ -1,16 +1,24 @@
 import { RouterProvider } from "react-router";
 import routes from "./Routes";
 import { Provider as ReduxProvider } from "react-redux";
-import { store, persistor } from "./store";
-import { PersistGate as ReduxPersistGate } from "redux-persist/integration/react";
+import { store } from "./store";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
-    <ReduxProvider store={store}>
-      <ReduxPersistGate loading={null} persistor={persistor}>
+    <QueryClientProvider client={queryClient}>
+      <ReduxProvider store={store}>
         <RouterProvider router={routes} />
-      </ReduxPersistGate>
-    </ReduxProvider>
+      </ReduxProvider>
+    </QueryClientProvider>
   );
 }
 

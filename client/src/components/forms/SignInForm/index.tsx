@@ -14,12 +14,11 @@ import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router";
+import { AiOutlineLoading } from "react-icons/ai";
 
 const SignInForm = (props: FormProps<SignInFormProps>) => {
   const { form } = useSignInForm();
   const navigate = useNavigate();
-
-  console.log(form.watch());
 
   const onSubmit = (values: SignInFormProps) => {
     props.onSubmit(values);
@@ -56,7 +55,11 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
                   )}
                 </div>
                 <FormControl>
-                  <Input placeholder={formField.placeholder} {...field} />
+                  <Input
+                    placeholder={formField.placeholder}
+                    type={formField.type}
+                    {...field}
+                  />
                 </FormControl>
                 {!formField.hideError && <FormMessage />}
               </FormItem>
@@ -65,7 +68,13 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
         ))}
 
         <div className="flex flex-col gap-6">
-          <Button className="w-full">{props.onSubmitLabel || "Login"}</Button>
+          <Button className="w-full">
+            {props.onSubmitLoading ? (
+              <AiOutlineLoading className="animate-spin" />
+            ) : (
+              props.onSubmitLabel || "Sign In"
+            )}
+          </Button>
           {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
             <span className="relative z-10 bg-background px-2 text-muted-foreground">
               Or continue with

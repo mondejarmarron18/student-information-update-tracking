@@ -1,4 +1,5 @@
 import { CookieOptions } from "express";
+import config from "../utils/config";
 
 const tokens = {
   ACCESS_TOKEN: "accessToken",

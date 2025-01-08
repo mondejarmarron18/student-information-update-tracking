@@ -15,7 +15,5 @@ export default class RoleSeeder {
       },
     ];
     await this.roleService.createRoles(roles);
-
-    console.log("Roles seeded successfully");
   }
 }

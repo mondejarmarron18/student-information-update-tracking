@@ -12,5 +12,10 @@ userProfileRoute.post(
   [authMiddleware, UserProfileMiddleware.createUserProfile],
   userProfileController.createUserProfile
 );
+userProfileRoute.get(
+  "/me",
+  [authMiddleware],
+  userProfileController.getOwnUserProfile
+);
 
 export default userProfileRoute;

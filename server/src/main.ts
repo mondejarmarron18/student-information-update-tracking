@@ -11,7 +11,12 @@ const port = config.port;
 
 app.use(morgan("dev"));
 app.use(Express.json());
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: config.clientUrl,
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(routes);
 

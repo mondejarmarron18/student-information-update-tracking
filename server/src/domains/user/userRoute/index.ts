@@ -16,5 +16,6 @@ userRoute.get(
   userMiddleware.verifyUser,
   userController.verifyUser
 );
+userRoute.get("/me", [authMiddleware], userController.getOwnUser);
 
 export default userRoute;

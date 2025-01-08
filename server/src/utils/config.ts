@@ -7,6 +7,7 @@ dotenvConfig({
 const _ = (key: string) => process.env[key];
 
 const config = {
+  nodeEnv: _("NODE_ENV"),
   appName: _("APP_NAME"),
   port: _("PORT"),
   dbUrl: _("DB_URL"),
