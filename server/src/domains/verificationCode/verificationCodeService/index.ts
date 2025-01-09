@@ -1,6 +1,7 @@
 import { x8tAsync } from "x8t";
 import { IVerificationCode } from "../verificationCodeModel";
 import VerificationCodeRepository from "../verificationCodeRepository";
+import CustomError from "../../../utils/CustomError";
 
 export default class VerificationCodeService {
   verificationCodeRepository: VerificationCodeRepository;
@@ -13,28 +14,32 @@ export default class VerificationCodeService {
     return this.verificationCodeRepository.createVerificationCode(userId);
   };
 
-  getValidVerificationCode = async (
-    id: IVerificationCode["_id"]
-  ): Promise<IVerificationCode> => {
+  getValidVerificationCode = async (id: IVerificationCode["_id"]) => {
     const verificationCode = await x8tAsync(
       this.verificationCodeRepository.getVerificationCode(id)
     );
 
-    if (verificationCode.error) throw verificationCode.error;
-
-    if (!verificationCode.result) {
-      throw new Error("Verification code not found");
+    if (verificationCode.error || !verificationCode.result) {
+      return CustomError.internalServerError({
+        details: verificationCode.error || "Verification code not found",
+      });
     }
 
     // Check if verification code is valid
     if (verificationCode.result.invalidatedAt) {
-      throw new Error("Verification code is invalid");
+      return CustomError.badRequest({
+        description: "Verification code is invalid",
+      });
     }
 
     // Check if verification code is expired
     if (verificationCode.result.expiresAt < new Date()) {
-      throw new Error("Verification code is expired");
+      return CustomError.badRequest({
+        description: "Verification code is expired",
+      });
     }
+
+    console.log({ VerificationCode: verificationCode.result });
 
     return verificationCode.result;
   };

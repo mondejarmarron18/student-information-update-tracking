@@ -1,7 +1,8 @@
 import api from "@/utils/api";
 import { useMutation } from "@tanstack/react-query";
 import useAccessToken from "./useAccessToken";
-import { ApiResponseError, ApiResponseSuccess } from "@/types/apiResponse.type";
+import { ApiResponseSuccess } from "@/types/apiResponse.type";
+import { reactQueryError } from "@/utils/errorHandler";
 
 const useLogout = () => {
   const { removeAccessToken } = useAccessToken();
@@ -11,8 +12,10 @@ const useLogout = () => {
     onSuccess: () => {
       removeAccessToken();
     },
-    onError: (error: ApiResponseError) => {
-      console.log("Logout failed:", error);
+    onError: (error) => {
+      const apiError = reactQueryError(error);
+
+      console.error(apiError);
       removeAccessToken();
     },
   });

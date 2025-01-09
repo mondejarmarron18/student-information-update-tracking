@@ -1,8 +1,9 @@
 import { model, Schema, Types } from "mongoose";
+import { UserRoles, userRolesValues } from "../../../constants/userRoles";
 
 export interface IRole {
   _id: Types.ObjectId;
-  name: string;
+  name: UserRoles;
   description: string;
   createdAt: Date;
   updatedAt: Date;
@@ -12,6 +13,13 @@ export const roleSchema = new Schema<IRole>({
   name: {
     type: String,
     required: true,
+    enum: userRolesValues,
+    validate: {
+      validator: (value: string) => {
+        return userRolesValues.includes(value as UserRoles);
+      },
+      message: `{VALUE} is not a valid role`,
+    },
     unique: [true, "Role already exists"],
   },
   description: {

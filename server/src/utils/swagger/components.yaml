@@ -80,6 +80,16 @@ components:
           type: object
         accessToken:
           $ref: "#/components/schemas/accessToken"
+    responseSuccessPublic:
+      type: object
+      properties:
+        status:
+          type: integer
+          default: 200
+        message:
+          type: string
+        data:
+          type: object
     error:
       type: object
       properties:

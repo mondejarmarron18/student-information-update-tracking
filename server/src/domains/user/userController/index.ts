@@ -8,7 +8,7 @@ import CustomError from "../../../utils/CustomError";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
 import tokens, { refreshTokenCookieOptions } from "../../../constants/tokens";
-import { getAccessToken, verifyToken } from "../../../utils/token";
+import userRoles from "../../../constants/userRoles";
 
 export default class UserController {
   userService: UserService;
@@ -17,8 +17,29 @@ export default class UserController {
     this.userService = new UserService();
   }
 
-  createUser = async (req: Request, res: Response) => {
-    const createdUser = await x8tAsync(this.userService.createUser(req.body));
+  registerUser = async (req: Request, res: Response) => {
+    const role = req.user?.roleId;
+
+    // Create user based on role
+    let createdUser = null;
+
+    if (!role?.name) {
+      createdUser = await x8tAsync(this.userService.createStudent(req.body));
+    } else {
+      // Prevent registering user with same role
+      if (role?._id === req.body.roleId) {
+        return CustomResponse.sendError(res, {
+          ...customErrors.forbidden,
+          details: "You can not register user with same role",
+        });
+      }
+
+      createdUser = await x8tAsync(this.userService.createUser(req.body));
+    }
+
+    if (!createdUser) {
+      return CustomResponse.sendError(res, customErrors.internalServerError);
+    }
 
     if (createdUser.error) {
       return CustomResponse.sendHandledError(res, createdUser.error);

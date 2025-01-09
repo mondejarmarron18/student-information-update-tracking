@@ -9,8 +9,10 @@ const EmailVerificationSent = () => {
         <RiMailSendLine className="w-14 h-14 text-primary" />
       </div>
       <div>
-        <h1 className="text-3xl font-bold">Email verification sent</h1>
-        <p className="opacity-70 mb-2">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
+          Email verification sent
+        </h1>
+        <p className="opacity-70 mb-2 p-2 md:p-4">
           Check your email to continue the registration process
         </p>
         <Link to={routePaths.signIn} className="text-primary">

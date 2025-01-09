@@ -38,6 +38,10 @@ export default class RoleRepository {
     return this.roleModel.insertMany(roles);
   };
 
+  getRoleByName = (name: IRole["name"]) => {
+    return this.roleModel.findOne({ name });
+  };
+
   getRoleById = (id: IRole["_id"]) => {
     return this.roleModel.findById(id);
   };

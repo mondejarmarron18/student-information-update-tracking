@@ -22,8 +22,10 @@
                           - $ref: "#/components/schemas/user"
                           - $ref: "#/components/schemas/date"
   post:
-    summary: Create user
+    summary: Create new user
     tags: [Users]
+    security:
+      - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -36,9 +38,67 @@
                   password:
                     type: string
                     format: password
+            required:
+              - roleId
+              - email
+              - password
     responses:
-      204:
-        description: No content
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccessPublic"
+                - type: object
+                  properties:
+                    data:
+                      allOf:
+                        - $ref: "#/components/schemas/_id"
+                        - $ref: "#/components/schemas/user"
+                        - $ref: "#/components/schemas/date"
+      400:
+        $ref: "#/components/responses/badRequest"
+      404:
+        $ref: "#/components/responses/unauthorized"
+      500:
+        $ref: "#/components/responses/internalServerError"
+
+/users/register:
+  post:
+    summary: Register student
+    tags: [Users]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                $ref: "#/components/schemas/user/properties/email"
+              password:
+                type: string
+                format: password
+            required:
+              - email
+              - password
+    responses:
+      200:
+        description: OK
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/responseSuccessPublic"
+                - type: object
+                  properties:
+                    data:
+                      allOf:
+                        - $ref: "#/components/schemas/_id"
+                        - $ref: "#/components/schemas/user"
+                        - $ref: "#/components/schemas/date"
+
       400:
         $ref: "#/components/responses/badRequest"
       404:

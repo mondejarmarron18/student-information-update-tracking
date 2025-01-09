@@ -7,7 +7,9 @@ type Props = {
 
 const conditions = [
   {
-    label: `Must have at least one special character: ${passwordValidator.allowedSpecialCharacters}`,
+    label: `Must have at least one special character: ${passwordValidator.allowedSpecialCharacters
+      .split("")
+      .join(", ")}`,
     validate: passwordValidator.hasSpecialCharacter,
   },
   {

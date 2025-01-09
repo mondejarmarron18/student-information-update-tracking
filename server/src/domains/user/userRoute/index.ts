@@ -8,7 +8,16 @@ const userController = new UserController();
 const userMiddleware = new UserMiddleware();
 
 userRoute.get("/", [authMiddleware], userController.getUsers);
-userRoute.post("/", userMiddleware.createUser, userController.createUser);
+userRoute.post(
+  "/",
+  [authMiddleware, userMiddleware.createUser],
+  userController.registerUser
+);
+userRoute.post(
+  "/register",
+  userMiddleware.createUser,
+  userController.registerUser
+);
 userRoute.post("/login", userMiddleware.loginUser, userController.loginUser);
 userRoute.post("/logout", [authMiddleware], userController.logoutUser);
 userRoute.get(

@@ -15,6 +15,7 @@ const StudentView = lazy(() => import("../components/layouts/StudentView"));
 const EmailVerificationSent = lazy(
   () => import("../pages/EmailVerificationSent")
 );
+const EmailVerification = lazy(() => import("../pages/EmailVerification"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const UserAccount = lazy(() => import("../pages/UserAccount"));
 
@@ -24,6 +25,7 @@ export const routePaths = {
   signIn: "/",
   signUp: "/sign-up",
   emailVerificationSent: "/email-verification-sent",
+  emailVerification: "/verify-email/:verificationCode",
   userProfile: "/user-profile",
   address: "/address",
   studentGuardian: "/student-guardian",
@@ -47,6 +49,10 @@ const publicRoutes = [
   {
     path: routePaths.forgotPassword,
     element: ForgotPassword,
+  },
+  {
+    path: routePaths.emailVerification,
+    element: EmailVerification,
   },
 ];
 

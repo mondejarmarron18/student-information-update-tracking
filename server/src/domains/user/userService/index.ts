@@ -37,23 +37,38 @@ export default class UserService {
     if (!user) {
       const isRoleExist = await this.roleService.isRoleIdExist(params.roleId);
 
-      if (!isRoleExist) throw new Error("Role not found");
+      if (!isRoleExist) {
+        return CustomError.notFound({ details: "Role not found" });
+      }
 
       const newUser = await x8tAsync(this.userRepository.createUser(params));
 
-      if (newUser.error) throw newUser.error;
-      if (!newUser.result) throw new Error("User creation failed");
+      if (newUser.error || !newUser.result) {
+        return CustomError.internalServerError({
+          details: newUser.error || "Failed to create user",
+        });
+      }
 
       user = newUser.result;
     }
 
-    if (user?.verifiedAt) throw new Error("Email already exists");
+    if (user?.verifiedAt) {
+      return CustomError.badRequest({ details: "Email already exists" });
+    }
 
     const verificationCode = await this.generateVerificationCode(user._id);
 
     await this.sendVerificationEmail(user.email, verificationCode);
 
-    return user;
+    return _.omit(user.toJSON(), "password");
+  };
+
+  createStudent = async (params: Pick<IUser, "email" | "password">) => {
+    const role = await this.roleService.getRoleByName("student");
+
+    if (!role) return CustomError.notFound({ details: "Role not found" });
+
+    return this.createUser({ ...params, roleId: role._id });
   };
 
   generateVerificationCode = async (userId: IVerificationCode["userId"]) => {
@@ -75,6 +90,9 @@ export default class UserService {
     email: IUser["email"],
     verificationCode: IVerificationCode["_id"]
   ) => {
+    console.log("Sending verification code to email:", email);
+    console.log({ EmailVerificationCode: verificationCode });
+
     const { error: sendMailError } = await sendMail({
       to: email,
       subject: "Account Verification",
@@ -92,8 +110,11 @@ export default class UserService {
     });
 
     if (sendMailError) {
+      console.log("Failed to send verification email:", sendMailError);
       CustomError.internalServerError({ details: sendMailError });
     }
+
+    console.log("Verification code sent to:", email);
   };
 
   getUserByEmail = (email: IUser["email"]) => {
@@ -174,17 +195,24 @@ export default class UserService {
     };
   };
 
-  verifyUser = async (id: IVerificationCode["_id"]): Promise<IUser> => {
+  verifyUser = async (id: IVerificationCode["_id"]) => {
     const verificationCode =
       await this.verificationCodeService.getValidVerificationCode(id);
+
+    if (!verificationCode?.userId) {
+      return CustomError.notFound({
+        description: "Verification code not found",
+      });
+    }
     const isVerified = await x8tAsync(
       this.userRepository.isUserVerified(verificationCode.userId)
     );
 
     if (isVerified.error) throw isVerified.error;
-    if (isVerified.result) {
-      throw new Error("User is already verified");
-    }
+    if (isVerified.result)
+      CustomError.alreadyExists({
+        description: "User is already verified",
+      });
 
     const verifyUser = await x8tAsync(
       this.userRepository.verifyUser(verificationCode.userId)

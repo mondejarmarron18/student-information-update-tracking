@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
+import { validatePassword } from "./validationSchema";
 
 export default class UserMiddleware {
   createUser = (req: Request, res: Response, next: NextFunction) => {
+    const isLoggedIn = req.user;
+
     const validate = z.object({
-      roleId: z.string().nonempty("Role is required"),
       email: z.string().email().nonempty("Email is required"),
-      password: z.string().nonempty("Password is required"),
+      password: validatePassword,
+      roleId: !isLoggedIn
+        ? z.undefined()
+        : z.string().nonempty("Role ID is required"),
     });
 
     const { error } = validate.safeParse(req.body);

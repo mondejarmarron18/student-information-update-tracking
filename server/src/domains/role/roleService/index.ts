@@ -1,3 +1,4 @@
+import CustomError from "../../../utils/CustomError";
 import { IRole } from "../roleModel";
 import RoleRepository from "../roleRepository";
 
@@ -40,6 +41,18 @@ export default class RoleService {
 
   getRoleById = (id: IRole["_id"]) => {
     return this.roleRepository.getRoleById(id);
+  };
+
+  getRoleByName = async (name: IRole["name"]) => {
+    const role = this.roleRepository.getRoleByName(name);
+
+    if (!role) {
+      CustomError.notFound({
+        description: "Role not found",
+      });
+    }
+
+    return await role;
   };
 
   isRoleIdExist = (id: IRole["_id"]) => {
