@@ -49,4 +49,26 @@ export default class AcadProfileController {
       data: acadProfiles.result,
     });
   };
+
+  getOwnAcadProfile: IControllerFunction = async (req, res) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return CustomResponse.sendHandledError(res, customErrors.unauthorized);
+    }
+
+    const acadProfile = await x8tAsync(
+      this.acadProfileService.getAcadProfileByUserId(userId)
+    );
+
+    if (acadProfile.error) {
+      return CustomResponse.sendHandledError(res, acadProfile.error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Academic profile retrieved successfully",
+      data: acadProfile.result,
+    });
+  };
 }

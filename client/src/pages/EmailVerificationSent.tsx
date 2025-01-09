@@ -1,4 +1,4 @@
-import { routePaths } from "@/Routes";
+import { routePaths } from "@/routes";
 import { RiMailSendLine } from "react-icons/ri";
 import { Link } from "react-router";
 

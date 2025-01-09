@@ -11,5 +11,10 @@ acadProfileRoute.post(
   [authMiddleware],
   acadProfileController.createAcadProfile
 );
+acadProfileRoute.get(
+  "/me",
+  [authMiddleware],
+  acadProfileController.getOwnAcadProfile
+);
 
 export default acadProfileRoute;

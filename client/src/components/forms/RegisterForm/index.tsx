@@ -10,25 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import PasswordValidator from "@/components/common/PasswordValidator";
-import { isValidPassword } from "@/utils/validator";
 import { RegisterFormProps } from "./schema";
 import useRegisterForm from "./useRegisterForm";
-import { useState } from "react";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 
 const RegisterForm = (props: FormProps<RegisterFormProps>) => {
   const { form } = useRegisterForm();
-  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const onSubmit = (values: RegisterFormProps) => {
-    const isPasswordMatch = values.password === values.confirmPassword;
-    const isValidPass = isValidPassword(values.password);
-
-    if (!isValidPass || !isPasswordMatch) {
-      return setPasswordError("Invalid password");
-    }
-
     props.onSubmit(values);
   };
 
@@ -61,8 +51,6 @@ const RegisterForm = (props: FormProps<RegisterFormProps>) => {
             )}
           />
         ))}
-
-        {passwordError && <p className="text-red-500">{passwordError}</p>}
 
         <div className="flex flex-col gap-6">
           <Button className="w-full">

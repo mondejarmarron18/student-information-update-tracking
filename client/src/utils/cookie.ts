@@ -6,7 +6,7 @@ const accessToken = {
     Cookies.set("accessToken", token, {
       sameSite: "Strict",
     }),
-  remove: () => Cookies.remove("accessToken"),
+  remove: () => Cookies.remove("accessToken", { sameSite: "Strict" }),
 };
 
 const cookie = {

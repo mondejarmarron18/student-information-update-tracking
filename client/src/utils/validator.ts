@@ -45,10 +45,6 @@ export const hasAllowedEmailDomain = (val: `${string}@${string}`) => {
   return allowedEmailDomains.includes(emailDomain);
 };
 
-export const isAuthenticated = () => {
-  return localStorage.getItem("token") !== null;
-};
-
 export const isMobileNumber = (val: string) => {
   return mobileNumberRegex.test(val);
 };
