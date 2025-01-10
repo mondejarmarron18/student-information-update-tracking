@@ -15,7 +15,7 @@ const EmailVerificationSent = () => {
         <p className="opacity-70 mb-2 p-2 md:p-4">
           Check your email to continue the registration process
         </p>
-        <Link to={routePaths.signIn} className="text-primary">
+        <Link to={routePaths.signIn.path} className="text-primary">
           Back to Sign In
         </Link>
       </div>

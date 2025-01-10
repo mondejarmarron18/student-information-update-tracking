@@ -80,7 +80,7 @@ const EmailVerification = () => {
         </p>
         <p className="text-sm md:text-base mb-6">{renderInstruction()}</p>
         {!isPending && (
-          <Link to={routePaths.signIn}>
+          <Link to={routePaths.signIn.path}>
             <Button variant={isSuccess ? "default" : "secondary"}>
               Go to Sign In
             </Button>

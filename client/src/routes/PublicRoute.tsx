@@ -10,7 +10,7 @@ type Props = {
 const PublicRoute = ({ children }: Props) => {
   const { accessToken } = useAccessToken();
 
-  return !accessToken ? children : <Navigate to={routePaths.dashboard} />;
+  return !accessToken ? children : <Navigate to={routePaths.dashboard.path} />;
 };
 
 export default PublicRoute;

@@ -10,7 +10,7 @@ type Props = {
 const PrivateRoute = ({ children }: Props) => {
   const { accessToken } = useAccessToken();
 
-  return accessToken ? children : <Navigate to={routePaths.signIn} />;
+  return accessToken ? children : <Navigate to={routePaths.signIn.path} />;
 };
 
 export default PrivateRoute;

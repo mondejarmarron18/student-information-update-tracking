@@ -1,7 +1,7 @@
 import { GrFormPrevious } from "react-icons/gr";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HiMiniAcademicCap } from "react-icons/hi2";
-import { MdNotifications, MdSpaceDashboard } from "react-icons/md";
+import { MdSpaceDashboard, MdPerson } from "react-icons/md";
 import { HiClipboardDocumentCheck } from "react-icons/hi2";
 import { RiProfileFill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,8 @@ import { UserProfile } from "@/types/userProfile.type";
 import { useLocation, useNavigate } from "react-router";
 import screenSize from "@/utils/screenSize";
 import UserAccountMenu from "../UserAccountMenu";
+import { Card } from "@/components/ui/card";
+import { PiChatsCircleFill } from "react-icons/pi";
 
 type NavItems = {
   name: string;
@@ -24,28 +26,23 @@ type NavItems = {
 
 export const navItems: NavItems[] = [
   {
-    name: "Nofitications",
-    path: routePaths.studentGuardian,
-    iconType: MdNotifications,
-  },
-  {
-    name: "Dashboard",
-    path: routePaths.dashboard,
+    ...routePaths.dashboard,
     iconType: MdSpaceDashboard,
   },
   {
-    name: "Personal Profile",
-    path: routePaths.userProfile,
+    ...routePaths.conversations,
+    iconType: PiChatsCircleFill,
+  },
+  {
+    ...routePaths.userProfile,
     iconType: RiProfileFill,
   },
   {
-    name: "Academic Profile",
-    path: routePaths.academicProfile,
+    ...routePaths.academicProfile,
     iconType: HiMiniAcademicCap,
   },
   {
-    name: "Update Requests",
-    path: routePaths.address,
+    ...routePaths.updateRequests,
     iconType: HiClipboardDocumentCheck,
   },
 ];
@@ -109,13 +106,13 @@ const NavigationBar = () => {
   };
 
   return (
-    <aside className="flex h-fit shrink-0 lg:h-full lg:flex-col lg:justify-between overflow-auto bg-gray-500/20 p-2 gap-2 justify-center  rounded-xl">
+    <Card className="flex h-fit shrink-0 lg:h-full lg:flex-col lg:justify-between overflow-auto p-2 gap-2 justify-center  rounded-xl">
       <Tooltip
         content="Menu"
         trigger={
           <button
             onClick={toggleNavCollapsed}
-            className="rounded-lg bg-gray-500/20 opacity-50 hover:bg-gray-500/50 transition-colors p-3 hidden lg:flex items-center"
+            className="rounded-lg bg-gray-500/40 opacity-50 hover:opacity-100 transition-colors p-3 hidden lg:flex items-center"
           >
             <div
               className={cn("rotate-180 transition-transform", {
@@ -138,7 +135,7 @@ const NavigationBar = () => {
               <button
                 name={navItem.name}
                 className={cn(
-                  "rounded-lg flex bg-gray-500/20 items-center opacity-50 hover:bg-gray-500/50 transition-colors p-3",
+                  "rounded-lg flex bg-gray-500/40 items-center opacity-50 hover:bg-gray-500/70 transition-colors p-3",
                   {
                     "opacity-100 bg-gray-500/80": pathname === navItem.path,
                   }
@@ -157,7 +154,7 @@ const NavigationBar = () => {
         trigger={
           <button
             className={cn(
-              "rounded-lg bg-gray-500/20 hover:bg-gray-500/50 transition-colors p-3 flex items-center opacity-50"
+              "rounded-lg bg-gray-500/40 hover:opacity-100 transition-all p-3 flex items-center opacity-50"
             )}
           >
             <Avatar
@@ -170,15 +167,16 @@ const NavigationBar = () => {
                 alt={`${userProfile?.firstName} ${userProfile?.lastName}`}
               />
               <AvatarFallback className="font-extrabold bg-transparent rounded-none text-xs uppercase">
-                {userProfile?.firstName[0]}
-                {userProfile?.lastName[0]}
+                {!userProfile
+                  ? renderIcon(MdPerson)
+                  : `${userProfile?.firstName[0]}${userProfile?.lastName[0]}`}
               </AvatarFallback>
             </Avatar>
             {renderText("Account")}
           </button>
         }
       />
-    </aside>
+    </Card>
   );
 };
 

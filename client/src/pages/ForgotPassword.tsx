@@ -30,7 +30,7 @@ const ForgotPassword = () => {
               </p>
             </div>
             <Link
-              to={routePaths.signIn}
+              to={routePaths.signIn.path}
               className="text-sm hover:underline self-center text-primary"
             >
               Back to Sign In
@@ -58,7 +58,7 @@ const ForgotPassword = () => {
                 Send Reset Link
               </Button>
               <Link
-                to={routePaths.signIn}
+                to={routePaths.signIn.path}
                 className="text-sm hover:underline self-center"
               >
                 Back to Sign In

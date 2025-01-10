@@ -18,70 +18,94 @@ const EmailVerificationSent = lazy(
 const EmailVerification = lazy(() => import("../pages/EmailVerification"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const UserAccount = lazy(() => import("../pages/UserAccount"));
+const UpdateRequest = lazy(() => import("../pages/UpdateRequest"));
+const Conversations = lazy(() => import("../pages/Conversations"));
 
 export const routePaths = {
-  dashboard: "/dashboard",
-  userAccount: "/user-account",
-  signIn: "/",
-  signUp: "/sign-up",
-  emailVerificationSent: "/email-verification-sent",
-  emailVerification: "/verify-email/:verificationCode",
-  userProfile: "/user-profile",
-  address: "/address",
-  studentGuardian: "/student-guardian",
-  academicProfile: "/academic-profile",
-  forgotPassword: "/forgot-password",
+  dashboard: {
+    path: "/dashboard",
+    name: "Dashboard",
+    element: Dashboard,
+  },
+  userAccount: {
+    path: "/user-account",
+    name: "User Account",
+    element: UserAccount,
+  },
+  signIn: {
+    path: "/sign-in",
+    name: "Sign In",
+    element: SignIn,
+  },
+  signUp: {
+    path: "/sign-up",
+    name: "Sign Up",
+    element: Register,
+  },
+  emailVerificationSent: {
+    path: "/email-verification-sent",
+    name: "Email Verification Sent",
+    element: EmailVerificationSent,
+  },
+  emailVerification: {
+    path: "/email-verification/:verificationCode",
+    name: "Email Verification",
+    element: EmailVerification,
+  },
+  userProfile: {
+    path: "/personal-profile",
+    name: "Personal Profile",
+    element: UserProfile,
+  },
+  address: {
+    path: "/address",
+    name: "Address",
+    element: Address,
+  },
+  studentGuardian: {
+    path: "/student-guardian",
+    name: "Student Guardian",
+    element: StudentGuardian,
+  },
+  academicProfile: {
+    path: "/academic-profile",
+    name: "Academic Profile",
+    element: AcademicProfile,
+  },
+  forgotPassword: {
+    path: "/forgot-password",
+    name: "Forgot Password",
+    element: ForgotPassword,
+  },
+  updateRequests: {
+    path: "/update-requests",
+    name: "Update Requests",
+    element: UpdateRequest,
+  },
+  conversations: {
+    path: "/conversations",
+    name: "Conversations",
+    element: Conversations,
+  },
 } as const;
 
 const publicRoutes = [
-  {
-    path: routePaths.signIn,
-    element: SignIn,
-  },
-  {
-    path: routePaths.signUp,
-    element: Register,
-  },
-  {
-    path: routePaths.emailVerificationSent,
-    element: EmailVerificationSent,
-  },
-  {
-    path: routePaths.forgotPassword,
-    element: ForgotPassword,
-  },
-  {
-    path: routePaths.emailVerification,
-    element: EmailVerification,
-  },
+  routePaths.signIn,
+  routePaths.signUp,
+  routePaths.forgotPassword,
+  routePaths.emailVerification,
+  routePaths.emailVerificationSent,
 ];
 
 const privateRoutes = [
-  {
-    path: routePaths.userProfile,
-    element: UserProfile,
-  },
-  {
-    path: routePaths.address,
-    element: Address,
-  },
-  {
-    path: routePaths.studentGuardian,
-    element: StudentGuardian,
-  },
-  {
-    path: routePaths.academicProfile,
-    element: AcademicProfile,
-  },
-
-  {
-    path: routePaths.userAccount,
-    element: UserAccount,
-  },
-  {
-    path: routePaths.dashboard,
-    element: Dashboard,
-  },
+  routePaths.dashboard,
+  routePaths.userAccount,
+  routePaths.userProfile,
+  routePaths.address,
+  routePaths.studentGuardian,
+  routePaths.academicProfile,
+  routePaths.updateRequests,
+  routePaths.conversations,
 ];
 
 const routes = createBrowserRouter([

@@ -10,8 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-type Props = {};
-
 const ForgotPasswordModal = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
