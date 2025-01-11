@@ -29,10 +29,8 @@ const useLogin = () => {
     onError: (error) => {
       const apiError = reactQueryError(error);
 
-      console.error(error);
-
       if (apiError.status === 422) {
-        return navigate(routePaths.emailVerificationSent);
+        return navigate(routePaths.emailVerificationSent.path);
       }
 
       toast({

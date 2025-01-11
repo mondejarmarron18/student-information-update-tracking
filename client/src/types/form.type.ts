@@ -2,7 +2,10 @@ import { ReactNode } from "react";
 
 export type FormProps<Value> = {
   className?: string;
+  values?: Value;
   onSubmit: (values: Value) => void;
+  onCancelLabel?: ReactNode;
+  onCancel?: () => void;
   onSubmitLabel?: ReactNode;
   onSubmitLoading?: boolean;
 };
@@ -24,7 +27,8 @@ export type FormField = {
         | "time"
         | "checkbox"
         | "tel"
-        | "number";
+        | "number"
+        | "textarea";
     }
   | {
       type: "select" | "radio";

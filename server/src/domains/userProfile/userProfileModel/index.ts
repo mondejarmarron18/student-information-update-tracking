@@ -7,10 +7,11 @@ import { schemaName } from "../../../constants/schemaName";
 
 export interface IAddress {
   country: String;
-  region: String;
+  state: String;
   city: String;
-  barangay: String;
-  street: String;
+  postalCode: String;
+  addressLine1: String;
+  addressLine2: String;
 }
 
 export interface IUserProfile {
@@ -34,11 +35,29 @@ export interface IUserProfile {
 
 export const addressSchema = new Schema<IAddress>(
   {
-    country: String,
-    region: String,
-    city: String,
-    barangay: String,
-    street: String,
+    country: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
+    addressLine1: {
+      type: String,
+      required: true,
+    },
+    addressLine2: {
+      type: String,
+    },
   },
   {
     _id: false,
@@ -77,6 +96,7 @@ const userProfileSchema = new Schema<IUserProfile>({
   contactMethods: {
     type: [Number],
     enum: contactMethodsValue,
+    default: [1],
     validate: {
       validator: (cms: ContactMethodsValue[]) => {
         return cms.every((cm) => contactMethodsValue.includes(cm));

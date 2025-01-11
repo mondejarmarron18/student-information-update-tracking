@@ -1,14 +1,13 @@
 import RegisterForm from "@/components/forms/RegisterForm";
 import { RegisterFormProps } from "@/components/forms/RegisterForm/schema";
 import useRegisterUser from "@/hooks/useRegisterUser";
+import _ from "lodash";
 
 const Register = () => {
   const registerUser = useRegisterUser();
 
   const handleRegisterUser = (data: RegisterFormProps) => {
-    const { email, password } = data;
-
-    registerUser.mutate({ email, password });
+    registerUser.mutate(_.omit(data, "isAddressSame"));
   };
 
   return (

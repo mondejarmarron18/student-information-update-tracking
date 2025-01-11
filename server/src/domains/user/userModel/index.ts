@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   password: string;
   roleId: Types.ObjectId;
+  loginAttempt: number;
   verifiedAt: Date;
   deletedAt: Date;
   createdAt: Date;
@@ -27,6 +28,10 @@ const userSchema = new Schema<IUser>({
     type: Schema.Types.ObjectId,
     ref: "role",
     required: true,
+  },
+  loginAttempt: {
+    type: Number,
+    default: 0,
   },
   verifiedAt: Date,
   deletedAt: Date,

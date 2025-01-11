@@ -3,10 +3,11 @@ import contactMethods from "../../../constants/contactMethods";
 
 export const validateAddress = z.object({
   country: z.string().nonempty("Country is required"),
-  region: z.string().nonempty("Region is required"),
-  city: z.string().nonempty("City is required"),
-  barangay: z.string().nonempty("Barangay is required"),
-  street: z.string().nonempty("Street is required"),
+  state: z.string().nonempty("State is required"), //Also provinces
+  city: z.string().nonempty("City is required"), //Also municipalities
+  postalCode: z.string().nonempty("Zip code is required"),
+  addressLine1: z.string().nonempty("Address line 1 is required"),
+  addressLine2: z.string().optional(),
 });
 
 export const validateUserProfile = z.object({

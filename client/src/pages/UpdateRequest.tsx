@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -8,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input"; // Assuming you have an Input component
+import { Input } from "@/components/ui/input";
 import {
   Pagination,
   PaginationContent,
@@ -17,42 +22,31 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationEllipsis,
-} from "@/components/ui/pagination"; // ShadCN Pagination components
+} from "@/components/ui/pagination";
+import { v4 as uuid } from "uuid";
+import { faker } from "@faker-js/faker";
 
-// Sample Data for Update Requests
-const updateRequests = [
-  {
-    id: 1,
-    requester: "John Doe",
-    reviewer: "Jane Smith",
-    status: "Pending",
-    contentType: "userProfileContent",
-    requestedAt: "2025-01-08 10:00 AM",
-    reviewedAt: "",
-    fieldsChanged: 4,
-  },
-  {
-    id: 2,
-    requester: "Alice Johnson",
-    reviewer: "Bob Brown",
-    status: "Approved",
-    contentType: "acadProfileContent",
-    requestedAt: "2025-01-05 11:30 AM",
-    reviewedAt: "2025-01-06 09:00 AM",
-    fieldsChanged: 3,
-  },
-  {
-    id: 3,
-    requester: "Robert Lee",
-    reviewer: "Emily White",
-    status: "Rejected",
-    contentType: "userProfileContent",
-    requestedAt: "2025-01-02 08:15 AM",
-    reviewedAt: "2025-01-02 10:00 AM",
-    fieldsChanged: 2,
-  },
-  // Additional mock data can be added here for pagination
-];
+const updateRequests: {
+  id: string;
+  reviewer: string;
+  status: string;
+  contentType: string;
+  requestedAt: string;
+  reviewedAt: string;
+  fieldsChanged: number;
+}[] = Array.from({ length: 100 }, () => {
+  const status = faker.number.int({ min: 1, max: 3 });
+
+  return {
+    id: uuid(),
+    reviewer: faker.person.fullName(),
+    status: status === 1 ? "Pending" : status === 2 ? "Approved" : "Rejected",
+    contentType: status === 3 ? "userProfileContent" : "acadProfileContent",
+    requestedAt: faker.date.past().toLocaleDateString(),
+    reviewedAt: status === 1 ? "" : faker.date.past().toLocaleDateString(),
+    fieldsChanged: faker.number.int({ min: 1, max: 10 }),
+  };
+});
 
 const UpdateRequest = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -62,7 +56,6 @@ const UpdateRequest = () => {
   // Filter the data based on search query
   const filteredRequests = updateRequests.filter((request) => {
     return (
-      request.requester.toLowerCase().includes(searchQuery.toLowerCase()) ||
       request.reviewer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       request.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (request.contentType === "userProfileContent" &&
@@ -84,9 +77,7 @@ const UpdateRequest = () => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Recent Update Requests</CardTitle>
-        </CardHeader>
+        <CardHeader></CardHeader>
         <CardContent>
           <div className="flex items-center mb-4">
             <Input
@@ -101,7 +92,6 @@ const UpdateRequest = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Requester</TableHead>
                 <TableHead>Reviewer</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Content Type</TableHead>
@@ -113,7 +103,6 @@ const UpdateRequest = () => {
             <TableBody>
               {currentRequests.map((request) => (
                 <TableRow key={request.id}>
-                  <TableCell>{request.requester}</TableCell>
                   <TableCell>{request.reviewer || "Pending"}</TableCell>
                   <TableCell>{request.status}</TableCell>
                   <TableCell>
@@ -130,17 +119,23 @@ const UpdateRequest = () => {
           </Table>
 
           {/* ShadCN Pagination */}
+        </CardContent>
+        <CardFooter>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
                   href="#"
-                  onClick={() => setCurrentPage(currentPage - 1)}
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      setCurrentPage(currentPage - 1);
+                    }
+                  }}
                 />
               </PaginationItem>
 
               {/* Render page numbers */}
-              {[...Array(totalPages)].map((_, index) => (
+              {[...Array(totalPages).keys()].map((_, index) => (
                 <PaginationItem key={index}>
                   <PaginationLink
                     href="#"
@@ -159,12 +154,16 @@ const UpdateRequest = () => {
               <PaginationItem>
                 <PaginationNext
                   href="#"
-                  onClick={() => setCurrentPage(currentPage + 1)}
+                  onClick={() => {
+                    if (currentPage < totalPages) {
+                      setCurrentPage(currentPage + 1);
+                    }
+                  }}
                 />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   );

@@ -4,6 +4,8 @@ const defaultValues: UserProfileFormProps = {
   firstName: "",
   middleName: "",
   lastName: "",
+  nameExtension: "",
+  dateOfBirth: new Date(),
   phoneNumber: "",
   sex: "male",
 };

@@ -15,6 +15,8 @@ import { AddressFormProps } from "./schema";
 import useAddressForm from "./useAddressForm";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useMemo } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import _ from "lodash";
 
 const RegisterForm = (
   props: FormProps<Omit<AddressFormProps, "isAddressSame">>
@@ -29,10 +31,8 @@ const RegisterForm = (
     }
   }, [form, isAddressSame]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSubmit = ({ isAddressSame, ...values }: AddressFormProps) => {
-    console.log(values);
-    props.onSubmit(values);
+  const onSubmit = (data: AddressFormProps) => {
+    props.onSubmit(_.omit(data, "isAddressSame"));
   };
 
   const RenderFields = useMemo(() => {
@@ -50,15 +50,32 @@ const RegisterForm = (
                 control={form.control}
                 name={fieldName as keyof AddressFormProps}
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{formField.label}</FormLabel>
+                  <FormItem
+                    className={cn("", {
+                      "col-span-2": formField.type === "textarea",
+                    })}
+                  >
+                    <FormLabel>
+                      {formField.label}{" "}
+                      <span className="opacity-50 italic">
+                        {formField.optional && "(Optional)"}
+                      </span>
+                    </FormLabel>
                     <FormControl>
-                      <Input
-                        type={formField.type}
-                        placeholder={formField.placeholder}
-                        {...field}
-                        value={field.value.toString()}
-                      />
+                      {formField.type === "textarea" ? (
+                        <Textarea
+                          placeholder={formField.placeholder}
+                          {...field}
+                          value={field.value.toString()}
+                        />
+                      ) : (
+                        <Input
+                          type={formField.type}
+                          placeholder={formField.placeholder}
+                          {...field}
+                          value={field.value.toString()}
+                        />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -109,9 +126,22 @@ const RegisterForm = (
           <RenderFields address="present" />
         </div>
 
-        <Button type="submit" className="mt-2">
-          {props.onSubmitLabel || "Submit"}
-        </Button>
+        <div className="mt-2 flex gap-2">
+          {props.onCancelLabel && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="flex-1"
+              onClick={props.onCancel}
+            >
+              {props.onCancelLabel}
+            </Button>
+          )}
+
+          <Button type="submit" className="flex-1">
+            {props.onSubmitLabel || "Submit"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

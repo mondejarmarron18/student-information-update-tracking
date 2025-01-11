@@ -1,14 +1,12 @@
 import { AddressFormProps } from "./schema";
 
 const values = {
-  houseNumber: "",
-  street: "",
-  barangay: "",
-  city: "",
-  province: "",
-  region: "",
-  zipCode: "",
   country: "",
+  state: "",
+  city: "",
+  postalCode: "",
+  addressLine1: "",
+  addressLine2: "",
 };
 
 const defaultValues: AddressFormProps = {

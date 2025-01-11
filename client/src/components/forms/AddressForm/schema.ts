@@ -1,14 +1,12 @@
 import { z } from "zod";
 
 const addressSchema = z.object({
-  houseNumber: z.string().nonempty("House number is required"),
-  street: z.string().nonempty("Street is required"),
-  barangay: z.string().nonempty("Barangay is required"),
-  city: z.string().nonempty("City is required"),
-  province: z.string().nonempty("Province is required"),
-  region: z.string().nonempty("Region is required"),
   country: z.string().nonempty("Country is required"),
-  zipCode: z.string().nonempty("Zip code is required"),
+  state: z.string().nonempty("State is required"), //Also provinces
+  city: z.string().nonempty("City is required"), //Also municipalities
+  postalCode: z.string().nonempty("Zip code is required"),
+  addressLine1: z.string().nonempty("Address line 1 is required"),
+  addressLine2: z.string().optional(),
 });
 
 const formSchema = z.object({

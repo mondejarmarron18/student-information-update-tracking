@@ -15,6 +15,7 @@ import useRegisterForm from "./useRegisterForm";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 import { AiOutlineLoading } from "react-icons/ai";
+import AppRecaptcha from "@/components/common/ReCAPTCHA";
 
 const RegisterForm = (props: FormProps<RegisterFormProps>) => {
   const { form } = useRegisterForm();
@@ -52,6 +53,19 @@ const RegisterForm = (props: FormProps<RegisterFormProps>) => {
             )}
           />
         ))}
+
+        <FormField
+          control={form.control}
+          name="captcha"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <AppRecaptcha onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="flex flex-col gap-6">
           <Button className="w-full">
