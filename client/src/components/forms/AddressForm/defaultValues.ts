@@ -11,7 +11,7 @@ const values = {
 
 const defaultValues: AddressFormProps = {
   permanent: values,
-  present: values,
+  current: values,
   isAddressSame: true,
 };
 

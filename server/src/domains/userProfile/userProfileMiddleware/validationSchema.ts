@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { array, z } from "zod";
 import contactMethods from "../../../constants/contactMethods";
 
 export const validateAddress = z.object({
@@ -19,8 +19,8 @@ export const validateUserProfile = z.object({
   phoneNumber: z.string().nonempty("Phone number is required"),
   contactMethods: z
     .array(z.nativeEnum(contactMethods))
-    .nonempty("Contact method is required")
-    .refine((arr) => new Set(arr).size === arr.length, {
+    .optional()
+    .refine((arr) => (arr ? new Set(arr).size === arr.length : true), {
       message: "Contact methods must be unique",
     }),
   address: z.object({

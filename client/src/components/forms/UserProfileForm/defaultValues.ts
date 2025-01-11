@@ -1,3 +1,4 @@
+import { subYears } from "date-fns";
 import { UserProfileFormProps } from "./schema";
 
 const defaultValues: UserProfileFormProps = {
@@ -5,7 +6,7 @@ const defaultValues: UserProfileFormProps = {
   middleName: "",
   lastName: "",
   nameExtension: "",
-  dateOfBirth: new Date(),
+  dateOfBirth: subYears(new Date(), 18),
   phoneNumber: "",
   sex: "male",
 };

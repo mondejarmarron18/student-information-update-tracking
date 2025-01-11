@@ -31,7 +31,45 @@ export default class updateRequestRepository {
   };
 
   getUpdateRequests = () => {
-    return this.updateRequestModel.find();
+    return this.updateRequestModel.aggregate([
+      {
+        $lookup: {
+          from: "userprofiles",
+          localField: "requesterId",
+          foreignField: "userId",
+          as: "requesterProfile",
+        },
+      },
+      {
+        $lookup: {
+          from: "userprofiles",
+          localField: "reviewerId",
+          foreignField: "userId",
+          as: "reviewerProfile",
+        },
+      },
+      {
+        $unwind: {
+          path: "$requesterProfile",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: { path: "$reviewerProfile", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $addFields: {
+          requesterProfile: {
+            firstName: "$requesterProfile.firstName",
+            lastName: "$requesterProfile.lastName",
+          },
+          reviewerProfile: {
+            firstName: "$reviewerProfile.firstName",
+            lastName: "$reviewerProfile.lastName",
+          },
+        },
+      },
+    ]);
   };
 
   isUpdateRequestExists = (id: IUpdateRequest["_id"]) => {

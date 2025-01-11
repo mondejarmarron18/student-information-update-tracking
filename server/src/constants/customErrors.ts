@@ -3,25 +3,25 @@ import { ICustomError } from "../utils/CustomError";
 const customErrors: Record<string, ICustomError> = {
   badRequest: {
     status: 400,
-    message: "Bad Request",
+    message: "Invalid Request",
     description:
       "The server cannot process the request due to malformed syntax or invalid parameters. Please check the request data.",
   },
   unauthorized: {
     status: 401,
-    message: "Unauthorized",
-    description: "You are not authorized to perform this action.",
+    message: "Login Required",
+    description: "You need to log in to access this resource.",
   },
   forbidden: {
     status: 403,
-    message: "Forbidden",
+    message: "Access Denied",
     description:
-      "Access to this resource is forbidden. You may not have the required permissions or the resource may be restricted from you.",
+      "You do not have permission to access this resource. Contact support if you think this is an error.",
   },
   notFound: {
     status: 404,
-    message: "Not Found",
-    description: "The requested resource could not be found on the server.",
+    message: "Resource Not Found",
+    description: "We couldn't find the resource you're looking for.",
   },
   alreadyExists: {
     status: 409,
@@ -30,44 +30,44 @@ const customErrors: Record<string, ICustomError> = {
   },
   unprocessableEntity: {
     status: 422,
-    message: "Unprocessable Entity",
+    message: "Something Went Wrong",
     description:
-      "The request was well-formed but was unable to be followed due to semantic errors.",
+      "The request was valid, but there was an issue processing it. Please check the data and try again.",
   },
   unverifiedAccount: {
     status: 422,
-    message: "Unverified Account",
+    message: "Account Not Verified",
     description:
-      "Your account is unverified. Please check your email and verify your account.",
+      "Your account is unverified. Please check your email and follow the instructions to verify your account.",
   },
   accountLocked: {
     status: 423,
     message: "Account Locked",
     description:
-      "The account has been locked due to multiple failed login attempts or suspicious activity.",
+      "Your account has been locked due to multiple failed login attempts or suspicious activity. Please contact support.",
   },
   tooManyRequests: {
     status: 429,
     message: "Too Many Requests",
     description:
-      "You have made too many requests in a short amount of time. Please try again later after waiting for the rate limit to reset.",
+      "You've made too many requests in a short time. Please wait a moment and try again later.",
   },
   expiredToken: {
     status: 440,
-    message: "Expired Token",
-    description: "The provided token has expired.",
+    message: "Session Expired",
+    description: "Your session has expired. Please log in again to continue.",
   },
   internalServerError: {
     status: 500,
-    message: "Internal Server Error",
+    message: "Something Went Wrong",
     description:
-      "The server encountered an unexpected condition that prevented it from fulfilling the request.",
+      "The server encountered an unexpected issue. Please try again later or contact support if the problem persists.",
   },
   serviceUnavailable: {
     status: 503,
     message: "Service Unavailable",
     description:
-      "The server is currently unable to handle the request due to a temporary overload or scheduled maintenance.",
+      "The server is temporarily unavailable due to maintenance or overload. Please try again later.",
   },
 } as const;
 

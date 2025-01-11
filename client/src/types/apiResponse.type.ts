@@ -1,8 +1,8 @@
-export type ApiResponseSuccess = {
+export type ApiResponseSuccess<Data = unknown> = {
   accessToken?: string;
   status: number;
   message: string;
-  data: unknown;
+  data: Data;
 };
 
 export type ApiResponseError = {

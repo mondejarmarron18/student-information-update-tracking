@@ -49,11 +49,11 @@ const permanentFields = fields.map((field) => ({
   ...field,
   name: `permanent.${field.name}` as Fields["name"],
 }));
-const presentFields = fields.map((field) => ({
+const currentFields = fields.map((field) => ({
   ...field,
-  name: `present.${field.name}` as Fields["name"],
+  name: `current.${field.name}` as Fields["name"],
 }));
 
-const formFields: Fields[] = permanentFields.concat(presentFields);
+const formFields: Fields[] = permanentFields.concat(currentFields);
 
 export default formFields;

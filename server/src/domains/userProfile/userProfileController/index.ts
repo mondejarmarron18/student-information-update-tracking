@@ -85,7 +85,7 @@ export default class UserProfileController {
       this.userProfileService.getUserProfileByUserId(user._id)
     );
 
-    if (error) return CustomResponse.sendHandledError(res, error);
+    if (error || !result) return CustomResponse.sendHandledError(res, error);
 
     CustomResponse.sendSuccess(res, {
       message: "User Profile",

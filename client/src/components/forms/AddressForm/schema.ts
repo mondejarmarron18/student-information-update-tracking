@@ -11,7 +11,7 @@ const addressSchema = z.object({
 
 const formSchema = z.object({
   permanent: addressSchema,
-  present: addressSchema,
+  current: addressSchema,
   isAddressSame: z.boolean(),
 });
 

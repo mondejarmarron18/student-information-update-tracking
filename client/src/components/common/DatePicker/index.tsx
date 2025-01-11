@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, subYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ type DatePickerProps = {
 const DatePicker = ({
   className,
   onSelect,
-  value = new Date(),
+  value,
   disabled = false,
 }: DatePickerProps) => {
   return (
@@ -44,6 +44,9 @@ const DatePicker = ({
           selected={value}
           onSelect={onSelect}
           initialFocus
+          fromDate={subYears(new Date(), 80)}
+          toDate={subYears(new Date(), 15)}
+          captionLayout="dropdown-buttons"
         />
       </PopoverContent>
     </Popover>

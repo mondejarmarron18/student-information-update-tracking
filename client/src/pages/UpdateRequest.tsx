@@ -23,56 +23,47 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { v4 as uuid } from "uuid";
-import { faker } from "@faker-js/faker";
-
-const updateRequests: {
-  id: string;
-  reviewer: string;
-  status: string;
-  contentType: string;
-  requestedAt: string;
-  reviewedAt: string;
-  fieldsChanged: number;
-}[] = Array.from({ length: 100 }, () => {
-  const status = faker.number.int({ min: 1, max: 3 });
-
-  return {
-    id: uuid(),
-    reviewer: faker.person.fullName(),
-    status: status === 1 ? "Pending" : status === 2 ? "Approved" : "Rejected",
-    contentType: status === 3 ? "userProfileContent" : "acadProfileContent",
-    requestedAt: faker.date.past().toLocaleDateString(),
-    reviewedAt: status === 1 ? "" : faker.date.past().toLocaleDateString(),
-    fieldsChanged: faker.number.int({ min: 1, max: 10 }),
-  };
-});
+import useUpdateRequests from "@/hooks/useUpdateRequests";
+import { IUpdateRequest } from "@/types/updateRequest.type";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router";
 
 const UpdateRequest = () => {
+  const { data } = useUpdateRequests();
+  const updateRequests = data?.data || ([] as IUpdateRequest[]);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Set how many items you want to display per page
 
   // Filter the data based on search query
-  const filteredRequests = updateRequests.filter((request) => {
-    return (
-      request.reviewer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      request.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (request.contentType === "userProfileContent" &&
-        "Personal Profile".includes(searchQuery)) ||
-      (request.contentType === "acadProfileContent" &&
-        "Academic Profile".includes(searchQuery))
-    );
-  });
 
   // Paginate data
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentRequests = filteredRequests.slice(
+  const currentRequests = updateRequests.slice(
     startIndex,
     startIndex + itemsPerPage
   );
 
-  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+  const totalPages = Math.ceil(updateRequests.length / itemsPerPage);
+
+  const renderStatus = (status: IUpdateRequest["reviewStatus"]) => {
+    switch (status) {
+      case 2:
+        return <span className="text-green-500">Approved</span>;
+      case 3:
+        return <span className="text-red-500">Rejected</span>;
+      default:
+        return <span className="text-yellow-500">Pending</span>;
+    }
+  };
+
+  const renderDate = (date?: Date) => {
+    if (!date) return "";
+
+    return format(new Date(date), "yyyy-MM-dd");
+  };
 
   return (
     <div className="space-y-6">
@@ -93,26 +84,33 @@ const UpdateRequest = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Reviewer</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead>Content Type</TableHead>
                 <TableHead>Fields Changed</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Requested At</TableHead>
                 <TableHead>Reviewed At</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentRequests.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell>{request.reviewer || "Pending"}</TableCell>
-                  <TableCell>{request.status}</TableCell>
+                <TableRow key={request._id}>
+                  <TableCell>
+                    {request.reviewerProfile.firstName}{" "}
+                    {request.reviewerProfile.lastName}
+                  </TableCell>
                   <TableCell>
                     {request.contentType === "userProfileContent"
                       ? "Personal Profile"
                       : "Academic Profile"}
                   </TableCell>
-                  <TableCell>{request.fieldsChanged}</TableCell>
-                  <TableCell>{request.requestedAt}</TableCell>
-                  <TableCell>{request.reviewedAt || "Pending"}</TableCell>
+                  <TableCell>0</TableCell>
+                  <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
+                  <TableCell>{renderDate(request.requestedAt)}</TableCell>
+                  <TableCell>{renderDate(request.reviewedAt)}</TableCell>
+                  <TableCell>
+                    <Link to={`/update-request/${request._id}`}>View</Link>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

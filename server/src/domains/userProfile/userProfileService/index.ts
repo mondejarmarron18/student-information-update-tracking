@@ -34,8 +34,18 @@ export default class UserProfileService {
     return this.userProfileRepository.getUserProfileById(id);
   };
 
-  getUserProfileByUserId = (userId: IUserProfile["userId"]) => {
-    return this.userProfileRepository.getUserProfileByUserId(userId);
+  getUserProfileByUserId = async (userId: IUserProfile["userId"]) => {
+    const userProfile = await this.userProfileRepository.getUserProfileByUserId(
+      userId
+    );
+
+    if (!userProfile) {
+      CustomError.notFound({
+        details: "User's profile does not exist",
+      });
+    }
+
+    return userProfile;
   };
 
   updateUserProfile = async (

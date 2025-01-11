@@ -71,3 +71,7 @@
     @apply h-full overflow-auto;
   }
 }
+
+.rdp-vhidden {
+  @apply hidden;
+}

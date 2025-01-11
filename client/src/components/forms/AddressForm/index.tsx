@@ -18,16 +18,31 @@ import { useEffect, useMemo } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import _ from "lodash";
 
+type AddressKey = keyof Omit<AddressFormProps, "isAddressSame">;
+
 const RegisterForm = (
   props: FormProps<Omit<AddressFormProps, "isAddressSame">>
 ) => {
   const { form } = useAddressForm();
   const isAddressSame = form.watch("isAddressSame");
 
+  useEffect(() => {
+    const data = props.values;
+
+    if (data) {
+      Object.entries(data).forEach(([key, value]) => {
+        form.setValue(
+          key as keyof AddressFormProps,
+          value as AddressFormProps["permanent"]
+        );
+      });
+    }
+  }, [props.values]);
+
   // set present address to permanent address
   useEffect(() => {
     if (isAddressSame) {
-      form.setValue("present", form.getValues("permanent"));
+      form.setValue("current", form.getValues("permanent"));
     }
   }, [form, isAddressSame]);
 
@@ -36,56 +51,54 @@ const RegisterForm = (
   };
 
   const RenderFields = useMemo(() => {
-    return ({ address }: { address: "permanent" | "present" }) => {
-      return (
-        <div className="grid grid-cols-2 gap-6">
-          {formFields.map((formField) => {
-            const fieldName = formField.name;
+    return ({ address }: { address: AddressKey }) => (
+      <div className="grid grid-cols-2 gap-6">
+        {formFields.map((formField) => {
+          const fieldName = formField.name;
 
-            if (!fieldName.includes(address)) return null;
+          if (!fieldName.includes(address)) return null;
 
-            return (
-              <FormField
-                key={fieldName}
-                control={form.control}
-                name={fieldName as keyof AddressFormProps}
-                render={({ field }) => (
-                  <FormItem
-                    className={cn("", {
-                      "col-span-2": formField.type === "textarea",
-                    })}
-                  >
-                    <FormLabel>
-                      {formField.label}{" "}
-                      <span className="opacity-50 italic">
-                        {formField.optional && "(Optional)"}
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      {formField.type === "textarea" ? (
-                        <Textarea
-                          placeholder={formField.placeholder}
-                          {...field}
-                          value={field.value.toString()}
-                        />
-                      ) : (
-                        <Input
-                          type={formField.type}
-                          placeholder={formField.placeholder}
-                          {...field}
-                          value={field.value.toString()}
-                        />
-                      )}
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            );
-          })}
-        </div>
-      );
-    };
+          return (
+            <FormField
+              key={fieldName}
+              control={form.control}
+              name={fieldName as AddressKey}
+              render={({ field }) => (
+                <FormItem
+                  className={cn("", {
+                    "col-span-2": formField.type === "textarea",
+                  })}
+                >
+                  <FormLabel>
+                    {formField.label}{" "}
+                    <span className="opacity-50 italic">
+                      {formField.optional && "(Optional)"}
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    {formField.type === "textarea" ? (
+                      <Textarea
+                        placeholder={formField.placeholder}
+                        {...field}
+                        value={field.value.toString()}
+                      />
+                    ) : (
+                      <Input
+                        type={formField.type}
+                        placeholder={formField.placeholder}
+                        {...field}
+                        value={field.value.toString()}
+                      />
+                    )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          );
+        })}
+      </div>
+    );
   }, [form.control]);
 
   return (
@@ -111,7 +124,7 @@ const RegisterForm = (
                 />
               </FormControl>
               <div className="space-y-1 leading-none">
-                <FormLabel>Present address is the same as permanent</FormLabel>
+                <FormLabel>Current address is the same as permanent</FormLabel>
               </div>
             </FormItem>
           )}
@@ -122,8 +135,8 @@ const RegisterForm = (
             hidden: isAddressSame,
           })}
         >
-          <h2 className="text-xl font-bold">Present Address</h2>
-          <RenderFields address="present" />
+          <h2 className="text-xl font-bold">Current Address</h2>
+          <RenderFields address="current" />
         </div>
 
         <div className="mt-2 flex gap-2">

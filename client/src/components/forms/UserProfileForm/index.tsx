@@ -18,9 +18,15 @@ import { MdInfoOutline } from "react-icons/md";
 import Tooltip from "@/components/common/Tooltip";
 import { useMemo } from "react";
 import DatePicker from "@/components/common/DatePicker";
+import useUserProfileValues from "./useUserProfileValues";
 
 const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
   const { form } = useUserProfileForm();
+
+  useUserProfileValues({
+    values: props.values,
+    form,
+  });
 
   const onSubmit = (values: UserProfileFormProps) => {
     props.onSubmit(values);
