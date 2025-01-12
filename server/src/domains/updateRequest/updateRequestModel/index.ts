@@ -84,15 +84,6 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
   }
 );
 
-// Hooks
-updateRequestSchema.pre("save", function (next) {
-  if (!this.isNew && this.isModified("reviewStatus")) {
-    this.reviewedAt = new Date();
-  }
-
-  next();
-});
-
 // Models
 const UpdateRequestModel = model<IUpdateRequest>(
   schemaName.UPDATE_REQUEST,

@@ -26,8 +26,8 @@ import {
 import useUpdateRequests from "@/hooks/useUpdateRequests";
 import { IUpdateRequest } from "@/types/updateRequest.type";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import { IUserProfile } from "@/hooks/useUserProfile";
 
 const UpdateRequest = () => {
   const { data } = useUpdateRequests();
@@ -65,6 +65,42 @@ const UpdateRequest = () => {
     return format(new Date(date), "yyyy-MM-dd");
   };
 
+  const renderChangesCount = (changes: IUpdateRequest["content"]) => {
+    let changesCount = 0;
+
+    // Helper function to recursively check for changes in nested objects
+    const compareValues = (
+      prevValue: IUpdateRequest,
+      currentValue: IUserProfile
+    ): boolean => {
+      if (
+        typeof prevValue === "object" &&
+        prevValue !== null &&
+        typeof currentValue === "object" &&
+        currentValue !== null
+      ) {
+        // If both are objects, recursively compare their properties
+        return (
+          renderChangesCount({
+            previous: prevValue,
+            current: currentValue,
+          }) > 0
+        ); // Return true if there are changes in the nested object
+      }
+      return prevValue !== currentValue; // Direct comparison for primitive values
+    };
+
+    Object.entries(changes.previous).forEach(([key, value]) => {
+      const changedValue = changes.current[key as keyof IUserProfile];
+
+      if (compareValues(value, changedValue)) {
+        changesCount++;
+      }
+    });
+
+    return changesCount;
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -84,11 +120,11 @@ const UpdateRequest = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Reviewer</TableHead>
-                <TableHead>Content Type</TableHead>
-                <TableHead>Fields Changed</TableHead>
+                <TableHead>Update Type</TableHead>
+                <TableHead>Updates Count</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Requested At</TableHead>
-                <TableHead>Reviewed At</TableHead>
+                <TableHead>Date Requested</TableHead>
+                <TableHead>Date Reviewed</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -104,7 +140,7 @@ const UpdateRequest = () => {
                       ? "Personal Profile"
                       : "Academic Profile"}
                   </TableCell>
-                  <TableCell>0</TableCell>
+                  <TableCell>{renderChangesCount(request.content)}</TableCell>
                   <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
                   <TableCell>{renderDate(request.requestedAt)}</TableCell>
                   <TableCell>{renderDate(request.reviewedAt)}</TableCell>

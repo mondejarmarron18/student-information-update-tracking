@@ -10,7 +10,7 @@ import { IconType } from "react-icons/lib";
 import { routePaths } from "@/routes";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/utils/api";
-import { useLayoutEffect, useState } from "react";
+import { memo, useLayoutEffect, useState } from "react";
 import { UserProfile } from "@/types/userProfile.type";
 import { useLocation, useNavigate } from "react-router";
 import screenSize from "@/utils/screenSize";
@@ -54,17 +54,8 @@ const NavigationBar = () => {
     queryKey: ["user-profile"],
     queryFn: () => api.get("/user-profiles/me"),
   });
-  const { data: AcadProfileData } = useQuery({
-    queryKey: ["academic-profile"],
-    queryFn: () => api.get("/academic-profiles/me"),
-  });
-  const { data: userAccount } = useQuery({
-    queryKey: ["user-account"],
-    queryFn: () => api.get("/users/me"),
-  });
   const [navCollapsed, setNavCollapsed] = useState(true);
   const userProfile: UserProfile = userProfileData?.data;
-  const acadProfile: unknown = AcadProfileData?.data;
 
   useLayoutEffect(() => {
     window.addEventListener("resize", () => {
@@ -73,8 +64,6 @@ const NavigationBar = () => {
       }
     });
   }, []);
-
-  console.log({ userProfile, acadProfile, userAccount });
 
   const toggleNavCollapsed = () => {
     setNavCollapsed((prev) => !prev);
@@ -180,4 +169,4 @@ const NavigationBar = () => {
   );
 };
 
-export default NavigationBar;
+export default memo(NavigationBar);

@@ -7,7 +7,8 @@ import { Toaster } from "./components/ui/toaster";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
+      staleTime: 1000,
     },
   },
 });
@@ -17,7 +18,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AccessTokenProvider>
         <RouterProvider router={routes} />
-        <Toaster  />
+        <Toaster />
       </AccessTokenProvider>
     </QueryClientProvider>
   );

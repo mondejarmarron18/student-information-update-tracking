@@ -50,9 +50,11 @@ const Header = () => {
             <MdNotifications className="w-5 h-5" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col overflow-hidden p-0 w-80">
+        <PopoverContent className="flex flex-col p-4 w-80 space-y-2">
           {notifications.length === 0 ? (
-            <div className="text-center text-sm p-2">No new notifications</div>
+            <div className="text-center text-sm text-gray-400">
+              No new notifications
+            </div>
           ) : (
             notifications.map((notification) => (
               <div
@@ -62,7 +64,7 @@ const Header = () => {
                 <div className="font-semibold text-sm text-gray-300">
                   {notification.title}
                 </div>
-                <div className={cn("text-xs text-gray-400 line-clamp-2")}>
+                <div className="text-xs text-gray-400 line-clamp-2">
                   {notification.description}
                 </div>
                 <div className="text-xs text-gray-500">

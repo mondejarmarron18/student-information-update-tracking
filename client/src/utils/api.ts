@@ -1,14 +1,22 @@
-import axios from "axios";
+import axios, { AxiosError, CreateAxiosDefaults } from "axios";
 import config from "./config";
 import cookie from "./cookie";
 
-const api = axios.create({
+const axiosDefaults: CreateAxiosDefaults = {
   baseURL: config.API_URL,
   headers: {
     "Content-Type": "application/json",
   },
   withCredentials: true,
+};
+
+export const apiWithoutInterceptors = axios.create(axiosDefaults);
+export const apiWithoutCredentials = axios.create({
+  ...axiosDefaults,
+  withCredentials: false,
 });
+
+const api = axios.create(axiosDefaults);
 
 api.interceptors.response.use(
   (response) => {
@@ -20,7 +28,7 @@ api.interceptors.response.use(
 
     return rest;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );

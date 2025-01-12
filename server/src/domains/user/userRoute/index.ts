@@ -34,5 +34,6 @@ userRoute.get(
 );
 //Get own user details
 userRoute.get("/me", [authMiddleware], userController.getOwnUser);
+userRoute.head("/auth", [authMiddleware], userController.isAuthenticated);
 
 export default userRoute;

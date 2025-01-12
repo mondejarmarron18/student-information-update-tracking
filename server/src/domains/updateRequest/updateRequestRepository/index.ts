@@ -69,6 +69,11 @@ export default class updateRequestRepository {
           },
         },
       },
+      {
+        $sort: {
+          requestedAt: -1,
+        },
+      },
     ]);
   };
 
@@ -79,10 +84,10 @@ export default class updateRequestRepository {
   reviewUpdateRequest = (
     params: Pick<
       IUpdateRequest,
-      "_id" | "reviewerId" | "reviewComment" | "reviewStatus"
+      "_id" | "reviewerId" | "reviewComment" | "reviewStatus" | "reviewedAt"
     >
   ) => {
-    return this.updateRequestModel.findOneAndUpdate(
+    return this.updateRequestModel.findByIdAndUpdate(
       {
         _id: params._id,
         reviewStatus: updateRequestStatus.pending,

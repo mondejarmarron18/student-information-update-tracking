@@ -162,6 +162,7 @@ export default class UpdateRequestService {
         reviewerId,
         reviewStatus,
         reviewComment,
+        reviewedAt: new Date(),
       })
     );
 

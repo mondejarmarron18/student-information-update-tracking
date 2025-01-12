@@ -121,7 +121,7 @@ export default class UpdateRequestController {
 
     return CustomResponse.sendSuccess(res, {
       status: 200,
-      message: `Update Request Rejected`,
+      message: `Update Request Approved`,
       data: updateRequest.result,
     });
   };

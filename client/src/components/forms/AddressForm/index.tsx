@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useMemo } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import _ from "lodash";
+import useAddressValues from "./useAddressValues";
 
 type AddressKey = keyof Omit<AddressFormProps, "isAddressSame">;
 
@@ -25,19 +26,11 @@ const RegisterForm = (
 ) => {
   const { form } = useAddressForm();
   const isAddressSame = form.watch("isAddressSame");
-
-  useEffect(() => {
-    const data = props.values;
-
-    if (data) {
-      Object.entries(data).forEach(([key, value]) => {
-        form.setValue(
-          key as keyof AddressFormProps,
-          value as AddressFormProps["permanent"]
-        );
-      });
-    }
-  }, [props.values]);
+  
+  useAddressValues({
+    values: props.values,
+    form,
+  });
 
   // set present address to permanent address
   useEffect(() => {

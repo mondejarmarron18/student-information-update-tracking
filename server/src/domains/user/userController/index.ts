@@ -147,4 +147,12 @@ export default class UserController {
       data: user,
     });
   };
+
+  isAuthenticated = async (req: Request, res: Response) => {
+    if (!req.user) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    CustomResponse.sendSuccess(res);
+  };
 }
