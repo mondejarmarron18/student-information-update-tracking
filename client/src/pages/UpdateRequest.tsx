@@ -1,206 +1,126 @@
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationLink,
-  PaginationNext,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
-import useUpdateRequests from "@/hooks/useUpdateRequests";
-import { IUpdateRequest } from "@/types/updateRequest.type";
-import { format } from "date-fns";
-import { Link } from "react-router";
-import { IUserProfile } from "@/hooks/useUserProfile";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import React from "react";
+import { MdArrowBackIos } from "react-icons/md";
 
-const UpdateRequest = () => {
-  const { data } = useUpdateRequests();
-  const updateRequests = data?.data || ([] as IUpdateRequest[]);
+// Dummy data for the update request
+const dummyUpdateRequest = {
+  content: {
+    previous: {
+      firstName: "John",
+      middleName: "Doe",
+      lastName: "Smith",
+      phoneNumber: "+1234567890",
+      address: {
+        current: "123 Old Street, City, Country",
+        permanent: "456 New Avenue, City, Country",
+      },
+    },
+    current: {
+      firstName: "Jane",
+      middleName: "A.",
+      lastName: "Doe",
+      phoneNumber: "+0987654321",
+      address: {
+        current: "789 New Street, City, Country",
+        permanent: "123 Old Avenue, City, Country",
+      },
+    },
+  },
+  reviewComment: "Please review the changes in the user's profile details.",
+  requestedAt: new Date("2025-01-10T10:00:00Z"),
+  reviewedAt: null,
+};
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Set how many items you want to display per page
+const UpdateRequestPage = () => {
+  const { content, reviewComment, requestedAt, reviewedAt } =
+    dummyUpdateRequest;
 
-  // Filter the data based on search query
-
-  // Paginate data
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentRequests = updateRequests.slice(
-    startIndex,
-    startIndex + itemsPerPage
+  // Helper to render each field
+  const renderField = (label: string, previous: string, current: string) => (
+    <div className="mb-4">
+      <div className="font-semibold text-gray-700">{label}</div>
+      <div className="flex items-center gap-4">
+        <div className="opacity-60">{previous}</div>
+        <MdArrowBackIos className="rotate-180" />
+        <div>{current}</div>
+      </div>
+    </div>
   );
 
-  const totalPages = Math.ceil(updateRequests.length / itemsPerPage);
-
-  const renderStatus = (status: IUpdateRequest["reviewStatus"]) => {
-    switch (status) {
-      case 2:
-        return <span className="text-green-500">Approved</span>;
-      case 3:
-        return <span className="text-red-500">Rejected</span>;
-      default:
-        return <span className="text-yellow-500">Pending</span>;
-    }
-  };
-
-  const renderDate = (date?: Date) => {
-    if (!date) return "";
-
-    return format(new Date(date), "yyyy-MM-dd");
-  };
-
-  const renderChangesCount = (changes: IUpdateRequest["content"]) => {
-    let changesCount = 0;
-
-    // Helper function to recursively check for changes in nested objects
-    const compareValues = (
-      prevValue: IUpdateRequest,
-      currentValue: IUserProfile
-    ): boolean => {
-      if (
-        typeof prevValue === "object" &&
-        prevValue !== null &&
-        typeof currentValue === "object" &&
-        currentValue !== null
-      ) {
-        // If both are objects, recursively compare their properties
-        return (
-          renderChangesCount({
-            previous: prevValue,
-            current: currentValue,
-          }) > 0
-        ); // Return true if there are changes in the nested object
-      }
-      return prevValue !== currentValue; // Direct comparison for primitive values
-    };
-
-    Object.entries(changes.previous).forEach(([key, value]) => {
-      const changedValue = changes.current[key as keyof IUserProfile];
-
-      if (compareValues(value, changedValue)) {
-        changesCount++;
-      }
-    });
-
-    return changesCount;
-  };
-
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader></CardHeader>
-        <CardContent>
-          <div className="flex items-center mb-4">
-            <Input
-              placeholder="Search by requester, reviewer, or status..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-1/3 mr-4"
-            />
+    <div className="p-4">
+      <Card className="p-6">
+        <h2 className="text-xl font-bold">Update Request Details</h2>
+
+        <p className="my-2 text-gray-600">
+          Requested At: {requestedAt.toLocaleString()}
+        </p>
+
+        <p className="my-2 text-gray-600">
+          Reviewed At:{" "}
+          {reviewedAt
+            ? new Date(reviewedAt).toLocaleString()
+            : "Not yet reviewed"}
+        </p>
+
+        <div className="my-4">
+          <div className="font-semibold">Review Comment:</div>
+          <p className="text-gray-500">{reviewComment}</p>
+        </div>
+
+        <Card className="p-4 my-4">
+          <div className="font-semibold text-lg">User Profile Changes</div>
+
+          {/* Render Fields */}
+          {renderField(
+            "First Name",
+            content.previous.firstName,
+            content.current.firstName
+          )}
+          {renderField(
+            "Middle Name",
+            content.previous.middleName,
+            content.current.middleName
+          )}
+          {renderField(
+            "Last Name",
+            content.previous.lastName,
+            content.current.lastName
+          )}
+          {renderField(
+            "Phone Number",
+            content.previous.phoneNumber,
+            content.current.phoneNumber
+          )}
+
+          {/* Address Section */}
+          <div className="font-semibold text-lg my-4">Address</div>
+          <div className="grid grid-cols-2 gap-8">
+            <div>
+              <div className="font-semibold">Current Address</div>
+              <div>{content.current.address.current}</div>
+            </div>
+            <div>
+              <div className="font-semibold">Permanent Address</div>
+              <div>{content.current.address.permanent}</div>
+            </div>
           </div>
+        </Card>
 
-          {/* Table */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Reviewer</TableHead>
-                <TableHead>Update Type</TableHead>
-                <TableHead>Updates Count</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date Requested</TableHead>
-                <TableHead>Date Reviewed</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentRequests.map((request) => (
-                <TableRow key={request._id}>
-                  <TableCell>
-                    {request.reviewerProfile.firstName}{" "}
-                    {request.reviewerProfile.lastName}
-                  </TableCell>
-                  <TableCell>
-                    {request.contentType === "userProfileContent"
-                      ? "Personal Profile"
-                      : "Academic Profile"}
-                  </TableCell>
-                  <TableCell>{renderChangesCount(request.content)}</TableCell>
-                  <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
-                  <TableCell>{renderDate(request.requestedAt)}</TableCell>
-                  <TableCell>{renderDate(request.reviewedAt)}</TableCell>
-                  <TableCell>
-                    <Link to={`/update-request/${request._id}`}>View</Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {/* ShadCN Pagination */}
-        </CardContent>
-        <CardFooter>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={() => {
-                    if (currentPage > 1) {
-                      setCurrentPage(currentPage - 1);
-                    }
-                  }}
-                />
-              </PaginationItem>
-
-              {/* Render page numbers */}
-              {[...Array(totalPages).keys()].map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    onClick={() => setCurrentPage(index + 1)}
-                    isActive={currentPage === index + 1}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={() => {
-                    if (currentPage < totalPages) {
-                      setCurrentPage(currentPage + 1);
-                    }
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </CardFooter>
+        {/* Action Buttons */}
+        <div className="flex gap-4 mt-6">
+          <Button
+            variant="destructive"
+            onClick={() => alert("Request Rejected")}
+          >
+            Reject
+          </Button>
+          <Button onClick={() => alert("Request Approved")}>Approve</Button>
+        </div>
       </Card>
     </div>
   );
 };
 
-export default UpdateRequest;
+export default UpdateRequestPage;

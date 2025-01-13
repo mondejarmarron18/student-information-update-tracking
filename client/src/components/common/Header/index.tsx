@@ -50,18 +50,23 @@ const Header = () => {
             <MdNotifications className="w-5 h-5" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col p-4 w-80 space-y-2">
+        <PopoverContent className="flex flex-col w-80 p-0 overflow-hidden">
           {notifications.length === 0 ? (
             <div className="text-center text-sm text-gray-400">
               No new notifications
             </div>
           ) : (
-            notifications.map((notification) => (
+            notifications.map((notification, index) => (
               <div
                 key={notification.id}
-                className="flex flex-col border-t space-y-1 hover:bg-gray-500/20 px-4 py-3 cursor-pointer transition-colors"
+                className={cn(
+                  "flex flex-col space-y-1 p-4 hover:bg-gray-500/20 py-3 cursor-pointer transition-colors",
+                  {
+                    "border-t": index !== 0,
+                  }
+                )}
               >
-                <div className="font-semibold text-sm text-gray-300">
+                <div className="font-semibold text-xs text-gray-300">
                   {notification.title}
                 </div>
                 <div className="text-xs text-gray-400 line-clamp-2">

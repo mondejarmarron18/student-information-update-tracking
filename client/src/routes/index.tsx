@@ -18,6 +18,7 @@ const EmailVerificationSent = lazy(
 const EmailVerification = lazy(() => import("../pages/EmailVerification"));
 const Dashboard = lazy(() => import("../pages/Dashboard"));
 const UserAccount = lazy(() => import("../pages/UserAccount"));
+const UpdateRequests = lazy(() => import("../pages/UpdateRequests"));
 const UpdateRequest = lazy(() => import("../pages/UpdateRequest"));
 const Conversations = lazy(() => import("../pages/Conversations"));
 
@@ -80,6 +81,11 @@ export const routePaths = {
   updateRequests: {
     path: "/update-requests",
     name: "Update Requests",
+    element: UpdateRequests,
+  },
+  updateRequest: {
+    path: "/:updateRequestId",
+    name: "Update Request",
     element: UpdateRequest,
   },
   conversations: {
@@ -106,6 +112,10 @@ const privateRoutes = [
   routePaths.academicProfile,
   routePaths.updateRequests,
   routePaths.conversations,
+  {
+    ...routePaths.updateRequest,
+    path: routePaths.updateRequests.path + routePaths.updateRequest.path,
+  },
 ];
 
 const routes = createBrowserRouter([
