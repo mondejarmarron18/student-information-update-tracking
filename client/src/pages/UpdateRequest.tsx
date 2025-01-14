@@ -1,124 +1,193 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import React from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { updateRequestStatus } from "@/constants/updateRequest";
+import useUpdateRequest from "@/hooks/useUpdateRequest";
+import { cn } from "@/lib/utils";
+import { routePaths } from "@/routes";
+import { IUpdateRequest } from "@/types/updateRequest.type";
+import { toDateString } from "@/utils/fomatter";
+import getContentChanges from "@/utils/getContentChanges";
+import { isArray } from "@/utils/validator";
+import _ from "lodash";
 import { MdArrowBackIos } from "react-icons/md";
-
-// Dummy data for the update request
-const dummyUpdateRequest = {
-  content: {
-    previous: {
-      firstName: "John",
-      middleName: "Doe",
-      lastName: "Smith",
-      phoneNumber: "+1234567890",
-      address: {
-        current: "123 Old Street, City, Country",
-        permanent: "456 New Avenue, City, Country",
-      },
-    },
-    current: {
-      firstName: "Jane",
-      middleName: "A.",
-      lastName: "Doe",
-      phoneNumber: "+0987654321",
-      address: {
-        current: "789 New Street, City, Country",
-        permanent: "123 Old Avenue, City, Country",
-      },
-    },
-  },
-  reviewComment: "Please review the changes in the user's profile details.",
-  requestedAt: new Date("2025-01-10T10:00:00Z"),
-  reviewedAt: null,
-};
+import { useNavigate, useParams } from "react-router";
 
 const UpdateRequestPage = () => {
-  const { content, reviewComment, requestedAt, reviewedAt } =
-    dummyUpdateRequest;
+  const navigate = useNavigate();
+  const { updateRequestId } = useParams();
+  const { data } = useUpdateRequest(updateRequestId || "");
+  const updateRequest = data?.data;
 
-  // Helper to render each field
-  const renderField = (label: string, previous: string, current: string) => (
-    <div className="mb-4">
-      <div className="font-semibold text-gray-700">{label}</div>
-      <div className="flex items-center gap-4">
-        <div className="opacity-60">{previous}</div>
-        <MdArrowBackIos className="rotate-180" />
-        <div>{current}</div>
-      </div>
-    </div>
-  );
+  const renderChanges = (changes: Record<string, unknown>) => {
+    return Object.entries(changes).map(([key, val]) => {
+      if (!isArray(val)) {
+        // If the value is an object, recursively render its changes
+        return (
+          <Card key={key}>
+            <CardHeader>
+              <div className="font-semibold">{_.startCase(key)}</div>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {renderChanges(val as Record<string, unknown>)}
+            </CardContent>
+          </Card>
+        );
+      }
 
-  return (
-    <div className="p-4">
-      <Card className="p-6">
-        <h2 className="text-xl font-bold">Update Request Details</h2>
-
-        <p className="my-2 text-gray-600">
-          Requested At: {requestedAt.toLocaleString()}
-        </p>
-
-        <p className="my-2 text-gray-600">
-          Reviewed At:{" "}
-          {reviewedAt
-            ? new Date(reviewedAt).toLocaleString()
-            : "Not yet reviewed"}
-        </p>
-
-        <div className="my-4">
-          <div className="font-semibold">Review Comment:</div>
-          <p className="text-gray-500">{reviewComment}</p>
-        </div>
-
-        <Card className="p-4 my-4">
-          <div className="font-semibold text-lg">User Profile Changes</div>
-
-          {/* Render Fields */}
-          {renderField(
-            "First Name",
-            content.previous.firstName,
-            content.current.firstName
-          )}
-          {renderField(
-            "Middle Name",
-            content.previous.middleName,
-            content.current.middleName
-          )}
-          {renderField(
-            "Last Name",
-            content.previous.lastName,
-            content.current.lastName
-          )}
-          {renderField(
-            "Phone Number",
-            content.previous.phoneNumber,
-            content.current.phoneNumber
-          )}
-
-          {/* Address Section */}
-          <div className="font-semibold text-lg my-4">Address</div>
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <div className="font-semibold">Current Address</div>
-              <div>{content.current.address.current}</div>
-            </div>
-            <div>
-              <div className="font-semibold">Permanent Address</div>
-              <div>{content.current.address.permanent}</div>
+      if (isArray(val[1])) {
+        return (
+          <div key={key} className="flex flex-col gap-1">
+            <div className="font-semibold text-sm">{_.startCase(key)}</div>
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-1">
+                {(val as string[][])[0].map((v) => (
+                  <div key={v as string} className="px-4 py-1 border rounded">
+                    {v as string}
+                  </div>
+                ))}
+              </div>
+              <MdArrowBackIos className="rotate-180" />
+              <div className="flex gap-2">
+                {val[1].length > 0 ? (
+                  val[1].map((v) => (
+                    <div key={v as string} className="px-4 py-1 border rounded">
+                      {v as string}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-1 text-sm text-gray-500">Empty</div>
+                )}
+              </div>
             </div>
           </div>
-        </Card>
+        );
+      }
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 mt-6">
-          <Button
-            variant="destructive"
-            onClick={() => alert("Request Rejected")}
-          >
-            Reject
-          </Button>
-          <Button onClick={() => alert("Request Approved")}>Approve</Button>
+      // If it's a simple value, just render it
+      return (
+        <div key={key} className="flex flex-col gap-1">
+          <div className="font-semibold text-sm">{_.startCase(key)}</div>
+          <div className="flex items-center gap-4">
+            <div
+              className={cn("opacity-60 px-4 py-1 border rounded", {
+                "border-none text-sm text-gray-500": !val[0],
+              })}
+            >
+              {(val[0] as string) || "Empty"}
+            </div>
+            <MdArrowBackIos className="rotate-180" size={10} />
+            <div
+              className={cn("px-4 py-1 border rounded", {
+                "border-none text-sm text-gray-500": !val[1],
+              })}
+            >
+              {(val[1] as string) || "Empty"}
+            </div>
+          </div>
         </div>
+      );
+    });
+  };
+
+  const renderStatus = (status: IUpdateRequest["reviewStatus"]) => {
+    switch (status) {
+      case 2:
+        return (
+          <Badge variant={"outline"} className="text-green-500">
+            Approved
+          </Badge>
+        );
+      case 3:
+        return (
+          <Badge variant={"outline"} className="text-red-500">
+            Rejected
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant={"outline"} className="text-yellow-500">
+            Pending
+          </Badge>
+        );
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Button
+        onClick={() => navigate(routePaths.updateRequests.path)}
+        variant={"outline"}
+        className="mb-4 self-start"
+      >
+        <MdArrowBackIos size={10} />
+        Update Requests
+      </Button>
+      <div className="flex justify-between flex-wrap gap-4">
+        <div>
+          <div className="font-semibold">Date Requested</div>
+          <p className="text-gray-500">
+            {toDateString(updateRequest?.requestedAt) || "-"}
+          </p>
+        </div>
+
+        <div>
+          <div className="font-semibold">Date Reviewed</div>
+          <p className="text-gray-500">
+            {toDateString(updateRequest?.reviewedAt) || "-"}
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div className="font-semibold">Comment</div>
+        <p className="text-gray-500">{updateRequest?.reviewComment || "-"}</p>
+      </div>
+
+      <Card className="min-h-[250px]">
+        <CardHeader>
+          <div className="font-semibold flex w-fit gap-2">
+            Fields Changes
+            {renderStatus(updateRequest?.reviewStatus || 1)}
+          </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          {updateRequest?.content &&
+          Object.keys(
+            getContentChanges(
+              updateRequest.content.previous,
+              updateRequest.content.current
+            )
+          ).length ? (
+            renderChanges(
+              getContentChanges(
+                updateRequest.content.previous,
+                updateRequest.content.current
+              )
+            )
+          ) : (
+            <div className="text-gray-500 m-auto mt-[50px]">
+              No changes found
+            </div>
+          )}
+        </CardContent>
       </Card>
+
+      <div className="flex gap-4 justify-end">
+        <Button
+          disabled={updateRequest?.reviewStatus !== updateRequestStatus.PENDING}
+          variant="destructive"
+          onClick={() => alert("Request Rejected")}
+        >
+          Reject
+        </Button>
+        <Button
+          disabled={updateRequest?.reviewStatus !== updateRequestStatus.PENDING}
+          onClick={() => alert("Request Approved")}
+        >
+          Approve
+        </Button>
+      </div>
     </div>
   );
 };

@@ -58,3 +58,8 @@ export const isValidPassword = (password: string) => {
     hasLength(password)
   );
 };
+
+export const isObject = (val: unknown): val is Record<string, unknown> =>
+  typeof val === "object" && val !== null;
+
+export const isArray = (val: unknown): val is unknown[] => Array.isArray(val);

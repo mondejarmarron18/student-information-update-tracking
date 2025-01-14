@@ -25,10 +25,9 @@ import {
 } from "@/components/ui/pagination";
 import useUpdateRequests from "@/hooks/useUpdateRequests";
 import { IUpdateRequest } from "@/types/updateRequest.type";
-import { format } from "date-fns";
 import { Link } from "react-router";
-import { IUserProfile } from "@/hooks/useUserProfile";
 import { routePaths } from "@/routes";
+import { toDateNumeric } from "@/utils/fomatter";
 
 const UpdateRequests = () => {
   const { data } = useUpdateRequests();
@@ -60,151 +59,105 @@ const UpdateRequests = () => {
     }
   };
 
-  const renderDate = (date?: Date) => {
-    if (!date) return "";
-
-    return format(new Date(date), "yyyy-MM-dd");
-  };
-
-  const renderChangesCount = (changes: IUpdateRequest["content"]) => {
-    let changesCount = 0;
-
-    // Helper function to recursively check for changes in nested objects
-    const compareValues = (
-      prevValue: IUpdateRequest,
-      currentValue: IUserProfile
-    ): boolean => {
-      if (
-        typeof prevValue === "object" &&
-        prevValue !== null &&
-        typeof currentValue === "object" &&
-        currentValue !== null
-      ) {
-        // If both are objects, recursively compare their properties
-        return (
-          renderChangesCount({
-            previous: prevValue,
-            current: currentValue,
-          }) > 0
-        ); // Return true if there are changes in the nested object
-      }
-      return prevValue !== currentValue; // Direct comparison for primitive values
-    };
-
-    Object.entries(changes.previous).forEach(([key, value]) => {
-      const changedValue = changes.current[key as keyof IUserProfile];
-
-      if (compareValues(value, changedValue)) {
-        changesCount++;
-      }
-    });
-
-    return changesCount;
-  };
-
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader></CardHeader>
-        <CardContent>
-          <div className="flex items-center mb-4">
-            <Input
-              placeholder="Search by requester, reviewer, or status..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-1/3 mr-4"
-            />
-          </div>
+    <Card>
+      <CardHeader></CardHeader>
+      <CardContent>
+        <div className="flex items-center mb-4">
+          <Input
+            placeholder="Search by requester, reviewer, or status..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-1/3 mr-4"
+          />
+        </div>
 
-          {/* Table */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Reviewer</TableHead>
-                <TableHead>Update Type</TableHead>
-                <TableHead>Updates Count</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date Requested</TableHead>
-                <TableHead>Date Reviewed</TableHead>
-                <TableHead>Actions</TableHead>
+        {/* Table */}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Reviewer</TableHead>
+              <TableHead>Update Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Date Requested</TableHead>
+              <TableHead>Date Reviewed</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentRequests.map((request) => (
+              <TableRow key={request._id}>
+                <TableCell>
+                  {request.reviewerProfile.firstName}{" "}
+                  {request.reviewerProfile.lastName}
+                </TableCell>
+                <TableCell>
+                  {request.contentType === "userProfileContent"
+                    ? "Personal Profile"
+                    : "Academic Profile"}
+                </TableCell>
+                <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
+                <TableCell>{toDateNumeric(request.requestedAt)}</TableCell>
+                <TableCell>
+                  {toDateNumeric(request.reviewedAt) || "-"}
+                </TableCell>
+                <TableCell>
+                  <Link to={`${routePaths.updateRequests.path}/${request._id}`}>
+                    View
+                  </Link>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentRequests.map((request) => (
-                <TableRow key={request._id}>
-                  <TableCell>
-                    {request.reviewerProfile.firstName}{" "}
-                    {request.reviewerProfile.lastName}
-                  </TableCell>
-                  <TableCell>
-                    {request.contentType === "userProfileContent"
-                      ? "Personal Profile"
-                      : "Academic Profile"}
-                  </TableCell>
-                  <TableCell>{renderChangesCount(request.content)}</TableCell>
-                  <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
-                  <TableCell>{renderDate(request.requestedAt)}</TableCell>
-                  <TableCell>{renderDate(request.reviewedAt)}</TableCell>
-                  <TableCell>
-                    <Link
-                      to={`${routePaths.updateRequests.path}/${request._id}`}
-                    >
-                      View
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+            ))}
+          </TableBody>
+        </Table>
 
-          {/* ShadCN Pagination */}
-        </CardContent>
-        <CardFooter>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
+        {/* ShadCN Pagination */}
+      </CardContent>
+      <CardFooter>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={() => {
+                  if (currentPage > 1) {
+                    setCurrentPage(currentPage - 1);
+                  }
+                }}
+              />
+            </PaginationItem>
+
+            {/* Render page numbers */}
+            {[...Array(totalPages).keys()].map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
                   href="#"
-                  onClick={() => {
-                    if (currentPage > 1) {
-                      setCurrentPage(currentPage - 1);
-                    }
-                  }}
-                />
+                  onClick={() => setCurrentPage(index + 1)}
+                  isActive={currentPage === index + 1}
+                >
+                  {index + 1}
+                </PaginationLink>
               </PaginationItem>
+            ))}
 
-              {/* Render page numbers */}
-              {[...Array(totalPages).keys()].map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    onClick={() => setCurrentPage(index + 1)}
-                    isActive={currentPage === index + 1}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
 
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={() => {
-                    if (currentPage < totalPages) {
-                      setCurrentPage(currentPage + 1);
-                    }
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </CardFooter>
-      </Card>
-    </div>
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={() => {
+                  if (currentPage < totalPages) {
+                    setCurrentPage(currentPage + 1);
+                  }
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </CardFooter>
+    </Card>
   );
 };
 
