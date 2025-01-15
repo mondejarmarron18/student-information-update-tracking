@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import AnimatedSpinner from "../AnimatedSpinner";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -38,20 +38,30 @@ type FormData = z.infer<typeof formSchema>;
 
 const RejectUpdateRequestDialog = (props: Props) => {
   const { trigger, updateRequestId } = props;
-
-  const { mutate, isPending } = useRejectUpdateRequest({
+  const { mutate, isPending, isSuccess } = useRejectUpdateRequest({
     updateRequestId,
   });
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setIsOpen(false);
+    }
+
+    return () => {
+      form.reset();
+    };
+  }, [form, isSuccess]);
 
   const onSubmit = (data: FormData) => {
     mutate(data.reviewComment);
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">

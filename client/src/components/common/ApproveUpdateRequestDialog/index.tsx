@@ -11,7 +11,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import AnimatedSpinner from "../AnimatedSpinner";
 import useApproveUpdateRequest from "@/hooks/useApproveUpdateRequest";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -41,16 +41,27 @@ const ApproveUpdateRequestDialog = (props: Props) => {
   const { mutate, isPending, isSuccess } = useApproveUpdateRequest({
     updateRequestId,
   });
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setIsOpen(false);
+    }
+
+    return () => {
+      form.reset();
+    };
+  }, [form, isSuccess]);
 
   const onSubmit = (data: FormData) => {
     mutate(data.reviewComment);
   };
 
   return (
-    <Dialog open={isSuccess}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
