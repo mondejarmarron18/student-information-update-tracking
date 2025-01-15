@@ -11,7 +11,6 @@ import AcadProfileService from "../../acadProfile/acadProfileService";
 import UserProfileService from "../../userProfile/userProfileService";
 import { IUserProfile } from "../../userProfile/userProfileModel";
 import { IAcadProfile } from "../../acadProfile/acadProfileModel";
-import { Types } from "mongoose";
 
 export default class UpdateRequestService {
   private updateRequestRepository: updateRequestRepository;
@@ -70,6 +69,8 @@ export default class UpdateRequestService {
           "You have a pending update request with this content type. Try again once it is approved or rejected.",
       });
     }
+
+    console.log(previousContent);
 
     const updateRequest = await x8tAsync(
       this.updateRequestRepository.createUpdateRequest({
@@ -139,20 +140,25 @@ export default class UpdateRequestService {
   ) => {
     const { _id, reviewerId, reviewStatus, reviewComment } = params;
 
-    const isAlreadyReviewed = await x8tAsync(
-      this.updateRequestRepository.isAlreadyReviewed(_id)
+    const updateReq = await x8tAsync(
+      this.updateRequestRepository.getUpdateRequestById(_id)
     );
 
-    if (isAlreadyReviewed.error) {
+    if (updateReq.error) {
       CustomError.badRequest({
-        details: isAlreadyReviewed.error,
+        details: updateReq.error,
       });
     }
 
-    // Update request not found
-    if (isAlreadyReviewed.result) {
+    if (updateReq.result?.reviewStatus !== updateRequestStatus.pending) {
       CustomError.alreadyExists({
         description: "Update request already reviewed",
+      });
+    }
+
+    if (updateReq.result?.requesterId.toString() === reviewerId.toString()) {
+      CustomError.badRequest({
+        description: "You are not authorized to review this request",
       });
     }
 
@@ -184,36 +190,20 @@ export default class UpdateRequestService {
     if (contentType === updateRequestContentType.ACAD_PROFILE) {
       const acadProfile = updateRequest.result.content.current;
 
-      acadProfile.userId = updateRequest.result.requesterId;
-
-      const updateAcadProfile = await x8tAsync(
-        this.acadProfileService.updateAcadProfileByUserId(acadProfile)
-      );
-
-      if (updateAcadProfile.error) {
-        CustomError.badRequest({
-          description: "Failed to update academic profile",
-          details: updateAcadProfile.error,
-        });
-      }
+      this.acadProfileService.updateAcadProfileByUserId({
+        ...acadProfile,
+        userId: updateRequest.result.requesterId,
+      });
     }
 
     // Update User Profile
     if (contentType === updateRequestContentType.USER_PROFILE) {
       const userProfile = updateRequest.result.content.current;
 
-      userProfile.userId = updateRequest.result.requesterId;
-
-      const updateUserProfile = await x8tAsync(
-        this.userProfileService.updateUserProfileByUserId(userProfile)
-      );
-
-      if (updateUserProfile.error) {
-        CustomError.badRequest({
-          description: "Failed to update user profile",
-          details: updateUserProfile.error,
-        });
-      }
+      this.userProfileService.updateUserProfileByUserId({
+        ...userProfile,
+        userId: updateRequest.result.requesterId,
+      });
     }
 
     return updateRequest.result;

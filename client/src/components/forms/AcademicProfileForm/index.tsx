@@ -48,6 +48,7 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
   };
 
   const RenderSpecializationInfo = () => {
+    return null;
     return (
       <div className="flex flex-col gap-2 bg-gray-500/10 p-4 rounded-lg mb-6">
         <h2 className="font-bold">Specialization</h2>

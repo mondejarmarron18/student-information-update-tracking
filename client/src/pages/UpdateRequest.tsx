@@ -1,3 +1,5 @@
+import ApproveUpdateRequestDialog from "@/components/common/ApproveUpdateRequestDialog";
+import RejectUpdateRequestDialog from "@/components/common/RejectUpdateRequestDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -16,7 +18,7 @@ import { useNavigate, useParams } from "react-router";
 const UpdateRequestPage = () => {
   const navigate = useNavigate();
   const { updateRequestId } = useParams();
-  const { data } = useUpdateRequest(updateRequestId || "");
+  const { data } = useUpdateRequest({ updateRequestId: updateRequestId! });
   const updateRequest = data?.data;
 
   const renderChanges = (changes: Record<string, unknown>) => {
@@ -118,10 +120,9 @@ const UpdateRequestPage = () => {
       <Button
         onClick={() => navigate(routePaths.updateRequests.path)}
         variant={"outline"}
-        className="mb-4 self-start"
+        className="mb-2 self-start"
       >
         <MdArrowBackIos size={10} />
-        Update Requests
       </Button>
       <div className="flex justify-between flex-wrap gap-4">
         <div>
@@ -140,14 +141,14 @@ const UpdateRequestPage = () => {
       </div>
 
       <div>
-        <div className="font-semibold">Comment</div>
+        <div className="font-semibold">Comment/Feedback</div>
         <p className="text-gray-500">{updateRequest?.reviewComment || "-"}</p>
       </div>
 
       <Card className="min-h-[250px]">
         <CardHeader>
           <div className="font-semibold flex w-fit gap-2">
-            Fields Changes
+            Requested Changes
             {renderStatus(updateRequest?.reviewStatus || 1)}
           </div>
         </CardHeader>
@@ -174,19 +175,35 @@ const UpdateRequestPage = () => {
       </Card>
 
       <div className="flex gap-4 justify-end">
-        <Button
-          disabled={updateRequest?.reviewStatus !== updateRequestStatus.PENDING}
-          variant="destructive"
-          onClick={() => alert("Request Rejected")}
-        >
-          Reject
-        </Button>
-        <Button
-          disabled={updateRequest?.reviewStatus !== updateRequestStatus.PENDING}
-          onClick={() => alert("Request Approved")}
-        >
-          Approve
-        </Button>
+        {!!updateRequestId && (
+          <RejectUpdateRequestDialog
+            updateRequestId={updateRequestId}
+            trigger={
+              <Button
+                disabled={
+                  updateRequest?.reviewStatus !== updateRequestStatus.PENDING
+                }
+                variant="destructive"
+              >
+                Reject
+              </Button>
+            }
+          />
+        )}
+        {!!updateRequestId && (
+          <ApproveUpdateRequestDialog
+            updateRequestId={updateRequestId}
+            trigger={
+              <Button
+                disabled={
+                  updateRequest?.reviewStatus !== updateRequestStatus.PENDING
+                }
+              >
+                Approve
+              </Button>
+            }
+          />
+        )}
       </div>
     </div>
   );

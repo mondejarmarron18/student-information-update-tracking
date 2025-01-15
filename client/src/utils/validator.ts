@@ -63,3 +63,5 @@ export const isObject = (val: unknown): val is Record<string, unknown> =>
   typeof val === "object" && val !== null;
 
 export const isArray = (val: unknown): val is unknown[] => Array.isArray(val);
+
+export const isDate = (val: unknown) => !isNaN(Date.parse(val as string));

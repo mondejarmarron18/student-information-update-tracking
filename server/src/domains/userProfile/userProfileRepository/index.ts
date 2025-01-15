@@ -21,7 +21,7 @@ export default class UserProfileRepository {
     });
   };
 
-  getUserProfileByUserId = (userId: IUserProfile["userId"]) => {
+  getUserProfileByUserId = async (userId: IUserProfile["userId"]) => {
     return this.userProfileModel.findOne({
       userId,
       deletedAt: null,

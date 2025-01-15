@@ -6,6 +6,7 @@ import { swaggerSetup } from "./utils/swagger/swagger";
 import userProfileRoute from "./domains/userProfile/userProfileRoute";
 import acadProfileRoute from "./domains/acadProfile/acadProfileRoute";
 import updateRequestRoute from "./domains/updateRequest/updateRequestRoute";
+import auditLogRoute from "./domains/auditLog/auditLogRoute";
 
 const routes = Router();
 
@@ -15,6 +16,7 @@ routes.use("/users", userRoute);
 routes.use("/user-profiles", userProfileRoute);
 routes.use("/academic-profiles", acadProfileRoute);
 routes.use("/update-requests", updateRequestRoute);
+routes.use("/audit-logs", auditLogRoute);
 
 // Documentation route
 routes.use("/docs", swaggerServe, swaggerSetup);

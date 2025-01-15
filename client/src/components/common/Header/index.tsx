@@ -10,8 +10,8 @@ import {
 
 const Header = () => {
   const { pathname } = useLocation();
-  const title = Object.values(routePaths).find(
-    ({ path }) => path === pathname
+  const title = Object.values(routePaths).find(({ path }) =>
+    pathname.includes(path)
   )?.name;
 
   const notifications = [

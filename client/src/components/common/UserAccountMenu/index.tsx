@@ -47,13 +47,13 @@ const UserAccountMenu = (props: Props) => {
         />
 
         {/* Status - Coming Soon */}
-        {/* <Button
-      variant="ghost"
-      size="sm"
-      className="flex items-center justify-start"
-    >
-      Active Status <Badge variant="outline">Coming soon</Badge>
-    </Button> */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center justify-start"
+        >
+          Dark/Light Mode <Badge variant="outline">Coming soon</Badge>
+        </Button>
 
         <Button
           variant="ghost"

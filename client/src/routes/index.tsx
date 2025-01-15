@@ -93,6 +93,11 @@ export const routePaths = {
     name: "Conversations",
     element: Conversations,
   },
+  auditLogs: {
+    path: "/audit-logs",
+    name: "Audit Logs",
+    element: lazy(() => import("../pages/AuditLogs")),
+  },
 } as const;
 
 const publicRoutes = [
@@ -112,6 +117,7 @@ const privateRoutes = [
   routePaths.academicProfile,
   routePaths.updateRequests,
   routePaths.conversations,
+  routePaths.auditLogs,
   {
     ...routePaths.updateRequest,
     path: routePaths.updateRequests.path + routePaths.updateRequest.path,

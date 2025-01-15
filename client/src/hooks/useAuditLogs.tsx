@@ -1,5 +1,5 @@
 import { ApiResponseSuccess } from "@/types/apiResponse.type";
-import { IUpdateRequest } from "@/types/updateRequest.type";
+import { IAuditLog } from "@/types/auditLog.type";
 import api from "@/utils/api";
 import { reactQueryError } from "@/utils/errorHandler";
 import { useQuery } from "@tanstack/react-query";
@@ -8,13 +8,13 @@ type Props = {
   enabled?: boolean;
 };
 
-const useUpdateRequests = (props?: Props) => {
+const useAuditLogs = (props?: Props) => {
   const { enabled = true } = props || {};
 
-  const { error, ...rest } = useQuery<ApiResponseSuccess<IUpdateRequest[]>>({
-    queryKey: ["update-requests"],
-    queryFn: async () => api.get("/update-requests"),
-    enabled: enabled,
+  const { error, ...rest } = useQuery<ApiResponseSuccess<IAuditLog[]>>({
+    queryKey: ["audit-logs"],
+    queryFn: async () => api.get("/audit-logs"),
+    enabled,
   });
 
   const handledError = error ? reactQueryError(error) : null;
@@ -25,4 +25,4 @@ const useUpdateRequests = (props?: Props) => {
   };
 };
 
-export default useUpdateRequests;
+export default useAuditLogs;

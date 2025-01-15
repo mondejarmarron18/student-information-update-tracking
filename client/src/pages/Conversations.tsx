@@ -8,6 +8,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { MdChat } from "react-icons/md"; // Assuming you want a chat icon for the room
+import { faker } from "@faker-js/faker";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 type Room = {
   id: number;
@@ -64,7 +67,36 @@ const Conversations = () => {
 
   return (
     <div className="flex flex-col w-full space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Conversations</h1>
+      <div className="flex gap-4">
+        {[...Array(5)].map((_, index) => {
+          const isActive = !!Math.floor(Math.random() * 2);
+
+          return (
+            <div key={index}>
+              <button
+                className={cn(
+                  "w-fit h-fit border-2 border-transparent relative rounded-full",
+                  {
+                    "border-white": isActive,
+                  }
+                )}
+              >
+                <Avatar>
+                  <AvatarImage src={faker.image.avatar()} />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                {isActive && (
+                  <div className="w-3 h-3 border-2 border-white bg-primary rounded-full absolute top-0 right-0 "></div>
+                )}
+              </button>
+
+              <button className="text-xs text-center line-clamp-1">
+                {faker.person.firstName()}
+              </button>
+            </div>
+          );
+        })}
+      </div>
 
       {/* Rooms Section */}
       <div className="flex space-x-4">

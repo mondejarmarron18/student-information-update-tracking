@@ -37,7 +37,7 @@ const DashboardBanner: React.FC<DashboardBannerProps> = ({ name }) => {
   }, [name]);
 
   return (
-    <Card className="shadow-lg text-center">
+    <Card className="text-center">
       <CardHeader className="flex items-center">
         {icon}
         <CardTitle className="text-2xl font-bold">{greeting}</CardTitle>

@@ -17,6 +17,7 @@ import screenSize from "@/utils/screenSize";
 import UserAccountMenu from "../UserAccountMenu";
 import { Card } from "@/components/ui/card";
 import { PiChatsCircleFill } from "react-icons/pi";
+import { AiOutlineAudit } from "react-icons/ai";
 
 type NavItems = {
   name: string;
@@ -44,6 +45,10 @@ export const navItems: NavItems[] = [
   {
     ...routePaths.updateRequests,
     iconType: HiClipboardDocumentCheck,
+  },
+  {
+    ...routePaths.auditLogs,
+    iconType: AiOutlineAudit,
   },
 ];
 
@@ -126,7 +131,9 @@ const NavigationBar = () => {
                 className={cn(
                   "rounded-lg flex bg-gray-500/40 items-center opacity-50 hover:bg-gray-500/70 transition-colors p-3",
                   {
-                    "opacity-100 bg-gray-500/80": pathname === navItem.path,
+                    "opacity-100 bg-gray-500/80": pathname.includes(
+                      navItem.path
+                    ),
                   }
                 )}
                 onClick={() => navigate(navItem.path)}

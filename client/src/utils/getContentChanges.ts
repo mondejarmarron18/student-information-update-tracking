@@ -1,4 +1,5 @@
-import { isArray, isObject } from "./validator";
+import { toDateString } from "./fomatter";
+import { isArray, isDate, isObject } from "./validator";
 
 const getContentChanges = (
   prevData: Record<string, unknown>,
@@ -29,7 +30,14 @@ const getContentChanges = (
     }
 
     if (prevValue !== newValue) {
-      changes[prevKey] = [prevValue, newValue];
+      const newPrevVal = isDate(prevValue)
+        ? toDateString(prevValue as Date)
+        : prevValue;
+      const newNewVal = isDate(newValue)
+        ? toDateString(newValue as Date)
+        : newValue;
+
+      changes[prevKey] = [newPrevVal, newNewVal];
     }
   });
 

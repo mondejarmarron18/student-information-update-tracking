@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -27,7 +22,7 @@ import useUpdateRequests from "@/hooks/useUpdateRequests";
 import { IUpdateRequest } from "@/types/updateRequest.type";
 import { Link } from "react-router";
 import { routePaths } from "@/routes";
-import { toDateNumeric } from "@/utils/fomatter";
+import { toDateTimeNumeric } from "@/utils/fomatter";
 
 const UpdateRequests = () => {
   const { data } = useUpdateRequests();
@@ -60,19 +55,18 @@ const UpdateRequests = () => {
   };
 
   return (
-    <Card>
-      <CardHeader></CardHeader>
-      <CardContent>
-        <div className="flex items-center mb-4">
-          <Input
-            placeholder="Search by requester, reviewer, or status..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-1/3 mr-4"
-          />
-        </div>
+    <div className="flex flex-col gap-8 mt-4 p-1">
+      <div className="flex items-center">
+        <Input
+          placeholder="Search by requester, reviewer, or status..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-1/3 mr-4"
+        />
+      </div>
 
-        {/* Table */}
+      {/* Table */}
+      <Card>
         <Table>
           <TableHeader>
             <TableRow>
@@ -97,9 +91,9 @@ const UpdateRequests = () => {
                     : "Academic Profile"}
                 </TableCell>
                 <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
-                <TableCell>{toDateNumeric(request.requestedAt)}</TableCell>
+                <TableCell>{toDateTimeNumeric(request.requestedAt)}</TableCell>
                 <TableCell>
-                  {toDateNumeric(request.reviewedAt) || "-"}
+                  {toDateTimeNumeric(request.reviewedAt) || "-"}
                 </TableCell>
                 <TableCell>
                   <Link to={`${routePaths.updateRequests.path}/${request._id}`}>
@@ -110,54 +104,51 @@ const UpdateRequests = () => {
             ))}
           </TableBody>
         </Table>
+      </Card>
 
-        {/* ShadCN Pagination */}
-      </CardContent>
-      <CardFooter>
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => {
+                if (currentPage > 1) {
+                  setCurrentPage(currentPage - 1);
+                }
+              }}
+            />
+          </PaginationItem>
+
+          {/* Render page numbers */}
+          {[...Array(totalPages).keys()].map((_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
                 href="#"
-                onClick={() => {
-                  if (currentPage > 1) {
-                    setCurrentPage(currentPage - 1);
-                  }
-                }}
-              />
+                onClick={() => setCurrentPage(index + 1)}
+                isActive={currentPage === index + 1}
+              >
+                {index + 1}
+              </PaginationLink>
             </PaginationItem>
+          ))}
 
-            {/* Render page numbers */}
-            {[...Array(totalPages).keys()].map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href="#"
-                  onClick={() => setCurrentPage(index + 1)}
-                  isActive={currentPage === index + 1}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
 
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() => {
-                  if (currentPage < totalPages) {
-                    setCurrentPage(currentPage + 1);
-                  }
-                }}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </CardFooter>
-    </Card>
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={() => {
+                if (currentPage < totalPages) {
+                  setCurrentPage(currentPage + 1);
+                }
+              }}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 };
 
