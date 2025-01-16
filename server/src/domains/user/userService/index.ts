@@ -143,15 +143,24 @@ export default class UserService {
 
   updateUserPassword = async (
     id: IUser["_id"],
-    password: IUser["password"]
+    currentPassword: IUser["password"],
+    newPassword: IUser["password"]
   ) => {
-    const isUserExist = await this.userRepository.isUserIdExists(id);
+    const user = await this.userRepository.getUserById(id);
 
-    if (!isUserExist) {
-      throw new Error("User not found");
+    if (!user) {
+      return CustomError.notFound({ description: "User not found" });
     }
 
-    return this.userRepository.updateUserPassword(id, password);
+    const isPasswordMatch = bcrypt.compareSync(currentPassword, user.password);
+
+    if (!isPasswordMatch) {
+      return CustomError.badRequest({
+        description: "Current password is incorrect",
+      });
+    }
+
+    return this.userRepository.updateUserPassword(id, newPassword);
   };
 
   loginUser = async (params: Pick<IUser, "email" | "password">) => {
@@ -160,13 +169,17 @@ export default class UserService {
       .populate("roleId");
 
     if (!user) {
-      throw new Error("Email not found");
+      return CustomError.unauthorized({
+        description: "Email is not registered",
+      });
     }
 
     const isPasswordMatch = bcrypt.compareSync(params.password, user.password);
 
     if (!isPasswordMatch) {
-      throw new Error("Invalid password");
+      return CustomError.unauthorized({
+        description: "Invalid email or password",
+      });
     }
 
     if (!user.verifiedAt) {
@@ -209,6 +222,7 @@ export default class UserService {
     );
 
     if (isVerified.error) throw isVerified.error;
+
     if (isVerified.result)
       CustomError.alreadyExists({
         description: "User is already verified",
@@ -220,9 +234,43 @@ export default class UserService {
 
     if (verifyUser.error) throw verifyUser.error;
     if (!verifyUser.result) {
-      throw new Error("User not found");
+      CustomError.internalServerError({
+        details: "Failed to verify user",
+      });
     }
 
     return verifyUser.result;
+  };
+
+  sendPasswordResetEmail = async (email: IUser["email"]) => {
+    const user = await this.userRepository.getUserByEmail(email).select("_id");
+
+    if (!user) {
+      return CustomError.notFound({ description: "Email does not exist" });
+    }
+
+    const verificationCode = await this.generateVerificationCode(user._id);
+
+    const { error: sendMailError, result: sendMailResult } = await sendMail({
+      to: email,
+      subject: "Forgot Password - Reset Your Password",
+      html: await hbs("passwordReset", {
+        resetLink: `${config.clientUrl}/password-reset/${verificationCode}`,
+        supportEmail: config.smtp.sender,
+        appName: config.appName,
+        unsubscribeUrl: `${config.clientUrl}/unsubscribe/${verificationCode}`,
+        expireIn: "24 hours",
+        website: {
+          domain: config.clientUrl?.replace(/(http|https):\/\//, ""),
+          url: config.clientUrl,
+        },
+      }),
+    });
+
+    if (sendMailError) {
+      return CustomError.internalServerError({ details: sendMailError });
+    }
+
+    return sendMailResult;
   };
 }

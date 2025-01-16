@@ -9,7 +9,7 @@ const customErrors: Record<string, ICustomError> = {
   },
   unauthorized: {
     status: 401,
-    message: "Login Required",
+    message: "Unauthorized",
     description: "You need to log in to access this resource.",
   },
   forbidden: {

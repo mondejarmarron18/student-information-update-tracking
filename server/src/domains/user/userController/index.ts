@@ -9,6 +9,7 @@ import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
 import tokens, { refreshTokenCookieOptions } from "../../../constants/tokens";
 import userRoles from "../../../constants/userRoles";
+import { UpdateOwnPasswordDto } from "../userDtos/updateOwnPasswordDto";
 
 export default class UserController {
   userService: UserService;
@@ -151,6 +152,45 @@ export default class UserController {
   isAuthenticated = async (req: Request, res: Response) => {
     if (!req.user) {
       return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    CustomResponse.sendSuccess(res);
+  };
+
+  updateOwnPassword = async (
+    req: Request<{}, {}, UpdateOwnPasswordDto>,
+    res: Response
+  ) => {
+    const user = req.user;
+
+    if (!user) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    const { error } = await x8tAsync(
+      this.userService.updateUserPassword(
+        user._id,
+        req.body.currentPassword,
+        req.body.newPassword
+      )
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      message: "Password updated successfully",
+    });
+  };
+
+  sendPasswordResetEmail = async (req: Request, res: Response) => {
+    const { error } = await x8tAsync(
+      this.userService.sendPasswordResetEmail(req.body.email)
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
     }
 
     CustomResponse.sendSuccess(res);

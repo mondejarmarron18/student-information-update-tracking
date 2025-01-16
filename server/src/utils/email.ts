@@ -6,7 +6,7 @@ const { smtp } = config;
 
 const transporter = createTransport({
   service: smtp.service,
-  port: smtp.port ,
+  port: smtp.port,
   host: smtp.host,
   secure: smtp.secure,
   auth: {
@@ -35,7 +35,7 @@ export const sendMail = async (
     })
   );
 
-  if (error !== null) {
+  if (error) {
     console.error("Error sending email:", error);
     return {
       result: null,

@@ -35,5 +35,16 @@ userRoute.get(
 //Get own user details
 userRoute.get("/me", [authMiddleware], userController.getOwnUser);
 userRoute.head("/auth", [authMiddleware], userController.isAuthenticated);
+//Update own user details
+userRoute.patch(
+  "/me/password",
+  [authMiddleware, userMiddleware.updatePassword],
+  userController.updateOwnPassword
+);
+userRoute.post(
+  "/forgot-password",
+  [userMiddleware.sendPasswordResetEmail],
+  userController.sendPasswordResetEmail
+);
 
 export default userRoute;

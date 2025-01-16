@@ -4,8 +4,18 @@ export const allowedLength = 8;
 export const allowedEmailDomains = ["phinmaed.com"];
 
 export const hasSpecialCharacter = (val: string) => {
-  const specialCharacters = new RegExp(`[${allowedSpecialCharacters}]`);
-  return specialCharacters.test(val);
+  const allowedCharactersRegex = new RegExp(`[${allowedSpecialCharacters}]`);
+  const disallowedCharactersRegex = new RegExp(
+    `[^a-zA-Z0-9${allowedSpecialCharacters}]`
+  );
+
+  // Must have at least one allowed special character
+  const hasAllowedSpecialCharacter = allowedCharactersRegex.test(val);
+
+  // Must not have any disallowed special characters
+  const hasNoDisallowedCharacters = !disallowedCharactersRegex.test(val);
+
+  return hasAllowedSpecialCharacter && hasNoDisallowedCharacters;
 };
 
 export const hasUppercase = (val: string) => {

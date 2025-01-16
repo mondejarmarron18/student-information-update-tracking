@@ -15,6 +15,7 @@ import { FormProps } from "@/types/form.type";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router";
 import { AiOutlineLoading } from "react-icons/ai";
+import FormError from "@/components/common/FormError";
 
 const SignInForm = (props: FormProps<SignInFormProps>) => {
   const { form } = useSignInForm();
@@ -66,6 +67,8 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
             )}
           />
         ))}
+
+        {props.error && <FormError {...props.error} />}
 
         <div className="flex flex-col gap-6">
           <Button className="w-full">

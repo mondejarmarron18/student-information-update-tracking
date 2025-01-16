@@ -39,8 +39,6 @@ export default class VerificationCodeService {
       });
     }
 
-    console.log({ VerificationCode: verificationCode.result });
-
     return verificationCode.result;
   };
 }

@@ -11,6 +11,7 @@ import useAccessToken from "@/hooks/useAccessToken";
 import Tooltip from "../Tooltip";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import ChangePasswordDialog from "../ChangePasswordDialog";
 
 type Props = {
   trigger?: ReactNode;
@@ -64,9 +65,13 @@ const UserAccountMenu = (props: Props) => {
         </Button>
 
         {/* Change Password */}
-        <Button variant="ghost" size="sm" className="flex justify-start">
-          Change Password
-        </Button>
+        <ChangePasswordDialog
+          trigger={
+            <Button variant="ghost" size="sm" className="flex justify-start">
+              Change Password
+            </Button>
+          }
+        />
 
         {/* Logout */}
         <LogoutDialog

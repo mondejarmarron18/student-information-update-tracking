@@ -1,5 +1,11 @@
 import { ReactNode } from "react";
 
+export type FormError = {
+  title?: string;
+  description: string;
+  component?: ReactNode;
+};
+
 export type FormProps<Value> = {
   className?: string;
   values?: Value;
@@ -8,6 +14,7 @@ export type FormProps<Value> = {
   onCancel?: () => void;
   onSubmitLabel?: ReactNode;
   onSubmitLoading?: boolean;
+  error?: FormError;
 };
 
 export type FormField = {

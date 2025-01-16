@@ -4,99 +4,86 @@ import { lazy } from "react";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 
-const SignIn = lazy(() => import("../pages/SignIn"));
-const Register = lazy(() => import("../pages/Register"));
-const UserProfile = lazy(() => import("../pages/UserProfile"));
-const Address = lazy(() => import("../pages/Address"));
-const StudentGuardian = lazy(() => import("../pages/StudentGuardian"));
-const AcademicProfile = lazy(() => import("../pages/AcedemicProfile"));
-const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
-const StudentView = lazy(() => import("../components/layouts/StudentView"));
-const EmailVerificationSent = lazy(
-  () => import("../pages/EmailVerificationSent")
-);
-const EmailVerification = lazy(() => import("../pages/EmailVerification"));
-const Dashboard = lazy(() => import("../pages/Dashboard"));
-const UserAccount = lazy(() => import("../pages/UserAccount"));
-const UpdateRequests = lazy(() => import("../pages/UpdateRequests"));
-const UpdateRequest = lazy(() => import("../pages/UpdateRequest"));
-const Conversations = lazy(() => import("../pages/Conversations"));
-
 export const routePaths = {
   dashboard: {
     path: "/dashboard",
     name: "Dashboard",
-    element: Dashboard,
+    element: lazy(() => import("../pages/Dashboard")),
   },
   userAccount: {
     path: "/user-account",
     name: "User Account",
-    element: UserAccount,
+    element: lazy(() => import("../pages/UserAccount")),
   },
   signIn: {
     path: "/sign-in",
     name: "Sign In",
-    element: SignIn,
+    element: lazy(() => import("../pages/SignIn")),
   },
   signUp: {
     path: "/sign-up",
     name: "Sign Up",
-    element: Register,
+    element: lazy(() => import("../pages/Register")),
   },
   emailVerificationSent: {
     path: "/email-verification-sent",
     name: "Email Verification Sent",
-    element: EmailVerificationSent,
+    element: lazy(() => import("../pages/EmailVerificationSent")),
   },
   emailVerification: {
     path: "/email-verification/:verificationCode",
     name: "Email Verification",
-    element: EmailVerification,
+    element: lazy(() => import("../pages/EmailVerification")),
   },
   userProfile: {
     path: "/personal-profile",
     name: "Personal Profile",
-    element: UserProfile,
+    element: lazy(() => import("../pages/UserProfile")),
   },
   address: {
     path: "/address",
     name: "Address",
-    element: Address,
+    element: lazy(() => import("../pages/Address")),
   },
   studentGuardian: {
     path: "/student-guardian",
     name: "Student Guardian",
-    element: StudentGuardian,
+    element: lazy(() => import("../pages/StudentGuardian")),
   },
   academicProfile: {
     path: "/academic-profile",
     name: "Academic Profile",
-    element: AcademicProfile,
+    element: lazy(() => import("../pages/AcedemicProfile")),
   },
   forgotPassword: {
     path: "/forgot-password",
     name: "Forgot Password",
-    element: ForgotPassword,
+    element: lazy(() => import("../pages/ForgotPassword")),
   },
   updateRequests: {
     path: "/update-requests",
     name: "Update Requests",
-    element: UpdateRequests,
+    element: lazy(() => import("../pages/UpdateRequests")),
   },
   updateRequest: {
     path: "/:updateRequestId",
     name: "Update Request",
-    element: UpdateRequest,
+    element: lazy(() => import("../pages/UpdateRequest")),
   },
   conversations: {
     path: "/conversations",
     name: "Conversations",
-    element: Conversations,
+    element: lazy(() => import("../pages/Conversations")),
   },
   auditLogs: {
     path: "/audit-logs",
     name: "Audit Logs",
     element: lazy(() => import("../pages/AuditLogs")),
+  },
+  passwordReset: {
+    path: "/password-reset/:verificationCode",
+    name: "Password Reset",
+    element: lazy(() => import("../pages/PasswordReset")),
   },
 } as const;
 
@@ -106,6 +93,7 @@ const publicRoutes = [
   routePaths.forgotPassword,
   routePaths.emailVerification,
   routePaths.emailVerificationSent,
+  routePaths.passwordReset,
 ];
 
 const privateRoutes = [
@@ -131,7 +119,13 @@ const routes = createBrowserRouter([
   })),
   {
     path: "/",
-    element: <PrivateRoute>{SuspenseWrapper(StudentView)}</PrivateRoute>,
+    element: (
+      <PrivateRoute>
+        {SuspenseWrapper(
+          lazy(() => import("../components/layouts/StudentView"))
+        )}
+      </PrivateRoute>
+    ),
     children: privateRoutes.map((route) => ({
       ...route,
       element: SuspenseWrapper(route.element),

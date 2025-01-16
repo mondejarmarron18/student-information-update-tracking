@@ -53,7 +53,7 @@ export default class CustomResponse {
     if (error instanceof Error) {
       return CustomResponse.sendError(res, {
         ...customErrors.internalServerError,
-        details: error.message,
+        description: error.message,
       });
     }
 

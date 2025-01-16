@@ -13,7 +13,7 @@ const useLogin = () => {
   const { toast } = useToast();
   const { setAccessToken } = useAccessToken();
 
-  const loginMutation = useMutation({
+  const { error, ...rest } = useMutation({
     mutationFn: (data: Pick<UserAccount, "email" | "password">) => {
       return api.post<ApiResponseSuccess>("/users/login", data);
     },
@@ -29,6 +29,8 @@ const useLogin = () => {
     onError: (error) => {
       const apiError = reactQueryError(error);
 
+      if (apiError.status === 401) return;
+
       if (apiError.status === 422) {
         return navigate(routePaths.emailVerificationSent.path);
       }
@@ -41,7 +43,9 @@ const useLogin = () => {
     },
   });
 
-  return loginMutation;
+  const handledError = error ? reactQueryError(error) : null;
+
+  return { ...rest, error: handledError };
 };
 
 export default useLogin;

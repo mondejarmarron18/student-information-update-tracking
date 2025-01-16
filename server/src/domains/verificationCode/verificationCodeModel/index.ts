@@ -32,16 +32,16 @@ const verificationCodeSchema = new Schema<IVerificationCode>({
 
 verificationCodeSchema.pre("save", async function (next) {
   if (this.isNew) {
-    // Invalidate previous codes before creating a new one
-    // This is to ensure that only one code can be used at a time for a given email within 24 hours
-    const isVerified = await model<IUser>("user").exists({
-      _id: this.userId,
-      verifiedAt: { $ne: null },
-    });
+    // // Invalidate previous codes before creating a new one
+    // // This is to ensure that only one code can be used at a time for a given email within 24 hours
+    // const isVerified = await model<IUser>("user").exists({
+    //   _id: this.userId,
+    //   verifiedAt: { $ne: null },
+    // });
 
-    if (isVerified) {
-      throw new Error("User is already verified");
-    }
+    // if (isVerified) {
+    //   throw new Error("User is already verified");
+    // }
 
     await model<IVerificationCode>("verificationCode").findOneAndUpdate(
       {
