@@ -121,14 +121,6 @@ const userProfileSchema = new Schema<IUserProfile>({
   },
 });
 
-userProfileSchema.pre("save", function (next) {
-  if (!this.isModified("deletedAt")) {
-    this.updatedAt = new Date();
-  }
-
-  next();
-});
-
 const UserProfileModel = model<IUserProfile>(
   schemaName.USER_PROFILE,
   userProfileSchema

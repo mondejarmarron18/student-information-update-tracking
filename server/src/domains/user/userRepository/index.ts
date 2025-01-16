@@ -1,3 +1,4 @@
+import { passwordEncrypt } from "../../../utils/password";
 import userModel, { IUser } from "../userModel";
 
 export default class UserRepository {
@@ -24,9 +25,12 @@ export default class UserRepository {
   };
 
   updateUserPassword = (id: IUser["_id"], password: IUser["password"]) => {
+    const encryptedPassword = passwordEncrypt(password);
+
     return this.userModel.findByIdAndUpdate(id, {
       $set: {
-        password,
+        password: encryptedPassword,
+        updatedAt: new Date(),
       },
     });
   };

@@ -96,4 +96,22 @@ export default class UserMiddleware {
 
     next();
   };
+
+  resetPassword: IMiddlware = (req, res, next) => {
+    const validate = z.object({
+      password: validatePassword,
+      verificationCode: z.string().nonempty("Verification code is required"),
+    });
+
+    const { error } = validate.safeParse(req.body);
+
+    if (error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
+    }
+
+    next();
+  };
 }

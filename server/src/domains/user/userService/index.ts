@@ -17,6 +17,8 @@ import { IVerificationCode } from "../../verificationCode/verificationCodeModel"
 import VerificationCodeService from "../../verificationCode/verificationCodeService";
 import CustomError from "../../../utils/CustomError";
 import { Request } from "express";
+import { convertToObjectId } from "../../../utils/mongooseUtil";
+import { passwordCompare } from "../../../utils/password";
 
 export default class UserService {
   userRepository: UserRepository;
@@ -174,7 +176,7 @@ export default class UserService {
       });
     }
 
-    const isPasswordMatch = bcrypt.compareSync(params.password, user.password);
+    const isPasswordMatch = passwordCompare(params.password, user.password);
 
     if (!isPasswordMatch) {
       return CustomError.unauthorized({
@@ -232,12 +234,15 @@ export default class UserService {
       this.userRepository.verifyUser(verificationCode.userId)
     );
 
-    if (verifyUser.error) throw verifyUser.error;
-    if (!verifyUser.result) {
-      CustomError.internalServerError({
-        details: "Failed to verify user",
+    if (verifyUser.error || !verifyUser.result) {
+      return CustomError.internalServerError({
+        details: verifyUser.error || "Failed to verify user",
       });
     }
+
+    await this.verificationCodeService.invalidateVerificationCode(
+      verificationCode.id
+    );
 
     return verifyUser.result;
   };
@@ -272,5 +277,39 @@ export default class UserService {
     }
 
     return sendMailResult;
+  };
+
+  resetPassword = async (
+    params: Pick<IUser, "password"> & {
+      verificationCode: IVerificationCode["_id"];
+    }
+  ) => {
+    const verificationCode =
+      await this.verificationCodeService.getValidVerificationCode(
+        params.verificationCode
+      );
+
+    if (!verificationCode) {
+      return CustomError.notFound({
+        description: "Verification code not found",
+      });
+    }
+
+    const user = this.userRepository.updateUserPassword(
+      verificationCode.userId,
+      params.password
+    );
+
+    if (!user) {
+      return CustomError.internalServerError({
+        details: "Failed to reset password",
+      });
+    }
+
+    await this.verificationCodeService.invalidateVerificationCode(
+      params.verificationCode
+    );
+
+    return user;
   };
 }

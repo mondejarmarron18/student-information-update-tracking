@@ -25,6 +25,7 @@ type NavItems = {
   iconType: IconType;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const navItems: NavItems[] = [
   {
     ...routePaths.dashboard,

@@ -10,6 +10,7 @@ import customErrors from "../../../constants/customErrors";
 import tokens, { refreshTokenCookieOptions } from "../../../constants/tokens";
 import userRoles from "../../../constants/userRoles";
 import { UpdateOwnPasswordDto } from "../userDtos/updateOwnPasswordDto";
+import { ResetPasswordDto } from "../userDtos/resetPasswordDto";
 
 export default class UserController {
   userService: UserService;
@@ -187,6 +188,35 @@ export default class UserController {
   sendPasswordResetEmail = async (req: Request, res: Response) => {
     const { error } = await x8tAsync(
       this.userService.sendPasswordResetEmail(req.body.email)
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
+
+    CustomResponse.sendSuccess(res);
+  };
+
+  resetPassword = async (
+    req: Request<{}, {}, ResetPasswordDto>,
+    res: Response
+  ) => {
+    const { password, verificationCode } = req.body;
+
+    const validVerificationCode = convertToObjectId(verificationCode);
+
+    if (validVerificationCode.error || !validVerificationCode.id) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: validVerificationCode.error || "Invalid verification code",
+      });
+    }
+
+    const { error } = await x8tAsync(
+      this.userService.resetPassword({
+        password,
+        verificationCode: validVerificationCode.id,
+      })
     );
 
     if (error) {

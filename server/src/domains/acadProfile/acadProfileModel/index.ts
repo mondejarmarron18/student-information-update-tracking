@@ -57,13 +57,6 @@ const acadProfileSchema = new Schema<IAcadProfile>({
   },
 });
 
-acadProfileSchema.pre("save", function (next) {
-  if (!this.isModified("deletedAt")) {
-    this.updatedAt = new Date();
-  }
-  next();
-});
-
 const AcadProfileModel = model<IAcadProfile>(
   schemaName.ACAD_PROFILE,
   acadProfileSchema

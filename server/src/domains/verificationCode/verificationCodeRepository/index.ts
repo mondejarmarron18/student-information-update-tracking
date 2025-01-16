@@ -18,4 +18,18 @@ export default class VerificationCodeRepository {
   getVerificationCode = (id: IVerificationCode["_id"]) => {
     return this.verificationCodeModel.findById(id);
   };
+
+  invalidateVerificationCode = (id: IVerificationCode["_id"]) => {
+    return this.verificationCodeModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          invalidatedAt: new Date(),
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  };
 }

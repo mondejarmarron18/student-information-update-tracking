@@ -11,7 +11,10 @@ export default class UserProfileRepository {
   createUserProfile = (
     params: Omit<IUserProfile, "_id" | "createdAt" | "updatedAt" | "deletedAt">
   ) => {
-    return this.userProfileModel.create(params);
+    return this.userProfileModel.create({
+      ...params,
+      updatedAt: new Date(),
+    });
   };
 
   getUserProfileById = (id: IUserProfile["_id"]) => {
@@ -55,6 +58,7 @@ export default class UserProfileRepository {
           phoneNumber: params.phoneNumber,
           contactMethods: params.contactMethods,
           address: params.address,
+          updatedAt: new Date(),
         },
       },
       {
@@ -81,6 +85,7 @@ export default class UserProfileRepository {
           phoneNumber: params.phoneNumber,
           contactMethods: params.contactMethods,
           address: params.address,
+          updatedAt: new Date(),
         },
       },
       {

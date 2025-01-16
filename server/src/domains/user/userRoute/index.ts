@@ -46,5 +46,10 @@ userRoute.post(
   [userMiddleware.sendPasswordResetEmail],
   userController.sendPasswordResetEmail
 );
+userRoute.patch(
+  "/reset-password",
+  [userMiddleware.resetPassword],
+  userController.resetPassword
+);
 
 export default userRoute;

@@ -41,4 +41,36 @@ export default class VerificationCodeService {
 
     return verificationCode.result;
   };
+
+  getVerificationCodeById = async (id: IVerificationCode["_id"]) => {
+    const { error, result } = await x8tAsync(
+      this.verificationCodeRepository.getVerificationCode(id)
+    );
+
+    if (error) {
+      return CustomError.internalServerError({ details: error });
+    }
+
+    if (!result) {
+      return CustomError.notFound({ details: "Verification code not found" });
+    }
+
+    return result;
+  };
+
+  invalidateVerificationCode = async (id: IVerificationCode["_id"]) => {
+    const { error, result } = await x8tAsync(
+      this.verificationCodeRepository.invalidateVerificationCode(id)
+    );
+
+    if (error) {
+      return CustomError.internalServerError({ details: error });
+    }
+
+    if (!result) {
+      return CustomError.notFound({ details: "Verification code not found" });
+    }
+
+    return result;
+  };
 }

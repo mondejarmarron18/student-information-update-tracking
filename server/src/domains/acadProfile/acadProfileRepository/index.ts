@@ -11,7 +11,10 @@ export default class AcadProfileRepository {
   createAcadProfile = (
     params: Omit<IAcadProfile, "_id" | "createdAt" | "updatedAt" | "deletedAt">
   ) => {
-    return this.acadProfileModel.create(params);
+    return this.acadProfileModel.create({
+      ...params,
+      updatedAt: new Date(),
+    });
   };
 
   getAcadProfiles = () => {
@@ -58,6 +61,7 @@ export default class AcadProfileRepository {
           course: params.course,
           specialization: params.specialization,
           guardians: params.guardians,
+          updatedAt: new Date(),
         },
       },
       {
@@ -81,6 +85,7 @@ export default class AcadProfileRepository {
           course: params.course,
           specialization: params.specialization,
           guardians: params.guardians,
+          updatedAt: new Date(),
         },
       },
       {
