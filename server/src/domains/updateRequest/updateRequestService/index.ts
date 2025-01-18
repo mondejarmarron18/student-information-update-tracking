@@ -70,8 +70,6 @@ export default class UpdateRequestService {
       });
     }
 
-    console.log(previousContent);
-
     const updateRequest = await x8tAsync(
       this.updateRequestRepository.createUpdateRequest({
         requesterId,
@@ -157,7 +155,7 @@ export default class UpdateRequestService {
     }
 
     if (updateReq.result?.requesterId.toString() === reviewerId.toString()) {
-      CustomError.badRequest({
+      return CustomError.badRequest({
         description: "You are not authorized to review this request",
       });
     }
@@ -190,20 +188,18 @@ export default class UpdateRequestService {
     if (contentType === updateRequestContentType.ACAD_PROFILE) {
       const acadProfile = updateRequest.result.content.current;
 
-      this.acadProfileService.updateAcadProfileByUserId({
-        ...acadProfile,
-        userId: updateRequest.result.requesterId,
-      });
+      acadProfile.userId = updateRequest.result.requesterId;
+
+      await this.acadProfileService.updateAcadProfileByUserId(acadProfile);
     }
 
     // Update User Profile
     if (contentType === updateRequestContentType.USER_PROFILE) {
       const userProfile = updateRequest.result.content.current;
 
-      this.userProfileService.updateUserProfileByUserId({
-        ...userProfile,
-        userId: updateRequest.result.requesterId,
-      });
+      userProfile.userId = updateRequest.result.requesterId;
+
+      await this.userProfileService.updateUserProfileByUserId(userProfile);
     }
 
     return updateRequest.result;

@@ -1,6 +1,10 @@
 export type UserAccount = {
   id: string;
-  roleId: string;
+  roleId: {
+    _id: string;
+    name: string;
+    description: string;
+  };
   userProfileId: string;
   email: string;
   password: string;

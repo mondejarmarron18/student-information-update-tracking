@@ -46,8 +46,6 @@ const userSchema = new Schema<IUser>({
 });
 
 userSchema.pre("save", function (next) {
-  console.log("Hook called");
-
   if (this.isModified("password")) {
     this.password = bcrypt.hashSync(this.password, 10);
   }

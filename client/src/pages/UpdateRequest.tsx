@@ -3,7 +3,9 @@ import RejectUpdateRequestDialog from "@/components/common/RejectUpdateRequestDi
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { role } from "@/constants/role";
 import { updateRequestStatus } from "@/constants/updateRequest";
+import useAccessToken from "@/hooks/useAccessToken";
 import useUpdateRequest from "@/hooks/useUpdateRequest";
 import { cn } from "@/lib/utils";
 import { routePaths } from "@/routes";
@@ -20,6 +22,8 @@ const UpdateRequestPage = () => {
   const { updateRequestId } = useParams();
   const { data } = useUpdateRequest({ updateRequestId: updateRequestId! });
   const updateRequest = data?.data;
+  const { decodedAccessToken } = useAccessToken();
+  const roleName = decodedAccessToken()?.roleId?.name;
 
   const renderChanges = (changes: Record<string, unknown>) => {
     return Object.entries(changes).map(([key, val]) => {
@@ -174,37 +178,39 @@ const UpdateRequestPage = () => {
         </CardContent>
       </Card>
 
-      <div className="flex gap-4 justify-end">
-        {!!updateRequestId && (
-          <RejectUpdateRequestDialog
-            updateRequestId={updateRequestId}
-            trigger={
-              <Button
-                disabled={
-                  updateRequest?.reviewStatus !== updateRequestStatus.PENDING
-                }
-                variant="destructive"
-              >
-                Reject
-              </Button>
-            }
-          />
-        )}
-        {!!updateRequestId && (
-          <ApproveUpdateRequestDialog
-            updateRequestId={updateRequestId}
-            trigger={
-              <Button
-                disabled={
-                  updateRequest?.reviewStatus !== updateRequestStatus.PENDING
-                }
-              >
-                Approve
-              </Button>
-            }
-          />
-        )}
-      </div>
+      {roleName !== role.STUDENT && (
+        <div className="flex gap-4 justify-end">
+          {!!updateRequestId && (
+            <RejectUpdateRequestDialog
+              updateRequestId={updateRequestId}
+              trigger={
+                <Button
+                  disabled={
+                    updateRequest?.reviewStatus !== updateRequestStatus.PENDING
+                  }
+                  variant="destructive"
+                >
+                  Reject
+                </Button>
+              }
+            />
+          )}
+          {!!updateRequestId && (
+            <ApproveUpdateRequestDialog
+              updateRequestId={updateRequestId}
+              trigger={
+                <Button
+                  disabled={
+                    updateRequest?.reviewStatus !== updateRequestStatus.PENDING
+                  }
+                >
+                  Approve
+                </Button>
+              }
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

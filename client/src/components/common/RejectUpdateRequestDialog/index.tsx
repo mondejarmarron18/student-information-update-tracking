@@ -50,11 +50,7 @@ const RejectUpdateRequestDialog = (props: Props) => {
     if (isSuccess) {
       setIsOpen(false);
     }
-
-    return () => {
-      form.reset();
-    };
-  }, [form, isSuccess]);
+  }, [isSuccess]);
 
   const onSubmit = (data: FormData) => {
     mutate(data.reviewComment);

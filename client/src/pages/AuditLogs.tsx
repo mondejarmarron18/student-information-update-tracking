@@ -24,6 +24,7 @@ import useAuditLogs from "@/hooks/useAuditLogs";
 import useExportAuditLogs from "@/hooks/useExportAuditLogs";
 import AnimatedSpinner from "@/components/common/AnimatedSpinner";
 import FileSaver from "file-saver";
+import { Link } from "react-router";
 
 const AuditLogTable = () => {
   const { data } = useAuditLogs();
@@ -91,7 +92,7 @@ const AuditLogTable = () => {
               <TableHead>Timestamp</TableHead>
               <TableHead>User Agent</TableHead>
               <TableHead>IP Address</TableHead>
-              <TableHead>Details</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -104,7 +105,9 @@ const AuditLogTable = () => {
                 </TableCell>
                 <TableCell>{log.userAgent}</TableCell>
                 <TableCell>{log.ipAddress}</TableCell>
-                <TableCell>{log.details}</TableCell>
+                <TableCell>
+                  <Link to={`/audit-logs/${log._id}`}>View Details</Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -23,6 +23,7 @@ const auditLogAction = {
 };
 
 type IAuditLog = {
+  _id: string;
   ipAddress: string;
   userAgent: string;
   userId: string;
@@ -38,12 +39,13 @@ const data: IAuditLog[] = [...Array(20)].map(() => {
     ];
 
   return {
+    _id: uniqueId(),
     ipAddress: faker.internet.ipv4(),
     userAgent: faker.internet.userAgent(),
     userId: uniqueId(),
-    details: `${action} ${faker.lorem.sentence()}`,
     timestamp: faker.date.past(),
     action,
+    details: `${action} ${faker.lorem.sentence()}`,
   };
 });
 
