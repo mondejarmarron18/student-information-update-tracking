@@ -25,10 +25,11 @@ const formFields: Fields[] = [
     placeholder: "Cruz",
   },
   {
-    name: "phoneNumber",
-    label: "Phone Number",
+    name: "nameExtension",
+    label: "Name Extension",
     type: "text",
-    placeholder: "+639xx xxx xxxx",
+    placeholder: "Jr., Sr., II, III, Esq.",
+    optional: true,
   },
   {
     name: "relationship",
@@ -43,6 +44,19 @@ const formFields: Fields[] = [
       { label: "Guardian", value: "guardian" },
       { label: "Other", value: "other" },
     ],
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "your_guardian@example.com",
+    optional: true,
+  },
+  {
+    name: "phoneNumber",
+    label: "Phone Number",
+    type: "text",
+    placeholder: "+639xx xxx xxxx",
   },
 ];
 

@@ -2,14 +2,12 @@ import { mobileNumberRegex } from "@/utils/validator";
 import { z } from "zod";
 
 const formSchema = z.object({
-  firstName: z.string().min(2, "First name is required"),
-  middleName: z.string().refine((val) => {
-    if (val === "") return true;
-
-    return val.length >= 2;
-  }, "Middle name must have at least 2 characters"),
-  lastName: z.string().min(2, "Last name is required"),
+  firstName: z.string().nonempty("First name is required"),
+  middleName: z.string().optional(),
+  lastName: z.string().nonempty("Last name is required"),
+  nameExtension: z.string().optional(),
   relationship: z.string().nonempty("Relationship is required"),
+  email: z.string().optional().or(z.string().email("Invalid email")),
   phoneNumber: z.string().regex(mobileNumberRegex, "Invalid phone number"),
 });
 

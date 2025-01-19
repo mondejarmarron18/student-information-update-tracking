@@ -11,7 +11,7 @@ export type IUserProfile = UserProfileFormProps & {
 
 const useUserProfile = () => {
   const { error, ...rest } = useQuery<ApiResponseSuccess<IUserProfile>>({
-    queryKey: ["userProfile"],
+    queryKey: ["user-profile"],
     queryFn: async () => api.get("/user-profiles/me"),
   });
 

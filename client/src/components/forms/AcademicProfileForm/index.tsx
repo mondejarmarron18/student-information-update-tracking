@@ -129,7 +129,7 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
                 ) : (
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    defaultValue={field.value.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -150,7 +150,10 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
                     ) : (
                       <SelectContent>
                         {formField.options.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
+                          <SelectItem
+                            key={`${option.value}`}
+                            value={`${option.value}`}
+                          >
                             {option.label}
                           </SelectItem>
                         ))}
