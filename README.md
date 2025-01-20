@@ -2,6 +2,8 @@
 
 This system would allow the college administration to track and manage updates to student personal information in real-time. It ensures that the college always has accurate data and can track changes such as contact information, addresses, and emergency contacts. The system would also ensure students regularly update their details and notify the administration when these updates occur.
 
+<img src="./banner.png"/>
+
 ## Key Features:
 
 1. Student Information Portal – A web-based interface where students can log in and update their personal information (contact numbers, home address, emergency contacts, etc.).
