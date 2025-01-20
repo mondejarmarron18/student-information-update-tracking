@@ -5,13 +5,30 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "./use-toast";
 import { IUserProfile } from "./useUserProfile";
 import useUpdateRequests from "./useUpdateRequests";
+import { IAcademicProfile } from "@/types/academicProfile.type";
 
-const useUpdateUserProfile = () => {
+export const contentType = {
+  userProfileContent: "userProfileContent",
+  acadProfileContent: "acadProfileContent",
+} as const;
+
+type ContentTypeMap = {
+  [contentType.acadProfileContent]: IAcademicProfile;
+  [contentType.userProfileContent]: IUserProfile;
+};
+
+type Props = {
+  contentType: keyof typeof contentType;
+};
+
+const useCreateUpdateRequest = (props: Props) => {
   const { refetch } = useUpdateRequests();
   const mutation = useMutation({
-    mutationFn: (data: IUserProfile) => {
-      return api.post<ApiResponseSuccess<IUserProfile>>("/update-requests", {
-        contentType: "userProfileContent",
+    mutationFn: (data: ContentTypeMap[typeof props.contentType]) => {
+      return api.post<
+        ApiResponseSuccess<ContentTypeMap[typeof props.contentType]>
+      >("/update-requests", {
+        contentType: props.contentType,
         content: data,
       });
     },
@@ -39,4 +56,4 @@ const useUpdateUserProfile = () => {
   return mutation;
 };
 
-export default useUpdateUserProfile;
+export default useCreateUpdateRequest;

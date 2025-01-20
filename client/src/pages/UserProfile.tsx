@@ -2,7 +2,9 @@ import AddressForm from "@/components/forms/AddressForm";
 import UserProfileForm from "@/components/forms/UserProfileForm";
 import { toast } from "@/hooks/use-toast";
 import useRegisterUserProfile from "@/hooks/useRegisterUserProfile";
-import useUpdateUserProfile from "@/hooks/useUpdateUserProfile";
+import useUpdateUserProfile, {
+  contentType,
+} from "@/hooks/useCreateUpdateRequest";
 import useUserProfile, { IUserProfile } from "@/hooks/useUserProfile";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -12,7 +14,9 @@ const UserProfile = () => {
   const [userProfile, setUserProfile] = useState<IUserProfile | undefined>();
   const [formIndex, setFormIndex] = useState(0);
   const registerUserProfile = useRegisterUserProfile();
-  const updateUserProfile = useUpdateUserProfile();
+  const updateUserProfile = useUpdateUserProfile({
+    contentType: contentType.userProfileContent,
+  });
 
   useEffect(() => {
     if (data) {

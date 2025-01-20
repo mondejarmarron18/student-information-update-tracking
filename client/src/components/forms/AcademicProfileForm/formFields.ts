@@ -1,6 +1,6 @@
 import { FormField } from "@/types/form.type";
 import { AcademicProfileFormProps } from "./schema";
-import courses from "@/constants/courses";
+
 type Fields = FormField & {
   name: keyof AcademicProfileFormProps;
 };
@@ -34,6 +34,10 @@ const formFields: Fields[] = [
         label: "4th Year",
         value: 4,
       },
+      {
+        label: "5th Year",
+        value: 5,
+      },
     ],
   },
   {
@@ -41,10 +45,7 @@ const formFields: Fields[] = [
     label: "Course",
     type: "select",
     placeholder: "Select course",
-    options: courses.map((course) => ({
-      label: course.name,
-      value: course.id,
-    })),
+    options: [],
   },
   {
     name: "specialization",

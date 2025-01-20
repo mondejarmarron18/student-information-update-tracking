@@ -5,6 +5,10 @@ export const schemaName = {
   ACAD_PROFILE: "acadProfile",
   VERIFICATION_CODE: "verificationCode",
   UPDATE_REQUEST: "updateRequest",
+  AUDIT_LOG: "auditLog",
+  COURSE: "course",
+  YEAR_LEVEL: "yearLevel",
+  SPECIALIZATION: "specialization",
 } as const;
 
 export const schemaNameValues = Object.values(schemaName);

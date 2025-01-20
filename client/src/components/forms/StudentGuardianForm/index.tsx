@@ -20,9 +20,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import useStudentGuardianValues from "./useStudentGuardianValues";
 
 const StudentGuardianForm = (props: FormProps<StudentGuardianFormProps>) => {
   const { form } = useStudentGiardianForm();
+
+  useStudentGuardianValues({
+    values: props.values,
+    form,
+  });
 
   const onSubmit = (values: StudentGuardianFormProps) => {
     props.onSubmit(values);
@@ -34,6 +40,7 @@ const StudentGuardianForm = (props: FormProps<StudentGuardianFormProps>) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn("flex flex-col gap-6", props.className)}
       >
+        <h2 className="text-xl font-semibold">Student Guardian</h2>
         {formFields.map((formField) => (
           <FormField
             key={formField.name}
@@ -51,6 +58,7 @@ const StudentGuardianForm = (props: FormProps<StudentGuardianFormProps>) => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -59,7 +67,10 @@ const StudentGuardianForm = (props: FormProps<StudentGuardianFormProps>) => {
                     </FormControl>
                     <SelectContent>
                       {formField.options.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <SelectItem
+                          key={`${option.value}`}
+                          value={`${option.value}`}
+                        >
                           {option.label}
                         </SelectItem>
                       ))}
@@ -72,10 +83,22 @@ const StudentGuardianForm = (props: FormProps<StudentGuardianFormProps>) => {
             )}
           />
         ))}
+        <div className="mt-2 flex gap-2">
+          {props.onCancelLabel && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="flex-1"
+              onClick={props.onCancel}
+            >
+              {props.onCancelLabel}
+            </Button>
+          )}
 
-        <Button type="submit" className="mt-4">
-          {props.onSubmitLabel || "Submit"}
-        </Button>
+          <Button type="submit" className="flex-1">
+            {props.onSubmitLabel || "Submit"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

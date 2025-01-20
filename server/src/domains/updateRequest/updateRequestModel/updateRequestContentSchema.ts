@@ -21,12 +21,14 @@ const acadProfileContent = new Schema<IAcadProfile>(
       type: String,
       required: true,
     },
-    yearLevel: {
-      type: Number,
+    yearLevelId: {
+      type: Schema.Types.ObjectId,
+      ref: "yearLevel",
       required: true,
     },
-    course: {
-      type: String,
+    courseId: {
+      type: Schema.Types.ObjectId,
+      ref: "course",
       required: true,
     },
     specialization: {

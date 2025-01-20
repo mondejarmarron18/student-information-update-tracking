@@ -85,6 +85,11 @@ export const routePaths = {
     name: "Password Reset",
     element: lazy(() => import("../pages/PasswordReset")),
   },
+  academicInfoMgmt: {
+    path: "/academic-information-management",
+    name: "Academic Information Management",
+    element: lazy(() => import("../pages/AcademicInfoMgmt")),
+  },
 } as const;
 
 const publicRoutes = [
@@ -106,6 +111,7 @@ const privateRoutes = [
   routePaths.updateRequests,
   routePaths.conversations,
   routePaths.auditLogs,
+  routePaths.academicInfoMgmt,
   {
     ...routePaths.updateRequest,
     path: routePaths.updateRequests.path + routePaths.updateRequest.path,

@@ -59,7 +59,7 @@ const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
                       className="flex items-center space-x-2 space-y-0"
                     >
                       <FormControl>
-                        <RadioGroupItem value={option.value} />
+                        <RadioGroupItem value={option.value.toString()} />
                       </FormControl>
                       <FormLabel className="font-normal gap-[1px] flex items-center">
                         <span>{option.label}</span>
@@ -110,6 +110,7 @@ const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn("flex flex-col gap-6", props.className)}
       >
+        <h2 className="text-xl font-semibold">Basic Information</h2>
         {RenderFields}
         <div className="mt-2 flex gap-2">
           {props.onCancelLabel && (

@@ -3,7 +3,9 @@ import StudentGuardianForm from "@/components/forms/StudentGuardianForm";
 import { toast } from "@/hooks/use-toast";
 import useAcademicProfile from "@/hooks/useAcademicProfile";
 import useRegisterAcademicProfile from "@/hooks/userRegisterAcademicProfile";
-import useUpdateUserProfile from "@/hooks/useUpdateUserProfile";
+import useCreateUpdateRequest, {
+  contentType,
+} from "@/hooks/useCreateUpdateRequest";
 import { cn } from "@/lib/utils";
 import { IAcademicProfile } from "@/types/academicProfile.type";
 import { useEffect, useState } from "react";
@@ -15,7 +17,9 @@ const AcademicProfile = () => {
   >();
   const [formIndex, setFormIndex] = useState(0);
   const registerAcademicProfile = useRegisterAcademicProfile();
-  const updateUserProfile = useUpdateUserProfile();
+  const createUpdateRequest = useCreateUpdateRequest({
+    contentType: contentType.acadProfileContent,
+  });
 
   useEffect(() => {
     if (data) {
@@ -31,56 +35,33 @@ const AcademicProfile = () => {
       message = "Your personal information has been saved.";
     }
 
-    if (updateUserProfile.isSuccess) {
+    if (createUpdateRequest.isSuccess) {
       message =
         "Your update request has been submitted and is pending approval.";
     }
 
     if (message) {
       toast({
-        title: "Personal Profile",
+        title: "Academic Profile",
         description: message,
       });
     }
-  }, [registerAcademicProfile.isSuccess, updateUserProfile.isSuccess]);
+  }, [registerAcademicProfile.isSuccess, createUpdateRequest.isSuccess]);
 
   const handleSave = (data: IAcademicProfile) => {
+    console.log(data);
     // if (isSuccess) {
-    //   return updateUserProfile.mutate(data);
+    //   return createUpdateRequest.mutate(data);
     // }
 
-    return registerAcademicProfile.mutate(data);
+    // return registerAcademicProfile.mutate(data);
   };
 
   return (
     <div className="flex h-full flex-col justify-center items-center p-4">
       <div className="w-full max-w-md">
-        {/* <UserProfileForm
-          onSubmitLabel="Next"
-          values={userProfile}
-          onSubmit={(val) => {
-            setUserProfile(val as IUserProfile);
-            setFormIndex((prev) => prev + 1);
-          }}
-          className={cn({
-            hidden: formIndex !== 0,
-          })}
-        /> */}
-        {/* <AddressForm
-          values={userProfile?.address}
-          
-          
-         
-          onSubmitLoading={registerUserProfile.isPending}
-          onSubmit={(val) => {
-            handleSave({ ...userProfile, address: val } as IUserProfile);
-          }}
-          className={cn({
-            hidden: formIndex !== 1,
-          })}
-        /> */}
-
         <AcademicProfileForm
+          values={academicProfile}
           onSubmit={(val) => {
             setAcademicProfile(val as IAcademicProfile);
             setFormIndex((prev) => prev + 1);
@@ -91,6 +72,7 @@ const AcademicProfile = () => {
           })}
         />
         <StudentGuardianForm
+          values={academicProfile?.guardians?.[0]}
           onSubmit={(val) => {
             handleSave({
               ...academicProfile,

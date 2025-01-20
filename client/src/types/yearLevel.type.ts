@@ -1,4 +1,4 @@
-export interface Course {
+export interface YearLevel {
   _id: string;
   name: string;
   description: string;

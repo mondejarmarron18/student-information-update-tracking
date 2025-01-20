@@ -41,7 +41,7 @@ export type FormField = {
       type: "select" | "radio";
       options: {
         label: string;
-        value: unknown;
+        value: string | number;
         tooltip?: string;
       }[];
     }

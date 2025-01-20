@@ -18,6 +18,7 @@ import UserAccountMenu from "../UserAccountMenu";
 import { Card } from "@/components/ui/card";
 import { PiChatsCircleFill } from "react-icons/pi";
 import { AiOutlineAudit } from "react-icons/ai";
+import { LiaSchoolSolid } from "react-icons/lia";
 
 type NavItems = {
   name: string;
@@ -30,6 +31,10 @@ export const navItems: NavItems[] = [
   {
     ...routePaths.dashboard,
     iconType: MdSpaceDashboard,
+  },
+  {
+    ...routePaths.academicInfoMgmt,
+    iconType: LiaSchoolSolid,
   },
   {
     ...routePaths.conversations,

@@ -20,28 +20,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import allSpecializations, { Specialization } from "@/constants/specialization";
-import courseSpecializations from "@/constants/courseSpecializations";
+
+import useAcademicProfileValues from "./useAcaemicProfileValues";
+import useCourses from "@/hooks/userCourses";
+import useCourseSpecializations from "@/hooks/useCourseSpecializations";
 
 const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
   const { form } = useAcademicProfileForm();
-  const [specializations, setSpecializations] = useState<Specialization[]>([]);
-  const course = form.watch("course");
+  const courseId = form.watch("course");
+  const courses = useCourses();
+  const courseSpecializations = useCourseSpecializations({ courseId });
+  const coursesList = courses.data?.data || [];
+  const courseSpeciliazationList = courseSpecializations.data?.data || [];
 
-  useEffect(() => {
-    const result = courseSpecializations.filter((courseSpecialization) => {
-      return courseSpecialization.courseId === course;
-    });
-
-    const _specializations = allSpecializations.filter((specialization) => {
-      return result.some((courseSpecialization) => {
-        return courseSpecialization.specializationId === specialization.id;
-      });
-    });
-
-    setSpecializations(_specializations);
-  }, [course]);
+  useAcademicProfileValues({
+    values: props.values,
+    form,
+  });
 
   const onSubmit = (values: AcademicProfileFormProps) => {
     props.onSubmit(values);
@@ -104,12 +99,33 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
     );
   };
 
+  const renderSelectOptions = (
+    fieldName: keyof AcademicProfileFormProps
+  ): { value: string; label: string }[] => {
+    if (fieldName === "course") {
+      return coursesList.map((course) => ({
+        value: course._id,
+        label: course.name,
+      }));
+    }
+
+    if (fieldName === "specialization") {
+      return courseSpeciliazationList.map((specialization) => ({
+        value: specialization._id,
+        label: specialization.name,
+      }));
+    }
+
+    return [];
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn("flex flex-col gap-6", props.className)}
       >
+        <h2 className="text-xl font-semibold">Student Information</h2>
         {formFields.map((formField) => (
           <FormField
             key={formField.name}
@@ -128,35 +144,37 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
                   </FormControl>
                 ) : (
                   <Select
+                    key={courseId}
                     onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
+                    defaultValue={`${field.value}`}
+                    value={`${field.value}`}
                   >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={formField.placeholder} />
                       </SelectTrigger>
                     </FormControl>
-                    {formField.name === "specialization" ? (
+                    {formField.type === "select" && (
                       <SelectContent>
-                        {specializations.map((specialization) => (
-                          <SelectItem
-                            key={specialization.id}
-                            value={specialization.id}
-                          >
-                            {specialization.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    ) : (
-                      <SelectContent>
-                        {formField.options.map((option) => (
-                          <SelectItem
-                            key={`${option.value}`}
-                            value={`${option.value}`}
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))}
+                        {formField.name !== "yearLevel"
+                          ? renderSelectOptions(formField.name).map(
+                              (option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              )
+                            )
+                          : formField.options.map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={`${option.value}`}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
                       </SelectContent>
                     )}
                   </Select>
@@ -167,7 +185,22 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
           />
         ))}
 
-        <Button type="submit">{props.onSubmitLabel || "Submit"}</Button>
+        <div className="mt-2 flex gap-2">
+          {props.onCancelLabel && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="flex-1"
+              onClick={props.onCancel}
+            >
+              {props.onCancelLabel}
+            </Button>
+          )}
+
+          <Button type="submit" className="flex-1">
+            {props.onSubmitLabel || "Submit"}
+          </Button>
+        </div>
       </form>
     </Form>
   );
