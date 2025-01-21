@@ -22,6 +22,7 @@ import { SlOptionsVertical } from "react-icons/sl";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import useCourses from "@/hooks/userCourses";
 import { Button } from "@/components/ui/button";
+import CourseDialog from "@/components/common/CourseDialog";
 
 const CoursesTable = () => {
   const courses = useCourses();
@@ -42,7 +43,7 @@ const CoursesTable = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/3 mr-4"
         />
-        <Button>Add Course</Button>
+        <CourseDialog trigger={<Button>Add Course</Button>} />
       </div>
 
       {/* Table */}

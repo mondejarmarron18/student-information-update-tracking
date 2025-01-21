@@ -1,10 +1,10 @@
 import { z } from "zod";
+import customErrors from "../../../constants/customErrors";
 import { IMiddlware } from "../../../types/middleware";
 import CustomResponse from "../../../utils/CustomResponse";
-import customErrors from "../../../constants/customErrors";
 
-export default class CourseMiddlewarre {
-  getCourseSpecializations: IMiddlware = (req, res, next) => {
+export default class SpecializationMiddleware {
+  getSpecializationsByCourseId: IMiddlware = async (req, res, next) => {
     const validate = z.object({
       courseId: z.string().nonempty("Course ID is required"),
     });
@@ -21,14 +21,18 @@ export default class CourseMiddlewarre {
     next();
   };
 
-  createCourse: IMiddlware = (req, res, next) => {
+  createSpecialization: IMiddlware = (req, res, next) => {
     const validate = z.object({
+      courseId: z.string().nonempty("Course ID is required"),
       name: z.string().nonempty("Name is required"),
       description: z.string().nonempty("Description is required"),
       details: z.string().optional(),
     });
 
-    const { error } = validate.safeParse(req.body);
+    const { error } = validate.safeParse({
+      ...req.body,
+      courseId: req.params.courseId,
+    });
 
     if (error) {
       return CustomResponse.sendError(res, {
@@ -40,9 +44,9 @@ export default class CourseMiddlewarre {
     next();
   };
 
-  updateCourse: IMiddlware = (req, res, next) => {
+  updateSpecialization: IMiddlware = (req, res, next) => {
     const validate = z.object({
-      courseId: z.string().nonempty("Course ID is required"),
+      specializationId: z.string().nonempty("Specialization ID is required"),
       name: z.string().nonempty("Name is required"),
       description: z.string().nonempty("Description is required"),
       details: z.string().optional(),
@@ -50,7 +54,7 @@ export default class CourseMiddlewarre {
 
     const { error } = validate.safeParse({
       ...req.body,
-      courseId: req.params.courseId,
+      specializationId: req.params.specializationId,
     });
 
     if (error) {

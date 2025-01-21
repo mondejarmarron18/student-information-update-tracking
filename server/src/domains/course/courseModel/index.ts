@@ -5,7 +5,7 @@ export interface ICourse {
   _id: Types.ObjectId;
   name: string;
   description: string;
-  specializationIds: Types.ObjectId[];
+  details: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
@@ -14,30 +14,15 @@ export interface ICourse {
 const courseSchema = new Schema<ICourse>({
   name: {
     type: String,
-    unique: [true, "Specialization with this name already exists"],
+    unique: [true, "Course name already exists"],
     required: true,
   },
   description: {
     type: String,
     required: true,
   },
-  specializationIds: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "specialization",
-      },
-    ],
-    default: [],
-    validate: {
-      validator: function (value) {
-        return (
-          Array.isArray(value) &&
-          new Set(value.map(String)).size === value.length
-        );
-      },
-      message: "Specialization must not have duplicates",
-    },
+  details: {
+    type: String,
   },
   createdAt: {
     type: Date,

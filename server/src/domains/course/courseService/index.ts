@@ -1,3 +1,4 @@
+import { x8tAsync } from "x8t";
 import CustomError from "../../../utils/CustomError";
 import { ICourse } from "../courseModel";
 import CourseRepository from "../courseRepository";
@@ -18,20 +19,37 @@ export default class CourseService {
   };
 
   createCourse = async (
-    params: Pick<ICourse, "name" | "description" | "specializationIds">
+    params: Pick<ICourse, "name" | "description" | "details">
   ) => {
-    const isCourseNameExist = await this.courseRepository.isCourseNameExists(
-      params.name
-    );
+    return this.courseRepository.createCourse(params);
+  };
 
-    if (isCourseNameExist) {
-      return CustomError.badRequest({
-        description: "Course name already exists",
+  updateCourse = async (
+    id: ICourse["_id"],
+    params: Pick<ICourse, "name" | "description" | "details">
+  ) => {
+    const isCourseExist = await this.isCourseIdExists(id);
+
+    if (isCourseExist) {
+      return CustomError.notFound({
+        description: "Course not found",
       });
     }
 
-    // TODO: Validate the specialization ids if they are valid
+    return this.courseRepository.updateCourse(id, params);
+  };
 
-    return await this.courseRepository.createCourse(params);
+  isCourseIdExists = async (id: ICourse["_id"]) => {
+    const isCourseExist = await x8tAsync(
+      this.courseRepository.isCourseIdExists(id)
+    );
+
+    if (isCourseExist.error) {
+      return CustomError.internalServerError({
+        details: isCourseExist.error,
+      });
+    }
+
+    return !!isCourseExist.result;
   };
 }

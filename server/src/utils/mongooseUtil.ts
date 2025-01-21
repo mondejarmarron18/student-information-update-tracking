@@ -11,7 +11,7 @@ export type TConvertToObjectId = (id: string) =>
       error: string;
     };
 
-export const convertToObjectId: TConvertToObjectId = (id: string) => {
+export const convertToObjectId = (id: string) => {
   const defaultValue = {
     id: null,
     error: "Invalid id",
@@ -23,7 +23,7 @@ export const convertToObjectId: TConvertToObjectId = (id: string) => {
 
   const { result, error } = x8tSync(() => new Types.ObjectId(id));
 
-  if (error !== null || result === null) {
+  if (error || !result) {
     return defaultValue;
   }
 

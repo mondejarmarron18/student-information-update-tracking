@@ -8,24 +8,21 @@ export default class CourseRepository {
   }
 
   getCourses = async () => {
-    return await this.courseModel.find();
+    return await this.courseModel.find().lean();
   };
 
   getCourseById = async (id: ICourse["_id"]) => {
-    return await this.courseModel.findById(id);
+    return await this.courseModel.findById(id).lean();
   };
 
-  createCourse = async (
-    params: Pick<ICourse, "name" | "description" | "specializationIds">
-  ) => {
+  createCourse = async (params: Pick<ICourse, "name" | "description">) => {
     return await this.courseModel.create({
       name: params.name,
       description: params.description,
-      specializationIds: params.specializationIds,
     });
   };
 
-  isCourseExists = async (id: ICourse["_id"]) => {
+  isCourseIdExists = async (id: ICourse["_id"]) => {
     return await this.courseModel.exists({ _id: id });
   };
 
@@ -35,23 +32,38 @@ export default class CourseRepository {
 
   updateCourse = async (
     id: ICourse["_id"],
-    params: Pick<ICourse, "name" | "description" | "specializationIds">
+    params: Pick<ICourse, "name" | "description">
   ) => {
-    return await this.courseModel.findByIdAndUpdate(id, {
-      $set: {
-        name: params.name,
-        description: params.description,
-        specializationIds: params.specializationIds,
-        updatedAt: new Date(),
-      },
-    });
+    return await this.courseModel
+      .findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            name: params.name,
+            description: params.description,
+            updatedAt: new Date(),
+          },
+        },
+        {
+          new: true,
+        }
+      )
+      .lean();
   };
 
   deleteCourse = async (id: ICourse["_id"]) => {
-    return await this.courseModel.findByIdAndUpdate(id, {
-      $set: {
-        deletedAt: new Date(),
-      },
-    });
+    return await this.courseModel
+      .findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            deletedAt: new Date(),
+          },
+        },
+        {
+          new: true,
+        }
+      )
+      .lean();
   };
 }

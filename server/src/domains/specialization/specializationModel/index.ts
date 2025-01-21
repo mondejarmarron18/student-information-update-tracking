@@ -3,6 +3,7 @@ import { schemaName } from "../../../constants/schemaName";
 
 export interface ISpecialization {
   _id: Types.ObjectId;
+  courseId: Types.ObjectId;
   name: string;
   description: string;
   details: string;
@@ -12,9 +13,13 @@ export interface ISpecialization {
 }
 
 const specializationSchema = new Schema<ISpecialization>({
+  courseId: {
+    type: Schema.Types.ObjectId,
+    ref: "course",
+    required: true,
+  },
   name: {
     type: String,
-    unique: [true, "Specialization with this name already exists"],
     required: true,
   },
   description: {
@@ -37,6 +42,8 @@ const specializationSchema = new Schema<ISpecialization>({
     default: null,
   },
 });
+
+specializationSchema.index({ courseId: 1, name: 1 }, { unique: true });
 
 const SpecializationModel = model<ISpecialization>(
   schemaName.SPECIALIZATION,

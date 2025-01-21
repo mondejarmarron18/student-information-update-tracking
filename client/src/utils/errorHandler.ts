@@ -5,13 +5,20 @@ export const reactQueryError = (error: Error): ApiResponseError => {
   if (error instanceof AxiosError) {
     const apiError: ApiResponseError = error.response?.data;
 
-    return apiError;
+    if (apiError.status) return apiError;
+
+    return {
+      status: 404,
+      message: "Not Found",
+      description: "The requested resource was not found.",
+      details: error.stack,
+    };
   }
 
   return {
     status: 500,
-    message: error.name,
-    description: error.message,
+    message: "Internal Server Error",
+    description: "Something went wrong on the server.",
     details: error.stack,
   };
 };

@@ -8,6 +8,8 @@ import acadProfileRoute from "./domains/acadProfile/acadProfileRoute";
 import updateRequestRoute from "./domains/updateRequest/updateRequestRoute";
 import auditLogRoute from "./domains/auditLog/auditLogRoute";
 import courseRoute from "./domains/course/courseRoute";
+import yearLevelRoute from "./domains/yearLevel/yearLevelRoute";
+import specializationRoute from "./domains/specialization/specializationRoute";
 
 const routes = Router();
 
@@ -19,6 +21,8 @@ routes.use("/academic-profiles", acadProfileRoute);
 routes.use("/update-requests", updateRequestRoute);
 routes.use("/audit-logs", auditLogRoute);
 routes.use("/courses", courseRoute);
+routes.use("/specializations", specializationRoute);
+routes.use("/year-levels", yearLevelRoute);
 
 // Documentation route
 routes.use("/docs", swaggerServe, swaggerSetup);

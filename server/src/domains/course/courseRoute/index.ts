@@ -15,4 +15,12 @@ courseRoute.get(
   courseController.getCourseSpecializations
 );
 
+courseRoute.post(
+  "/",
+  [authMiddleware, courseMiddleware.createCourse],
+  courseController.createCourse
+);
+
+courseRoute.put("/:courseId", [authMiddleware], courseController.updateCourse);
+
 export default courseRoute;

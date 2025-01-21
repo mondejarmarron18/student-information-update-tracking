@@ -20,7 +20,7 @@ export default class YearLevelController {
     CustomResponse.sendSuccess(res, {
       status: 200,
       message: "Year levels retrieved successfully",
-      data: yearLevels,
+      data: yearLevels.result,
     });
   };
 
