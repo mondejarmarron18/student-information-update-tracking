@@ -17,38 +17,17 @@ const formFields: Fields[] = [
     label: "Year Level",
     type: "select",
     placeholder: "Select year level",
-    options: [
-      {
-        label: "1st Year",
-        value: 1,
-      },
-      {
-        label: "2nd Year",
-        value: 2,
-      },
-      {
-        label: "3rd Year",
-        value: 3,
-      },
-      {
-        label: "4th Year",
-        value: 4,
-      },
-      {
-        label: "5th Year",
-        value: 5,
-      },
-    ],
+    options: [],
   },
   {
-    name: "course",
+    name: "courseId",
     label: "Course",
     type: "select",
     placeholder: "Select course",
     options: [],
   },
   {
-    name: "specialization",
+    name: "specializationId",
     label: "Specialization",
     type: "select",
     placeholder: "Select specialization",

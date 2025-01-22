@@ -9,6 +9,7 @@ import {
   contactMethodsValue,
   ContactMethodsValue,
 } from "../../../constants/contactMethods";
+import { schemaName } from "../../../constants/schemaName";
 
 const acadProfileContent = new Schema<IAcadProfile>(
   {
@@ -28,11 +29,12 @@ const acadProfileContent = new Schema<IAcadProfile>(
     },
     courseId: {
       type: Schema.Types.ObjectId,
-      ref: "course",
+      ref: schemaName.COURSE,
       required: true,
     },
-    specialization: {
-      type: String,
+    specializationId: {
+      type: Schema.Types.ObjectId,
+      ref: schemaName.SPECIALIZATION,
       required: true,
     },
     guardians: {

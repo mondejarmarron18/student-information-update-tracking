@@ -7,40 +7,79 @@ export default class CourseRepository {
     this.courseModel = courseModel;
   }
 
-  getCourses = async () => {
-    return await this.courseModel.find().lean();
+  getCourses = () => {
+    return this.courseModel.aggregate([
+      {
+        $lookup: {
+          from: "userprofiles",
+          localField: "creatorId",
+          foreignField: "userId",
+          as: "creator",
+        },
+      },
+      {
+        $unwind: {
+          path: "$creator",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "userprofiles",
+          localField: "updaterId",
+          foreignField: "userId",
+          as: "updater",
+        },
+      },
+      {
+        $unwind: {
+          path: "$creator",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
   };
 
-  getCourseById = async (id: ICourse["_id"]) => {
-    return await this.courseModel.findById(id).lean();
+  getCourseById = (id: ICourse["_id"]) => {
+    return this.courseModel
+      .findById({ _id: id })
+      .populate("creatorId", "userId")
+      .populate("updaterId", "userId");
   };
 
-  createCourse = async (params: Pick<ICourse, "name" | "description">) => {
-    return await this.courseModel.create({
+  createCourse = (
+    params: Pick<ICourse, "creatorId" | "name" | "description" | "details">
+  ) => {
+    return this.courseModel.create({
+      creatorId: params.creatorId,
+      updaterId: params.creatorId,
       name: params.name,
       description: params.description,
+      details: params.details,
     });
   };
 
-  isCourseIdExists = async (id: ICourse["_id"]) => {
-    return await this.courseModel.exists({ _id: id });
+  isCourseIdExists = (id: ICourse["_id"]) => {
+    return this.courseModel.exists({ _id: id });
   };
 
-  isCourseNameExists = async (name: ICourse["name"]) => {
-    return await this.courseModel.exists({ name });
+  isCourseNameExists = (name: ICourse["name"]) => {
+    return this.courseModel.exists({ name });
   };
 
-  updateCourse = async (
+  updateCourse = (
     id: ICourse["_id"],
-    params: Pick<ICourse, "name" | "description">
+    params: Pick<ICourse, "updaterId" | "name" | "description" | "details">
   ) => {
-    return await this.courseModel
+    return this.courseModel
       .findByIdAndUpdate(
         id,
         {
           $set: {
             name: params.name,
             description: params.description,
+            details: params.details,
+            updatedById: params.updaterId,
             updatedAt: new Date(),
           },
         },
@@ -48,11 +87,13 @@ export default class CourseRepository {
           new: true,
         }
       )
+      .populate("creatorId")
+      .populate("updaterId")
       .lean();
   };
 
-  deleteCourse = async (id: ICourse["_id"]) => {
-    return await this.courseModel
+  deleteCourse = (id: ICourse["_id"]) => {
+    return this.courseModel
       .findByIdAndUpdate(
         id,
         {

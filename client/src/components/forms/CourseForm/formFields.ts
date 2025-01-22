@@ -15,16 +15,10 @@ const formFields: (FormField & { name: keyof CourseFormProps })[] = [
     placeholder: "Course description...",
   },
   {
-    name: "specializationIds",
-    label: "Specializations",
-    type: "select",
-    placeholder: "Select specializations",
-    options: [
-      {
-        label: "Specialization 1",
-        value: "1",
-      },
-    ],
+    name: "details",
+    label: "Details",
+    type: "richtext",
+    placeholder: "Course details...",
   },
 ];
 

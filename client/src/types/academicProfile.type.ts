@@ -10,8 +10,8 @@ export type IGuardian = {
 
 export type IAcademicProfile = {
   learnerReferenceNumber: string;
-  yearLevel: number;
-  course: string;
-  specialization: string;
+  yearLevelId: string;
+  courseId: string;
+  specializationId: string;
   guardians: IGuardian[];
 };

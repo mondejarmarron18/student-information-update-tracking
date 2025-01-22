@@ -38,7 +38,7 @@ type FormData = z.infer<typeof formSchema>;
 
 const ApproveUpdateRequestDialog = (props: Props) => {
   const { trigger, updateRequestId } = props;
-  const { mutate, isPending, isSuccess } = useApproveUpdateRequest({
+  const { mutate, isPending, isSuccess, reset } = useApproveUpdateRequest({
     updateRequestId,
   });
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +50,10 @@ const ApproveUpdateRequestDialog = (props: Props) => {
     if (isSuccess) {
       setIsOpen(false);
     }
+
+    return () => {
+      reset();
+    };
   }, [isSuccess]);
 
   const onSubmit = (data: FormData) => {

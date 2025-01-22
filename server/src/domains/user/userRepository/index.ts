@@ -17,7 +17,7 @@ export default class UserRepository {
   };
 
   getUserById = (id: IUser["_id"]) => {
-    return this.userModel.findById(id).populate("roleId");
+    return this.userModel.findById(id).populate("roleId").lean();
   };
 
   getUsers = () => {

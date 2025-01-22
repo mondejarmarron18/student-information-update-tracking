@@ -8,7 +8,7 @@ export interface IAcadProfile {
   learnerReferenceNumber: string;
   yearLevelId: Types.ObjectId;
   courseId: Types.ObjectId;
-  specialization: string;
+  specializationId: Types.ObjectId;
   guardians: IGuardian[];
   createdAt: Date;
   updatedAt: Date;
@@ -29,16 +29,17 @@ const acadProfileSchema = new Schema<IAcadProfile>({
   },
   yearLevelId: {
     type: Schema.Types.ObjectId,
-    ref: "yearLevel",
+    ref: schemaName.YEAR_LEVEL,
     required: true,
   },
   courseId: {
     type: Schema.Types.ObjectId,
-    ref: "course",
+    ref: schemaName.COURSE,
     required: true,
   },
-  specialization: {
-    type: String,
+  specializationId: {
+    type: Schema.Types.ObjectId,
+    ref: schemaName.SPECIALIZATION,
     required: true,
   },
   guardians: {

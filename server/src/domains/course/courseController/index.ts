@@ -14,11 +14,16 @@ export default class CourseController {
     this.courseService = new CourseService();
   }
 
-  getCourses = (req: Request, res: Response) => {
+  getCourses = async (req: Request, res: Response) => {
+    const courses = await x8tAsync(this.courseService.getCourses());
+
+    if (courses.error)
+      return CustomResponse.sendHandledError(res, courses.error);
+
     CustomResponse.sendSuccess(res, {
       status: 200,
       message: "Courses retrieved successfully",
-      data: [],
+      data: courses.result,
     });
   };
 
@@ -45,7 +50,20 @@ export default class CourseController {
   };
 
   createCourse = async (req: Request, res: Response) => {
-    const newCourse = await x8tAsync(this.courseService.createCourse(req.body));
+    const creatorId = req.user?._id;
+
+    if (!creatorId) {
+      return CustomResponse.sendHandledError(res, {
+        ...customErrors.unauthorized,
+      });
+    }
+
+    const newCourse = await x8tAsync(
+      this.courseService.createCourse({
+        ...req.body,
+        creatorId,
+      })
+    );
 
     if (newCourse.error)
       return CustomResponse.sendHandledError(res, newCourse.error);
@@ -58,6 +76,14 @@ export default class CourseController {
   };
 
   updateCourse = async (req: Request, res: Response) => {
+    const updaterId = req.user?._id;
+
+    if (!updaterId) {
+      return CustomResponse.sendHandledError(res, {
+        ...customErrors.unauthorized,
+      });
+    }
+
     const { id, error: idError } = convertToObjectId(req.params.id);
 
     if (idError || !id) {
@@ -68,7 +94,10 @@ export default class CourseController {
     }
 
     const updatedCourse = await x8tAsync(
-      this.courseService.updateCourse(id, req.body)
+      this.courseService.updateCourse(id, {
+        ...req.body,
+        updaterId,
+      })
     );
 
     if (updatedCourse.error)

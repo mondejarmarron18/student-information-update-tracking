@@ -136,7 +136,7 @@ export default class UserService {
   };
 
   isUserIdExists = (id: IUser["_id"]) => {
-    return this.userRepository.getUserById(id);
+    return this.userRepository.getUserById(id)
   };
 
   deleteUser = (id: IUser["_id"]) => {

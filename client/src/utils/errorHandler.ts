@@ -5,7 +5,7 @@ export const reactQueryError = (error: Error): ApiResponseError => {
   if (error instanceof AxiosError) {
     const apiError: ApiResponseError = error.response?.data;
 
-    if (apiError.status) return apiError;
+    if (apiError?.status) return apiError;
 
     return {
       status: 404,

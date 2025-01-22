@@ -6,11 +6,15 @@ import { Course } from "@/types/course.type";
 import { CourseFormProps } from "@/components/forms/CourseForm/schema";
 import useCourses from "./useCourses";
 
-const useCreateCourse = () => {
+const useUpdateCourse = () => {
   const courses = useCourses({ enabled: false });
   const { error, ...mutation } = useMutation({
-    mutationFn: (data: CourseFormProps) => {
-      return api.post<ApiResponseSuccess<Course>>("/courses", data);
+    mutationFn: (data: CourseFormProps & { courseId: string }) => {
+      return api.put<ApiResponseSuccess<Course>>(`/courses/${data.courseId}`, {
+        name: data.name,
+        description: data.description,
+        details: data.details,
+      });
     },
     onSuccess: () => courses.refetch(),
   });
@@ -23,4 +27,4 @@ const useCreateCourse = () => {
   };
 };
 
-export default useCreateCourse;
+export default useUpdateCourse;

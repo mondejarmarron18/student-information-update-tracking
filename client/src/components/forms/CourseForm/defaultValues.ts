@@ -3,7 +3,7 @@ import { CourseFormProps } from "./schema";
 const defaultValues: CourseFormProps = {
   name: "",
   description: "",
-  specializationIds: [],
+  details: "",
 };
 
 export default defaultValues;

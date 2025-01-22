@@ -2,12 +2,15 @@ import { x8tAsync } from "x8t";
 import CustomError from "../../../utils/CustomError";
 import { ICourse } from "../courseModel";
 import CourseRepository from "../courseRepository";
+import UserService from "../../user/userService";
 
 export default class CourseService {
   private courseRepository: CourseRepository;
+  private userService: UserService;
 
   constructor() {
     this.courseRepository = new CourseRepository();
+    this.userService = new UserService();
   }
 
   getCourses = async () => {
@@ -19,14 +22,25 @@ export default class CourseService {
   };
 
   createCourse = async (
-    params: Pick<ICourse, "name" | "description" | "details">
+    params: Pick<ICourse, "creatorId" | "name" | "description" | "details">
   ) => {
-    return this.courseRepository.createCourse(params);
+    const isCreatorExist = await this.userService.isUserIdExists(
+      params.creatorId
+    );
+
+    if (!isCreatorExist) {
+      return CustomError.forbidden();
+    }
+
+    return this.courseRepository.createCourse({
+      ...params,
+      creatorId: params.creatorId,
+    });
   };
 
   updateCourse = async (
     id: ICourse["_id"],
-    params: Pick<ICourse, "name" | "description" | "details">
+    params: Pick<ICourse, "updaterId" | "name" | "description" | "details">
   ) => {
     const isCourseExist = await this.isCourseIdExists(id);
 
@@ -36,7 +50,18 @@ export default class CourseService {
       });
     }
 
-    return this.courseRepository.updateCourse(id, params);
+    const isUpdaterExist = await this.userService.isUserIdExists(
+      params.updaterId
+    );
+
+    if (!isUpdaterExist) {
+      return CustomError.forbidden();
+    }
+
+    return this.courseRepository.updateCourse(id, {
+      ...params,
+      updaterId: params.updaterId,
+    });
   };
 
   isCourseIdExists = async (id: ICourse["_id"]) => {

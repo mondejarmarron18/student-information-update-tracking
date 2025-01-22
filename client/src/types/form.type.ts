@@ -35,7 +35,8 @@ export type FormField = {
         | "checkbox"
         | "tel"
         | "number"
-        | "textarea";
+        | "textarea"
+        | "richtext";
     }
   | {
       type: "select" | "radio";

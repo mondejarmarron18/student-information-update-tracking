@@ -16,6 +16,6 @@ export const validateAcadProfile = z.object({
     .nonempty("Learner reference number is required"),
   yearLevelId: z.string().nonempty("Year level is required"),
   courseId: z.string().nonempty("Course is required"),
-  specialization: z.string().nonempty("Specialization is required"),
+  specializationId: z.string().nonempty("Specialization is required"),
   guardians: z.array(validateGuardian).nonempty("Guardian is required"),
 });

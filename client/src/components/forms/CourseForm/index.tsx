@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import RichText from "@/components/common/RichText";
 
 const RegisterForm = (props: FormProps<CourseFormProps>) => {
   const { form } = useCourseForm();
@@ -50,6 +51,12 @@ const RegisterForm = (props: FormProps<CourseFormProps>) => {
                       <Textarea
                         placeholder={formField.placeholder}
                         {...field}
+                      />
+                    ) : formField.type === "richtext" ? (
+                      <RichText
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder={formField.placeholder}
                       />
                     ) : (
                       <Input

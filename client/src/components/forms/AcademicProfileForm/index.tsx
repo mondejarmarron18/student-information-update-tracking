@@ -22,12 +22,12 @@ import {
 } from "@/components/ui/select";
 
 import useAcademicProfileValues from "./useAcaemicProfileValues";
-import useCourses from "@/hooks/userCourses";
+import useCourses from "@/hooks/useCourses";
 import useCourseSpecializations from "@/hooks/useCourseSpecializations";
 
 const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
   const { form } = useAcademicProfileForm();
-  const courseId = form.watch("course");
+  const courseId = form.watch("courseId");
   const courses = useCourses();
   const courseSpecializations = useCourseSpecializations({ courseId });
   const coursesList = courses.data?.data || [];
@@ -102,14 +102,14 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
   const renderSelectOptions = (
     fieldName: keyof AcademicProfileFormProps
   ): { value: string; label: string }[] => {
-    if (fieldName === "course") {
+    if (fieldName === "courseId") {
       return coursesList.map((course) => ({
         value: course._id,
         label: course.name,
       }));
     }
 
-    if (fieldName === "specialization") {
+    if (fieldName === "specializationId") {
       return courseSpeciliazationList.map((specialization) => ({
         value: specialization._id,
         label: specialization.name,
@@ -133,7 +133,7 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
             name={formField.name}
             render={({ field }) => (
               <FormItem>
-                {formField.name === "specialization" && (
+                {formField.name === "specializationId" && (
                   <RenderSpecializationInfo />
                 )}
                 <FormLabel>{formField.label}</FormLabel>

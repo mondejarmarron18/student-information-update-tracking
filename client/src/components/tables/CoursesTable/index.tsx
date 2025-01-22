@@ -20,9 +20,11 @@ import {
 } from "@/components/ui/pagination";
 import { SlOptionsVertical } from "react-icons/sl";
 import { toDateTimeNumeric } from "@/utils/fomatter";
-import useCourses from "@/hooks/userCourses";
+import useCourses from "@/hooks/useCourses";
 import { Button } from "@/components/ui/button";
 import CourseDialog from "@/components/common/CourseDialog";
+import PopupMenu from "@/components/common/PopupMenu";
+import { routePaths } from "@/routes";
 
 const CoursesTable = () => {
   const courses = useCourses();
@@ -53,6 +55,7 @@ const CoursesTable = () => {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
+              <TableHead>Created By</TableHead>
               <TableHead>Date Created</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
@@ -63,11 +66,36 @@ const CoursesTable = () => {
                 <TableRow key={course._id}>
                   <TableCell>{course.name}</TableCell>
                   <TableCell>{course.description}</TableCell>
+                  <TableCell>
+                    {course.creator.firstName} {course.creator.lastName}
+                  </TableCell>
                   <TableCell>{toDateTimeNumeric(course.createdAt)}</TableCell>
                   <TableCell>
-                    <Button size={"icon"} variant={"ghost"}>
-                      <SlOptionsVertical />
-                    </Button>
+                    <PopupMenu
+                      trigger={
+                        <Button size={"icon"} variant={"ghost"}>
+                          <SlOptionsVertical />
+                        </Button>
+                      }
+                      menu={[
+                        {
+                          label: "View",
+                          link: `${routePaths.academicInfoMgmt.path}/courses/${course._id}`,
+                        },
+                        {
+                          label: "Edit",
+                          onClick: () => {
+                            // Handle edit action
+                          },
+                        },
+                        {
+                          label: "Delete",
+                          onClick: () => {
+                            // Handle delete action
+                          },
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))

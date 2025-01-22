@@ -3,6 +3,8 @@ import { schemaName } from "../../../constants/schemaName";
 
 export interface ICourse {
   _id: Types.ObjectId;
+  creatorId: Types.ObjectId;
+  updaterId: Types.ObjectId;
   name: string;
   description: string;
   details: string;
@@ -12,6 +14,16 @@ export interface ICourse {
 }
 
 const courseSchema = new Schema<ICourse>({
+  creatorId: {
+    type: Schema.Types.ObjectId,
+    ref: schemaName.USER_PROFILE,
+    required: true,
+  },
+  updaterId: {
+    type: Schema.Types.ObjectId,
+    ref: schemaName.USER_PROFILE,
+    required: true,
+  },
   name: {
     type: String,
     unique: [true, "Course name already exists"],

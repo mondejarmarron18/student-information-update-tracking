@@ -21,7 +21,8 @@ type Props = {
 const RejectUpdateRequestDialog = (props: Props) => {
   const { mutate: logout } = useLogout();
   const { trigger } = props;
-  const { mutate, isPending, isSuccess, error, isIdle } = useUpdatePassword();
+  const { mutate, isPending, isSuccess, error, isIdle, reset } =
+    useUpdatePassword();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -30,13 +31,16 @@ const RejectUpdateRequestDialog = (props: Props) => {
     }
 
     if (error && !isIdle) {
-      console.log(error);
       toast({
         title: error?.message,
         description: error?.description,
         variant: "destructive",
       });
     }
+
+    return () => {
+      reset();
+    };
   }, [error, isIdle, isSuccess, logout]);
 
   const onSubmit = (data: UpdatePasswordFormProps) => {

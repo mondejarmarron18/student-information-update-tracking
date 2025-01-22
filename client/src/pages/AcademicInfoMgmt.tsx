@@ -30,7 +30,7 @@ const AcademicInfoMgmt = () => {
   return (
     <div>
       <Tabs defaultValue={tabs[0].key}>
-        <TabsList className="mb-2">
+        <TabsList className="mb-2 mx-1">
           {tabs.map((tab) => (
             <TabsTrigger key={tab.key} value={tab.key}>
               {tab.label}
