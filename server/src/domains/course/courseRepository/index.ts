@@ -1,4 +1,11 @@
+import CustomError from "../../../utils/CustomError";
 import courseModel, { ICourse } from "../courseModel";
+import {
+  creatorProfile,
+  specializationsCount,
+  studentsCount,
+  updaterProfile,
+} from "./coursePipelines";
 
 export default class CourseRepository {
   private courseModel: typeof courseModel;
@@ -10,41 +17,38 @@ export default class CourseRepository {
   getCourses = () => {
     return this.courseModel.aggregate([
       {
-        $lookup: {
-          from: "userprofiles",
-          localField: "creatorId",
-          foreignField: "userId",
-          as: "creator",
+        $match: {
+          deletedAt: null,
         },
       },
+      ...creatorProfile,
+      ...updaterProfile,
+      ...specializationsCount,
+      ...studentsCount,
       {
-        $unwind: {
-          path: "$creator",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $lookup: {
-          from: "userprofiles",
-          localField: "updaterId",
-          foreignField: "userId",
-          as: "updater",
-        },
-      },
-      {
-        $unwind: {
-          path: "$creator",
-          preserveNullAndEmptyArrays: true,
+        $sort: {
+          updatedAt: -1,
         },
       },
     ]);
   };
 
-  getCourseById = (id: ICourse["_id"]) => {
-    return this.courseModel
-      .findById({ _id: id })
-      .populate("creatorId", "userId")
-      .populate("updaterId", "userId");
+  getCourseById = async (id: ICourse["_id"]) => {
+    const course = await this.courseModel.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      ...updaterProfile,
+      ...creatorProfile,
+      ...specializationsCount,
+      {
+        $limit: 1,
+      },
+    ]);
+
+    return course.length > 0 ? course[0] : CustomError.notFound();
   };
 
   createCourse = (
@@ -60,11 +64,11 @@ export default class CourseRepository {
   };
 
   isCourseIdExists = (id: ICourse["_id"]) => {
-    return this.courseModel.exists({ _id: id });
+    return this.courseModel.exists({ _id: id, deletedAt: null });
   };
 
   isCourseNameExists = (name: ICourse["name"]) => {
-    return this.courseModel.exists({ name });
+    return this.courseModel.exists({ name, deletedAt: null });
   };
 
   updateCourse = (
@@ -79,7 +83,7 @@ export default class CourseRepository {
             name: params.name,
             description: params.description,
             details: params.details,
-            updatedById: params.updaterId,
+            updaterId: params.updaterId,
             updatedAt: new Date(),
           },
         },
@@ -87,8 +91,6 @@ export default class CourseRepository {
           new: true,
         }
       )
-      .populate("creatorId")
-      .populate("updaterId")
       .lean();
   };
 

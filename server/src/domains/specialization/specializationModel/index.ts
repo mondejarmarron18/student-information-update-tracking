@@ -3,6 +3,8 @@ import { schemaName } from "../../../constants/schemaName";
 
 export interface ISpecialization {
   _id: Types.ObjectId;
+  creatorId: Types.ObjectId;
+  updaterId: Types.ObjectId;
   courseId: Types.ObjectId;
   name: string;
   description: string;
@@ -16,6 +18,16 @@ const specializationSchema = new Schema<ISpecialization>({
   courseId: {
     type: Schema.Types.ObjectId,
     ref: "course",
+    required: true,
+  },
+  creatorId: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  updaterId: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
     required: true,
   },
   name: {

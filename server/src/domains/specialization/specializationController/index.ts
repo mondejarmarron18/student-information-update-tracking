@@ -4,6 +4,7 @@ import SpecializationService from "../specializationService";
 import CustomResponse from "../../../utils/CustomResponse";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
 import customErrors from "../../../constants/customErrors";
+import { ISpecialization } from "../specializationModel";
 
 export default class SpecializationController {
   private specializationService: SpecializationService;
@@ -14,6 +15,11 @@ export default class SpecializationController {
 
   createSpecialization: IControllerFunction = async (req, res) => {
     const { id: courseId } = convertToObjectId(req.body.courseId);
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return CustomResponse.sendHandledError(res, customErrors.unauthorized);
+    }
 
     if (!courseId) {
       return CustomResponse.sendHandledError(res, {
@@ -25,8 +31,12 @@ export default class SpecializationController {
     const { result, error } = await x8tAsync(
       this.specializationService.createSpecialization({
         ...req.body,
-        courseId: courseId,
-      })
+        courseId,
+        creatorId: userId,
+      }),
+      {
+        log: true,
+      }
     );
 
     if (error || !result) return CustomResponse.sendHandledError(res, error);
@@ -39,9 +49,18 @@ export default class SpecializationController {
   };
 
   getSpecializations: IControllerFunction = async (req, res) => {
+    const filter: Partial<ISpecialization> = req.query;
+
+    if (filter.courseId) {
+      const { id } = convertToObjectId(`${filter.courseId}`);
+
+      filter.courseId = id || undefined;
+    }
+
     const { result, error } = await x8tAsync(
-      this.specializationService.getSpecializations()
+      this.specializationService.getSpecializations(filter)
     );
+
     if (error || !result) return CustomResponse.sendHandledError(res, error);
 
     CustomResponse.sendSuccess(res, {
@@ -52,7 +71,9 @@ export default class SpecializationController {
   };
 
   getSpecializationsByCourseId: IControllerFunction = async (req, res) => {
-    const { id, error: idError } = convertToObjectId(req.params.id);
+    const { id, error: idError } = convertToObjectId(
+      req.params.specializationId
+    );
 
     if (idError || !id) {
       return CustomResponse.sendHandledError(res, {
@@ -73,8 +94,10 @@ export default class SpecializationController {
     });
   };
 
-  updateSpecialization: IControllerFunction = async (req, res) => {
-    const { id, error: idError } = convertToObjectId(req.params.id);
+  getSpecializationById: IControllerFunction = async (req, res) => {
+    const { id, error: idError } = convertToObjectId(
+      req.params.specializationId
+    );
 
     if (idError || !id) {
       return CustomResponse.sendHandledError(res, {
@@ -84,7 +107,44 @@ export default class SpecializationController {
     }
 
     const { result, error } = await x8tAsync(
-      this.specializationService.updateSpecialization(id, req.body)
+      this.specializationService.getSpecializationById(id),
+      {
+        log: true,
+      }
+    );
+
+    if (error || !result) return CustomResponse.sendHandledError(res, error);
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      data: result,
+      message: "Specialization retrieved successfully",
+    });
+  };
+
+  updateSpecialization: IControllerFunction = async (req, res) => {
+    const { id, error: idError } = convertToObjectId(req.params.id);
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return CustomResponse.sendHandledError(res, customErrors.unauthorized);
+    }
+
+    if (idError || !id) {
+      return CustomResponse.sendHandledError(res, {
+        ...customErrors.badRequest,
+        description: "Invalid specialization ID",
+      });
+    }
+
+    const { result, error } = await x8tAsync(
+      this.specializationService.updateSpecialization(id, {
+        ...req.body,
+        updaterId: userId,
+      }),
+      {
+        log: true,
+      }
     );
 
     if (error || !result) return CustomResponse.sendHandledError(res, error);

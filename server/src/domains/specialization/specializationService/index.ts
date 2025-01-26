@@ -3,6 +3,7 @@ import CustomError from "../../../utils/CustomError";
 import CourseService from "../../course/courseService";
 import { ISpecialization } from "../specializationModel";
 import SpecializationRepository from "../specializationRepository";
+import { convertToObjectId } from "../../../utils/mongooseUtil";
 
 export default class SpecializationService {
   private specializationRepository: SpecializationRepository;
@@ -16,7 +17,7 @@ export default class SpecializationService {
   createSpecialization = async (
     params: Pick<
       ISpecialization,
-      "courseId" | "name" | "description" | "details"
+      "creatorId" | "courseId" | "name" | "description" | "details"
     >
   ) => {
     const isCourseIdExists = await this.courseService.isCourseIdExists(
@@ -24,16 +25,30 @@ export default class SpecializationService {
     );
 
     if (!isCourseIdExists) {
-      return CustomError.notFound({
-        description: "Course not found",
+      return CustomError.badRequest({
+        description: "Invalid course",
+      });
+    }
+
+    const isSpecializationExists =
+      await this.specializationRepository.isSpecializationNameAndCourseIdExists(
+        {
+          name: params.name,
+          courseId: params.courseId,
+        }
+      );
+
+    if (isSpecializationExists) {
+      return CustomError.alreadyExists({
+        description: "Specialization name under this course already exists",
       });
     }
 
     return this.specializationRepository.createSpecialization(params);
   };
 
-  getSpecializations = async () => {
-    return await this.specializationRepository.getSpecializations();
+  getSpecializations = async (filter: Partial<ISpecialization>) => {
+    return await this.specializationRepository.getSpecializations(filter);
   };
 
   getSpecializationsByCourseId = async (
@@ -66,18 +81,21 @@ export default class SpecializationService {
 
   updateSpecialization = async (
     id: ISpecialization["_id"],
-    params: Pick<ISpecialization, "name" | "description" | "details">
+    params: Pick<
+      ISpecialization,
+      "updaterId" | "name" | "description" | "details" | "courseId"
+    >
   ) => {
-    const isSpecializationExist =
-      await this.specializationRepository.isSpecializationExists(id);
+    const specialization =
+      await this.specializationRepository.updateSpecialization(id, params);
 
-    if (!isSpecializationExist) {
+    if (!specialization) {
       return CustomError.notFound({
         description: "Specialization not found",
       });
     }
 
-    return this.specializationRepository.updateSpecialization(id, params);
+    return specialization;
   };
 
   deleteSpecialization = (id: ISpecialization["_id"]) => {

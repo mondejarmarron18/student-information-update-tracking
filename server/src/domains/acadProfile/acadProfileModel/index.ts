@@ -6,7 +6,7 @@ export interface IAcadProfile {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   learnerReferenceNumber: string;
-  yearLevelId: Types.ObjectId;
+  yearLevel: number;
   courseId: Types.ObjectId;
   specializationId: Types.ObjectId;
   guardians: IGuardian[];
@@ -27,9 +27,8 @@ const acadProfileSchema = new Schema<IAcadProfile>({
     required: true,
     unique: [true, "Learner reference number already exists"],
   },
-  yearLevelId: {
-    type: Schema.Types.ObjectId,
-    ref: schemaName.YEAR_LEVEL,
+  yearLevel: {
+    type: Number,
     required: true,
   },
   courseId: {

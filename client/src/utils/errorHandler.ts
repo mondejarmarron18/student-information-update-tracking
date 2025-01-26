@@ -2,6 +2,8 @@ import { ApiResponseError } from "@/types/apiResponse.type";
 import { AxiosError } from "axios";
 
 export const reactQueryError = (error: Error): ApiResponseError => {
+  console.error(error);
+
   if (error instanceof AxiosError) {
     const apiError: ApiResponseError = error.response?.data;
 

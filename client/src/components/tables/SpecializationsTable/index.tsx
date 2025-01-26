@@ -18,15 +18,19 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { SlOptionsVertical } from "react-icons/sl";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import { Button } from "@/components/ui/button";
 import useSpecializations from "@/hooks/useSpecializations";
+import SpecializationDialog from "@/components/common/SpecializationDialog";
+import { routePaths } from "@/routes";
+import { Link, useParams } from "react-router";
 
 const SpecializationsTable = () => {
-  const specilizations = useSpecializations();
+  const { courseId } = useParams();
+  const specilizations = useSpecializations({
+    courseId,
+  });
   const specilizationsList = specilizations.data?.data || [];
-
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Set how many items you want to display per page
@@ -42,31 +46,46 @@ const SpecializationsTable = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/3 mr-4"
         />
-        <Button>Add Course</Button>
+        <SpecializationDialog trigger={<Button>Add Specialization</Button>} />
       </div>
 
-      {/* Table */}
       <Card>
         <Table>
           <TableHeader>
             <TableRow>
+              {!courseId && <TableHead>Course</TableHead>}
               <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Date Created</TableHead>
+              <TableHead>Students</TableHead>
+              <TableHead>Updated By</TableHead>
+              <TableHead>Date Updated</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {specilizationsList.length > 0 ? (
-              specilizationsList.map((course) => (
-                <TableRow key={course._id}>
-                  <TableCell>{course.name}</TableCell>
-                  <TableCell>{course.description}</TableCell>
-                  <TableCell>{toDateTimeNumeric(course.createdAt)}</TableCell>
+              specilizationsList.map((specialization) => (
+                <TableRow key={specialization._id}>
+                  {!courseId && (
+                    <TableCell>{specialization.course?.name}</TableCell>
+                  )}
+                  <TableCell>{specialization.studentsCount}</TableCell>
+                  <TableCell>{specialization.name}</TableCell>
                   <TableCell>
-                    <Button size={"icon"} variant={"ghost"}>
-                      <SlOptionsVertical />
-                    </Button>
+                    {specialization.updaterProfile?.firstName}{" "}
+                    {specialization.updaterProfile?.lastName}
+                  </TableCell>
+                  <TableCell>
+                    {toDateTimeNumeric(specialization.updatedAt)}
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      to={routePaths.specialization.path
+                        .replace(":specializationId", specialization._id)
+                        .replace(":courseId", courseId as string)}
+                      className="hover:text-primary"
+                    >
+                      View
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))
@@ -76,7 +95,7 @@ const SpecializationsTable = () => {
                   colSpan={4}
                   className="h-24 text-center text-gray-500"
                 >
-                  No Specializations found.
+                  No courses found.
                 </TableCell>
               </TableRow>
             )}

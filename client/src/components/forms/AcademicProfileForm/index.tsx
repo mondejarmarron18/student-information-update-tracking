@@ -13,25 +13,20 @@ import { AcademicProfileFormProps } from "./schema";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 import useAcademicProfileForm from "./useAcademicProfileForm";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import useAcademicProfileValues from "./useAcaemicProfileValues";
-import useCourses from "@/hooks/useCourses";
-import useCourseSpecializations from "@/hooks/useCourseSpecializations";
+import SelectCourseSpecialization from "@/components/common/SelectCourseSpecialization";
+import SelectCourse from "@/components/common/SelectCourse";
+import { ControllerRenderProps } from "react-hook-form";
+import { useEffect } from "react";
+import SelectYearLevel from "@/components/common/SelectYearLevel";
 
 const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
   const { form } = useAcademicProfileForm();
   const courseId = form.watch("courseId");
-  const courses = useCourses();
-  const courseSpecializations = useCourseSpecializations({ courseId });
-  const coursesList = courses.data?.data || [];
-  const courseSpeciliazationList = courseSpecializations.data?.data || [];
+
+  useEffect(() => {
+    form.setValue("specializationId", "");
+  }, [courseId]);
 
   useAcademicProfileValues({
     values: props.values,
@@ -99,24 +94,36 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
     );
   };
 
-  const renderSelectOptions = (
-    fieldName: keyof AcademicProfileFormProps
-  ): { value: string; label: string }[] => {
-    if (fieldName === "courseId") {
-      return coursesList.map((course) => ({
-        value: course._id,
-        label: course.name,
-      }));
-    }
+  const renderSelect = (
+    formField: (typeof formFields)[number],
+    field: ControllerRenderProps<AcademicProfileFormProps>
+  ) => {
+    if (formField.name === "courseId")
+      return (
+        <SelectCourse
+          placeholder={formField.placeholder}
+          value={field.value as string}
+          onValueChange={field.onChange}
+        />
+      );
 
-    if (fieldName === "specializationId") {
-      return courseSpeciliazationList.map((specialization) => ({
-        value: specialization._id,
-        label: specialization.name,
-      }));
-    }
+    if (formField.name === "specializationId")
+      return (
+        <SelectCourseSpecialization
+          courseId={courseId}
+          placeholder={formField.placeholder}
+          value={field.value as string}
+          onValueChange={field.onChange}
+        />
+      );
 
-    return [];
+    return (
+      <SelectYearLevel
+        placeholder={formField.placeholder}
+        value={field.value}
+        onValueChange={(value) => field.onChange(value)}
+      />
+    );
   };
 
   return (
@@ -138,46 +145,12 @@ const AcademicProfileForm = (props: FormProps<AcademicProfileFormProps>) => {
                 )}
                 <FormLabel>{formField.label}</FormLabel>
 
-                {formField.type !== "select" ? (
+                {formField.type === "select" ? (
+                  renderSelect(formField, field)
+                ) : (
                   <FormControl>
                     <Input placeholder={formField.placeholder} {...field} />
                   </FormControl>
-                ) : (
-                  <Select
-                    key={courseId}
-                    onValueChange={field.onChange}
-                    defaultValue={`${field.value}`}
-                    value={`${field.value}`}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={formField.placeholder} />
-                      </SelectTrigger>
-                    </FormControl>
-                    {formField.type === "select" && (
-                      <SelectContent>
-                        {formField.name !== "yearLevel"
-                          ? renderSelectOptions(formField.name).map(
-                              (option) => (
-                                <SelectItem
-                                  key={option.value}
-                                  value={option.value}
-                                >
-                                  {option.label}
-                                </SelectItem>
-                              )
-                            )
-                          : formField.options.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={`${option.value}`}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                      </SelectContent>
-                    )}
-                  </Select>
                 )}
                 <FormMessage />
               </FormItem>

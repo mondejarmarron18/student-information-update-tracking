@@ -8,8 +8,8 @@ import acadProfileRoute from "./domains/acadProfile/acadProfileRoute";
 import updateRequestRoute from "./domains/updateRequest/updateRequestRoute";
 import auditLogRoute from "./domains/auditLog/auditLogRoute";
 import courseRoute from "./domains/course/courseRoute";
-import yearLevelRoute from "./domains/yearLevel/yearLevelRoute";
 import specializationRoute from "./domains/specialization/specializationRoute";
+import yearLevelRoute from "./domains/yearLevel/yearLevelRoute";
 
 const routes = Router();
 

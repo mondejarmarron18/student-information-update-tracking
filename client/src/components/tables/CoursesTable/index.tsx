@@ -18,13 +18,12 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { SlOptionsVertical } from "react-icons/sl";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import useCourses from "@/hooks/useCourses";
 import { Button } from "@/components/ui/button";
 import CourseDialog from "@/components/common/CourseDialog";
-import PopupMenu from "@/components/common/PopupMenu";
 import { routePaths } from "@/routes";
+import { Link } from "react-router";
 
 const CoursesTable = () => {
   const courses = useCourses();
@@ -54,9 +53,10 @@ const CoursesTable = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Created By</TableHead>
-              <TableHead>Date Created</TableHead>
+              <TableHead>Students</TableHead>
+              <TableHead>Specializations</TableHead>
+              <TableHead>Updated By</TableHead>
+              <TableHead>Date Updated</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -65,37 +65,23 @@ const CoursesTable = () => {
               coursesList.map((course) => (
                 <TableRow key={course._id}>
                   <TableCell>{course.name}</TableCell>
-                  <TableCell>{course.description}</TableCell>
+                  <TableCell>{course.studentsCount}</TableCell>
+                  <TableCell>{course.specializationsCount}</TableCell>
                   <TableCell>
-                    {course.creator.firstName} {course.creator.lastName}
+                    {course.updaterProfile?.firstName}{" "}
+                    {course.updaterProfile?.lastName}
                   </TableCell>
-                  <TableCell>{toDateTimeNumeric(course.createdAt)}</TableCell>
+                  <TableCell>{toDateTimeNumeric(course.updatedAt)}</TableCell>
                   <TableCell>
-                    <PopupMenu
-                      trigger={
-                        <Button size={"icon"} variant={"ghost"}>
-                          <SlOptionsVertical />
-                        </Button>
-                      }
-                      menu={[
-                        {
-                          label: "View",
-                          link: `${routePaths.academicInfoMgmt.path}/courses/${course._id}`,
-                        },
-                        {
-                          label: "Edit",
-                          onClick: () => {
-                            // Handle edit action
-                          },
-                        },
-                        {
-                          label: "Delete",
-                          onClick: () => {
-                            // Handle delete action
-                          },
-                        },
-                      ]}
-                    />
+                    <Link
+                      to={routePaths.course.path.replace(
+                        ":courseId",
+                        course._id
+                      )}
+                      className="text-primary hover:underline"
+                    >
+                      View
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

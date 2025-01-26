@@ -12,6 +12,7 @@ import { CourseFormProps } from "@/components/forms/CourseForm/schema";
 import useCreateCourse from "@/hooks/useCreateCourse";
 import { toast } from "@/hooks/use-toast";
 import useUpdateCourse from "@/hooks/useUpdateCourse";
+import useCourse from "@/hooks/useCourse";
 
 type Props = {
   courseId?: string;
@@ -20,9 +21,12 @@ type Props = {
 
 const CourseDialog = (props: Props) => {
   const { trigger } = props;
+  const course = useCourse({ courseId: props.courseId || "" });
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
   const [isOpen, setIsOpen] = useState(false);
+
+  const error = createCourse.error || updateCourse.error;
 
   useEffect(() => {
     if (createCourse.isSuccess || updateCourse.isSuccess) {
@@ -67,16 +71,13 @@ const CourseDialog = (props: Props) => {
           </DialogDescription>
         </DialogHeader>
         <CourseForm
-          error={
-            createCourse.error
-              ? { description: createCourse.error.description }
-              : undefined
-          }
+          values={course.data?.data}
+          error={error ? { description: error.description } : undefined}
           onCancel={() => setIsOpen(false)}
           onCancelLabel={"Cancel"}
           onSubmitLabel={props.courseId ? "Update" : "Save"}
           onSubmit={onSubmit}
-          onSubmitLoading={createCourse.isPending}
+          onSubmitLoading={createCourse.isPending || updateCourse.isPending}
         />
       </DialogContent>
     </Dialog>

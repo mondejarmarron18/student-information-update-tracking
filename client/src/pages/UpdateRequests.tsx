@@ -96,7 +96,13 @@ const UpdateRequests = () => {
                   {toDateTimeNumeric(request.reviewedAt) || "-"}
                 </TableCell>
                 <TableCell>
-                  <Link to={`${routePaths.updateRequests.path}/${request._id}`}>
+                  <Link
+                    to={routePaths.updateRequest.path.replace(
+                      ":updateRequestId",
+                      request._id
+                    )}
+                    className="hover:text-primary"
+                  >
                     View
                   </Link>
                 </TableCell>

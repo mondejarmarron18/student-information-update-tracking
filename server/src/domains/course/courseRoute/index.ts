@@ -23,4 +23,10 @@ courseRoute.post(
 
 courseRoute.put("/:courseId", [authMiddleware], courseController.updateCourse);
 
+courseRoute.get(
+  "/:courseId",
+  [authMiddleware, courseMiddleware.getCourseById],
+  courseController.getCourseById
+);
+
 export default courseRoute;

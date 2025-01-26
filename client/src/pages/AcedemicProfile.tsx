@@ -49,12 +49,11 @@ const AcademicProfile = () => {
   }, [registerAcademicProfile.isSuccess, createUpdateRequest.isSuccess]);
 
   const handleSave = (data: IAcademicProfile) => {
-    console.log(data);
-    // if (isSuccess) {
-    //   return createUpdateRequest.mutate(data);
-    // }
+    if (isSuccess) {
+      return createUpdateRequest.mutate(data);
+    }
 
-    // return registerAcademicProfile.mutate(data);
+    return registerAcademicProfile.mutate(data);
   };
 
   return (

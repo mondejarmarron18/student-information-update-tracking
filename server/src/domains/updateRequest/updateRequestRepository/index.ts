@@ -11,7 +11,11 @@ export default class updateRequestRepository {
   createUpdateRequest = (
     params: Pick<IUpdateRequest, "requesterId" | "contentType" | "content">
   ) => {
-    return this.updateRequestModel.create(params);
+    return this.updateRequestModel.create({
+      requesterId: params.requesterId,
+      contentType: params.contentType,
+      content: params.content,
+    });
   };
 
   getUpdateRequestById = (id: IUpdateRequest["_id"]) => {
@@ -72,6 +76,7 @@ export default class updateRequestRepository {
       {
         $sort: {
           requestedAt: -1,
+          reviewdAt: -1,
         },
       },
     ]);
@@ -93,7 +98,12 @@ export default class updateRequestRepository {
         reviewStatus: updateRequestStatus.pending,
       },
       {
-        $set: params,
+        $set: {
+          reviewerId: params.reviewerId,
+          reviewComment: params.reviewComment,
+          reviewStatus: params.reviewStatus,
+          reviewedAt: params.reviewedAt,
+        },
       },
       {
         new: true,

@@ -32,8 +32,13 @@ const UserAccountMenu = (props: Props) => {
       >
         <Tooltip
           trigger={
-            <Button variant="ghost" size="sm" title={user?.email}>
-              <span className="truncate w-36">{user?.email}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              title={user?.email}
+              className="flex"
+            >
+              <span className="truncate flex-1 text-left">{user?.email}</span>
               <Badge
                 variant="outline"
                 className={cn("text-xs", {

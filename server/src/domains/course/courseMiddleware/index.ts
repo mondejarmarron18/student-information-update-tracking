@@ -62,4 +62,21 @@ export default class CourseMiddlewarre {
 
     next();
   };
+
+  getCourseById: IMiddlware = (req, res, next) => {
+    const validate = z.object({
+      courseId: z.string().nonempty("Course ID is required"),
+    });
+
+    const { error } = validate.safeParse(req.params);
+
+    if (error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
+    }
+
+    next();
+  };
 }

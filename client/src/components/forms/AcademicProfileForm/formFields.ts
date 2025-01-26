@@ -13,7 +13,7 @@ const formFields: Fields[] = [
     placeholder: "01 xxxx xxxxx",
   },
   {
-    name: "yearLevel",
+    name: "yearLevelId",
     label: "Year Level",
     type: "select",
     placeholder: "Select year level",

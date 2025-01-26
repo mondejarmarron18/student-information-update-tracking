@@ -4,11 +4,13 @@ export interface Course {
   _id: string;
   name: string;
   description: string;
-  details: string;
+  details?: string;
   creatorId: string;
   updaterId: string;
-  creator: UserProfile;
-  updater: UserProfile;
+  specializationsCount: number;
+  studentsCount: number;
+  creatorProfile?: UserProfile;
+  updaterProfile?: UserProfile;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

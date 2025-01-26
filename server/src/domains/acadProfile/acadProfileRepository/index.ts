@@ -57,7 +57,7 @@ export default class AcadProfileRepository {
       {
         $set: {
           learnerReferenceNumber: params.learnerReferenceNumber,
-          yearLevelId: params.yearLevelId,
+          yearLevel: params.yearLevel,
           courseId: params.courseId,
           specializationId: params.specializationId,
           guardians: params.guardians,
@@ -81,7 +81,7 @@ export default class AcadProfileRepository {
       {
         $set: {
           learnerReferenceNumber: params.learnerReferenceNumber,
-          yearLevelId: params.yearLevelId,
+          yearLevel: params.yearLevel,
           courseId: params.courseId,
           specializationId: params.specializationId,
           guardians: params.guardians,

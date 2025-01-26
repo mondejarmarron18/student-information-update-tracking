@@ -5,53 +5,63 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
-import { useNavigate } from "react-router";
+import { Fragment, ReactNode } from "react";
+import { SlOptionsVertical } from "react-icons/sl";
+
+type MenuItem = {
+  label: string;
+  className?: string;
+  onClick: () => void;
+};
 
 type Props = {
-  trigger: ReactNode;
+  trigger?: ReactNode;
   side?: "top" | "right" | "bottom" | "left";
   direction?: "horizontal" | "vertical";
-  menu: ({
-    label: string;
-    className?: string;
-  } & (
-    | { onClick: () => void; link?: never }
-    | { link: string; onClick?: never }
-  ))[];
+  items: (MenuItem | ReactNode)[];
 };
 
 const PopupMenu = (props: Props) => {
-  const navigate = useNavigate();
-
   return (
     <Popover>
-      <PopoverTrigger asChild>{props.trigger}</PopoverTrigger>
+      <PopoverTrigger asChild>
+        {props?.trigger || (
+          <Button variant="ghost">
+            <SlOptionsVertical />
+          </Button>
+        )}
+      </PopoverTrigger>
       <PopoverContent
         side={props.side || "left"}
         className={cn("flex flex-col p-0 items-start max-w-fit w-fit", {
           "flex-row": props.direction === "horizontal",
         })}
       >
-        {props.menu.map((item, index) => (
-          <Button
-            variant={"ghost"}
-            key={item.label}
-            onClick={() => {
-              if (item.link) {
-                return navigate(item.link);
-              }
+        {props.items.map((item, index) => {
+          if (!item) return null;
 
-              item.onClick?.();
-            }}
-            className={cn("w-full min-w-[120px] rounded-none", item.className, {
-              "border-t": index !== 0,
-              "min-w-min": props.direction === "horizontal",
-            })}
-          >
-            {item.label}
-          </Button>
-        ))}
+          if (!(typeof item === "object" && "label" in item)) {
+            return <Fragment key={index}>{item}</Fragment>;
+          }
+
+          return (
+            <Button
+              variant={"ghost"}
+              key={item.label}
+              onClick={item.onClick}
+              className={cn(
+                "w-full min-w-[120px] rounded-none",
+                item.className,
+                {
+                  "border-t": index !== 0,
+                  "min-w-min": props.direction === "horizontal",
+                }
+              )}
+            >
+              {item.label}
+            </Button>
+          );
+        })}
       </PopoverContent>
     </Popover>
   );

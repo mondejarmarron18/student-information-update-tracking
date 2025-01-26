@@ -18,12 +18,13 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { SlOptionsVertical } from "react-icons/sl";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import { Button } from "@/components/ui/button";
 import useYearLevels from "@/hooks/useYearLevels";
+import PopupMenu from "@/components/common/PopupMenu";
+import YearLevelDialog from "@/components/common/YearLevelDialog";
 
-const SpecializationsTable = () => {
+const YearLevelsTable = () => {
   const yearLevels = useYearLevels();
   const yearLevelsList = yearLevels.data?.data || [];
 
@@ -42,7 +43,7 @@ const SpecializationsTable = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/3 mr-4"
         />
-        <Button>Add Course</Button>
+        <YearLevelDialog trigger={<Button>Add Year Level</Button>} />
       </div>
 
       {/* Table */}
@@ -51,22 +52,49 @@ const SpecializationsTable = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Students</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Date Created</TableHead>
+              <TableHead>Updated By</TableHead>
+              <TableHead>Date Updated</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {yearLevelsList.length > 0 ? (
-              yearLevelsList.map((course) => (
-                <TableRow key={course._id}>
-                  <TableCell>{course.name}</TableCell>
-                  <TableCell>{course.description}</TableCell>
-                  <TableCell>{toDateTimeNumeric(course.createdAt)}</TableCell>
+              yearLevelsList.map((yearLevel) => (
+                <TableRow key={yearLevel._id}>
+                  <TableCell>{yearLevel.name}</TableCell>
+                  <TableCell>{yearLevel.studentsCount}</TableCell>
+                  <TableCell>{yearLevel.description}</TableCell>
                   <TableCell>
-                    <Button size={"icon"} variant={"ghost"}>
-                      <SlOptionsVertical />
-                    </Button>
+                    {yearLevel.updaterProfile?.firstName}{" "}
+                    {yearLevel.updaterProfile?.lastName}
+                  </TableCell>
+                  <TableCell>
+                    {toDateTimeNumeric(yearLevel.updatedAt)}
+                  </TableCell>
+                  <TableCell>
+                    <PopupMenu
+                      items={[
+                        <YearLevelDialog
+                          trigger={
+                            <Button
+                              variant={"ghost"}
+                              className="w-full rounded-none"
+                            >
+                              Edit
+                            </Button>
+                          }
+                          yearLevelId={yearLevel._id}
+                        />,
+                        {
+                          label: "Delete",
+                          onClick: () => {
+                            // Handle delete action
+                          },
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -130,4 +158,4 @@ const SpecializationsTable = () => {
   );
 };
 
-export default SpecializationsTable;
+export default YearLevelsTable;

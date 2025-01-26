@@ -44,29 +44,34 @@ export default class CourseService {
   ) => {
     const isCourseExist = await this.isCourseIdExists(id);
 
-    if (isCourseExist) {
+    if (!isCourseExist) {
       return CustomError.notFound({
         description: "Course not found",
       });
     }
 
-    const isUpdaterExist = await this.userService.isUserIdExists(
-      params.updaterId
-    );
-
-    if (!isUpdaterExist) {
-      return CustomError.forbidden();
-    }
-
     return this.courseRepository.updateCourse(id, {
       ...params,
-      updaterId: params.updaterId,
     });
   };
 
   isCourseIdExists = async (id: ICourse["_id"]) => {
     const isCourseExist = await x8tAsync(
       this.courseRepository.isCourseIdExists(id)
+    );
+
+    if (isCourseExist.error) {
+      return CustomError.internalServerError({
+        details: isCourseExist.error,
+      });
+    }
+
+    return !!isCourseExist.result;
+  };
+
+  isCourseNameExists = async (name: ICourse["name"]) => {
+    const isCourseExist = await x8tAsync(
+      this.courseRepository.isCourseNameExists(name)
     );
 
     if (isCourseExist.error) {

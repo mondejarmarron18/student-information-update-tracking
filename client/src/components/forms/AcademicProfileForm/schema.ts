@@ -4,7 +4,7 @@ const formSchema = z.object({
   learnerReferenceNumber: z
     .string()
     .nonempty("Learner reference number is required"),
-  yearLevel: z.string().nonempty("Year level is required"),
+  yearLevelId: z.string().nonempty("Year level is required"),
   courseId: z.string().nonempty("Course is required"),
   specializationId: z.string().nonempty("Specialization is required"),
 });

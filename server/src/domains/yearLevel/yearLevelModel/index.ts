@@ -1,24 +1,35 @@
 import { model, Schema, Types } from "mongoose";
 import { schemaName } from "../../../constants/schemaName";
 
-export interface IYearLevel {
+export type YearLevel = {
   _id: Types.ObjectId;
   name: string;
   description: string;
+  creatorId: Types.ObjectId;
+  updaterId: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
-}
+};
 
-const yearLevelSchema = new Schema<IYearLevel>({
+const yearLevelSchema = new Schema<YearLevel>({
+  creatorId: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  updaterId: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
   name: {
     type: String,
-    unique: [true, "Year level with this name already exists"],
     required: true,
+    unique: [true, "Year level already exists"],
   },
   description: {
     type: String,
-    required: true,
   },
   createdAt: {
     type: Date,
@@ -28,14 +39,9 @@ const yearLevelSchema = new Schema<IYearLevel>({
     type: Date,
     default: Date.now,
   },
-  deletedAt: {
-    type: Date,
-  },
+  deletedAt: Date,
 });
 
-const YearLevelModel = model<IYearLevel>(
-  schemaName.YEAR_LEVEL,
-  yearLevelSchema
-);
+const yearLevelModel = model<YearLevel>(schemaName.YEAR_LEVEL, yearLevelSchema);
 
-export default YearLevelModel;
+export default yearLevelModel;

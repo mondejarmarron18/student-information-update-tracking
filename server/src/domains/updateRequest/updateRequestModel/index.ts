@@ -29,6 +29,7 @@ export type IUpdateRequest = {
   reviewComment: string;
   reviewedAt: Date;
   requestedAt: Date;
+  updatedAt: Date;
 } & (
   | IUpdateRequestContent<
       typeof updateRequestContentType.ACAD_PROFILE,

@@ -10,7 +10,6 @@ type Props = {
 
 const useYearLevels = (props?: Props) => {
   const { enabled = true } = props || {};
-
   const { error, ...rest } = useQuery<ApiResponseSuccess<YearLevel[]>>({
     queryKey: ["year-levels"],
     queryFn: async () => api.get(`/year-levels`),

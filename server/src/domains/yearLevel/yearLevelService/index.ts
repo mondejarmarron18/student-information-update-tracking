@@ -1,38 +1,31 @@
-import { x8tAsync } from "x8t";
-import YearLevelRepository from "../yearLevelRepository";
-import CustomError from "../../../utils/CustomError";
-import { IYearLevel } from "../yearLevelModel";
+import { YearLevel } from "../yearLevelModel";
+import yearLevelRepository from "../yearLevelRepository";
 
 export default class YearLevelService {
-  yearLevelRepository: YearLevelRepository;
+  private yearLevelRepository: yearLevelRepository;
 
   constructor() {
-    this.yearLevelRepository = new YearLevelRepository();
+    this.yearLevelRepository = new yearLevelRepository();
   }
 
-  getYearLevels = async () => {
-    const { error, result } = await x8tAsync(
-      this.yearLevelRepository.getYearLevels()
-    );
-
-    if (error) CustomError.internalServerError({ details: error });
-
-    return result;
+  createYearLevel = (
+    params: Pick<YearLevel, "name" | "description" | "creatorId">
+  ) => {
+    return this.yearLevelRepository.createYearLevel(params);
   };
 
-  createYearLevel = async (
-    params: Pick<IYearLevel, "name" | "description">
+  getYearLevels = () => {
+    return this.yearLevelRepository.getYearLevels();
+  };
+
+  getYearLevelById = (id: YearLevel["_id"]) => {
+    return this.yearLevelRepository.getYearLevelById(id);
+  };
+
+  updateYearLevel = (
+    id: YearLevel["_id"],
+    params: Pick<YearLevel, "name" | "description" | "updaterId">
   ) => {
-    const { error, result } = await x8tAsync(
-      this.yearLevelRepository.createYearLevel(params)
-    );
-
-    if (error || !result)
-      CustomError.internalServerError({
-        description: "Error creating year level",
-        details: error,
-      });
-
-    return result;
+    return this.yearLevelRepository.updateYearLevel(id, params);
   };
 }

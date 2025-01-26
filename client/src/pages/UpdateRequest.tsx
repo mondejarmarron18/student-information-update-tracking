@@ -17,7 +17,7 @@ import _ from "lodash";
 import { MdArrowBackIos } from "react-icons/md";
 import { useNavigate, useParams } from "react-router";
 
-const UpdateRequestPage = () => {
+const UpdateRequest = () => {
   const navigate = useNavigate();
   const { updateRequestId } = useParams();
   const { data } = useUpdateRequest({ updateRequestId: updateRequestId! });
@@ -215,4 +215,4 @@ const UpdateRequestPage = () => {
   );
 };
 
-export default UpdateRequestPage;
+export default UpdateRequest;

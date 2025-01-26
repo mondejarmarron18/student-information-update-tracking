@@ -27,6 +27,29 @@ export default class CourseController {
     });
   };
 
+  getCourseById = async (req: Request<{ courseId: string }>, res: Response) => {
+    const { courseId } = req.params;
+
+    const { id } = convertToObjectId(courseId);
+
+    if (!id) {
+      return CustomResponse.sendHandledError(res, {
+        ...customErrors.badRequest,
+        description: "Invalid course ID",
+      });
+    }
+
+    const course = await x8tAsync(this.courseService.getCourseById(id));
+
+    if (course.error) return CustomResponse.sendHandledError(res, course.error);
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Course retrieved successfully",
+      data: course.result,
+    });
+  };
+
   getCourseSpecializations = (
     req: Request<{ courseId: string }>,
     res: Response
@@ -84,9 +107,9 @@ export default class CourseController {
       });
     }
 
-    const { id, error: idError } = convertToObjectId(req.params.id);
+    const { id: courseId } = convertToObjectId(req.params.courseId);
 
-    if (idError || !id) {
+    if (!courseId) {
       return CustomResponse.sendHandledError(res, {
         ...customErrors.badRequest,
         description: "Invalid course ID",
@@ -94,7 +117,7 @@ export default class CourseController {
     }
 
     const updatedCourse = await x8tAsync(
-      this.courseService.updateCourse(id, {
+      this.courseService.updateCourse(courseId, {
         ...req.body,
         updaterId,
       })

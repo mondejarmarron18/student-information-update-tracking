@@ -9,13 +9,13 @@ const specializationMiddleware = new SpecializationMiddleware();
 
 specializationRoute.get(
   "/",
-  [authMiddleware],
+  [authMiddleware, specializationMiddleware.getSpecializations],
   specializationController.getSpecializations
 );
 specializationRoute.get(
-  "/:courseId",
-  [authMiddleware, specializationMiddleware.getSpecializationsByCourseId],
-  specializationController.getSpecializationsByCourseId
+  "/:specializationId",
+  [authMiddleware, specializationMiddleware.getSpecializationById],
+  specializationController.getSpecializationById
 );
 specializationRoute.post(
   "/",

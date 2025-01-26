@@ -33,13 +33,14 @@ export const navItems: NavItems[] = [
     iconType: MdSpaceDashboard,
   },
   {
-    ...routePaths.academicInfoMgmt,
-    iconType: LiaSchoolSolid,
-  },
-  {
     ...routePaths.conversations,
     iconType: PiChatsCircleFill,
   },
+  {
+    ...routePaths.programsSpecializations,
+    iconType: LiaSchoolSolid,
+  },
+
   {
     ...routePaths.userProfile,
     iconType: RiProfileFill,

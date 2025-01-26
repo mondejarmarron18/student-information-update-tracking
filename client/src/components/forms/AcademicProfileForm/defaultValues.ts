@@ -2,7 +2,7 @@ import { AcademicProfileFormProps } from "./schema";
 
 const defaultValues: AcademicProfileFormProps = {
   learnerReferenceNumber: "",
-  yearLevel: "",
+  yearLevelId: "",
   courseId: "",
   specializationId: "",
 };

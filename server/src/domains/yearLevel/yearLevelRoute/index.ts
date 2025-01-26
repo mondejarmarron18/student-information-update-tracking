@@ -7,11 +7,21 @@ const yearLevelRoute = Router();
 const yearLevelController = new YearLevelController();
 const yearLevelMiddleware = new YearLevelMiddleware();
 
-yearLevelRoute.get("/", [authMiddleware], yearLevelController.getYearLevels);
 yearLevelRoute.post(
   "/",
   [authMiddleware, yearLevelMiddleware.createYearLevel],
   yearLevelController.createYearLevel
+);
+yearLevelRoute.get("/", [authMiddleware], yearLevelController.getYearLevels);
+yearLevelRoute.get(
+  "/:yearLevelId",
+  [authMiddleware, yearLevelMiddleware.getYearLevelById],
+  yearLevelController.getYearLevelById
+);
+yearLevelRoute.put(
+  "/:yearLevelId",
+  [authMiddleware, yearLevelMiddleware.getYearLevelById],
+  yearLevelController.updateYearLevel
 );
 
 export default yearLevelRoute;
