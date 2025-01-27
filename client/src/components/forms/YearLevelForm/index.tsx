@@ -83,7 +83,7 @@ const YearLevelForm = (props: FormProps<YearLevelFormProps>) => {
             </Button>
           )}
 
-          <Button type="submit" className="flex-1">
+          <Button disabled={props.onSubmitLoading} type="submit" className="flex-1">
             {props.onSubmitLoading ? (
               <AnimatedSpinner />
             ) : (

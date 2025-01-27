@@ -20,10 +20,12 @@ import { useNavigate, useParams } from "react-router";
 const UpdateRequest = () => {
   const navigate = useNavigate();
   const { updateRequestId } = useParams();
-  const { data } = useUpdateRequest({ updateRequestId: updateRequestId! });
-  const updateRequest = data?.data;
+  const updateRequest = useUpdateRequest({ updateRequestId: updateRequestId! });
+  const updateRequestData = updateRequest.data?.data;
   const { decodedAccessToken } = useAccessToken();
   const roleName = decodedAccessToken()?.roleId?.name;
+
+  console.log(updateRequest);
 
   const renderChanges = (changes: Record<string, unknown>) => {
     return Object.entries(changes).map(([key, val]) => {
@@ -132,42 +134,44 @@ const UpdateRequest = () => {
         <div>
           <div className="font-semibold">Date Requested</div>
           <p className="text-gray-500">
-            {toDateString(updateRequest?.requestedAt) || "-"}
+            {toDateString(updateRequestData?.requestedAt) || "-"}
           </p>
         </div>
 
         <div>
           <div className="font-semibold">Date Reviewed</div>
           <p className="text-gray-500">
-            {toDateString(updateRequest?.reviewedAt) || "-"}
+            {toDateString(updateRequestData?.reviewedAt) || "-"}
           </p>
         </div>
       </div>
 
       <div>
         <div className="font-semibold">Comment/Feedback</div>
-        <p className="text-gray-500">{updateRequest?.reviewComment || "-"}</p>
+        <p className="text-gray-500">
+          {updateRequestData?.reviewComment || "-"}
+        </p>
       </div>
 
       <Card className="min-h-[250px]">
         <CardHeader>
           <div className="font-semibold flex w-fit gap-2">
             Requested Changes
-            {renderStatus(updateRequest?.reviewStatus || 1)}
+            {renderStatus(updateRequestData?.reviewStatus || 1)}
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {updateRequest?.content &&
+          {updateRequestData?.content &&
           Object.keys(
             getContentChanges(
-              updateRequest.content.previous,
-              updateRequest.content.current
+              updateRequestData.content.previous,
+              updateRequestData.content.current
             )
           ).length ? (
             renderChanges(
               getContentChanges(
-                updateRequest.content.previous,
-                updateRequest.content.current
+                updateRequestData.content.previous,
+                updateRequestData.content.current
               )
             )
           ) : (
@@ -186,7 +190,8 @@ const UpdateRequest = () => {
               trigger={
                 <Button
                   disabled={
-                    updateRequest?.reviewStatus !== updateRequestStatus.PENDING
+                    updateRequestData?.reviewStatus !==
+                    updateRequestStatus.PENDING
                   }
                   variant="destructive"
                 >
@@ -201,7 +206,8 @@ const UpdateRequest = () => {
               trigger={
                 <Button
                   disabled={
-                    updateRequest?.reviewStatus !== updateRequestStatus.PENDING
+                    updateRequestData?.reviewStatus !==
+                    updateRequestStatus.PENDING
                   }
                 >
                   Approve

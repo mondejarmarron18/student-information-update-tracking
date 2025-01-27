@@ -18,7 +18,7 @@ export const roleSchema = new Schema<IRole>({
       validator: (value: string) => {
         return userRolesValues.includes(value as UserRoles);
       },
-      message: `{VALUE} is not a valid role`,
+      message: `Invalid role: ${userRolesValues.join(", ")}`,
     },
     unique: [true, "Role already exists"],
   },

@@ -8,7 +8,7 @@ type RoutePath = {
 
 const routePaths: Record<string, RoutePath> = {
   dashboard: {
-    path: "/dashboard",
+    path: "/",
     name: "Dashboard",
     element: lazy(() => import("../pages/Dashboard")),
   },
@@ -96,6 +96,11 @@ const routePaths: Record<string, RoutePath> = {
     path: "/programs-specializations/:courseId/specializations/:specializationId",
     name: "Specialization",
     element: lazy(() => import("../pages/Specialization")),
+  },
+  profile: {
+    path: "/profile",
+    name: "Profile",
+    element: lazy(() => import("../pages/Profile")),
   },
 } as const;
 

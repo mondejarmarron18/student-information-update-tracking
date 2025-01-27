@@ -14,7 +14,6 @@ const useUpdateYearLevel = () => {
         {
           name: data.name,
           description: data.description,
-          details: data.details,
         }
       );
     },

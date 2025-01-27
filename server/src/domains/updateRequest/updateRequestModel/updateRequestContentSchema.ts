@@ -15,15 +15,16 @@ const acadProfileContent = new Schema<IAcadProfile>(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: schemaName.USER,
       required: true,
     },
     learnerReferenceNumber: {
       type: String,
       required: true,
     },
-    yearLevel: {
-      type: Number,
+    yearLevelId: {
+      type: Schema.Types.ObjectId,
+      ref: schemaName.YEAR_LEVEL,
       required: true,
     },
     courseId: {

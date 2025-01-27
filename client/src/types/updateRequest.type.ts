@@ -1,18 +1,29 @@
 import { IUserProfile } from "@/hooks/useUserProfile";
+import { IAcademicProfile } from "./academicProfile.type";
 
-export interface IUpdateRequest {
+export type IUpdateRequest = {
   _id: string;
   requesterId: string;
   reviewerId: string;
   reviewStatus: 1 | 2 | 3;
-  contentType: "userProfileContent";
-  content: {
-    previous: IUserProfile;
-    current: IUserProfile;
-  };
   reviewComment: string;
   requestedAt: Date;
   reviewedAt: Date;
   requesterProfile: IUserProfile;
   reviewerProfile: IUserProfile;
-}
+} & (
+  | {
+      contentType: "userProfileContent";
+      content: {
+        previous: IUserProfile;
+        current: IUserProfile;
+      };
+    }
+  | {
+      contentType: "acadProfileContent";
+      content: {
+        previous: IAcademicProfile;
+        current: IAcademicProfile;
+      };
+    }
+);

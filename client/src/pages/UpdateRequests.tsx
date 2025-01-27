@@ -23,6 +23,8 @@ import { IUpdateRequest } from "@/types/updateRequest.type";
 import { Link } from "react-router";
 import { routePaths } from "@/routes";
 import { toDateTimeNumeric } from "@/utils/fomatter";
+import UpdateRequestStatus from "@/components/common/UpdateRequestStatus";
+import UpdateRequestType from "@/components/common/UpdateRequestType";
 
 const UpdateRequests = () => {
   const { data } = useUpdateRequests();
@@ -43,17 +45,6 @@ const UpdateRequests = () => {
 
   const totalPages = Math.ceil(updateRequests.length / itemsPerPage);
 
-  const renderStatus = (status: IUpdateRequest["reviewStatus"]) => {
-    switch (status) {
-      case 2:
-        return <span className="text-green-500">Approved</span>;
-      case 3:
-        return <span className="text-red-500">Rejected</span>;
-      default:
-        return <span className="text-yellow-500">Pending</span>;
-    }
-  };
-
   return (
     <div className="flex flex-col gap-8 mt-4 p-1">
       <div className="flex items-center">
@@ -71,7 +62,7 @@ const UpdateRequests = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Reviewer</TableHead>
-              <TableHead>Update Type</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date Requested</TableHead>
               <TableHead>Date Reviewed</TableHead>
@@ -86,11 +77,11 @@ const UpdateRequests = () => {
                   {request.reviewerProfile.lastName}
                 </TableCell>
                 <TableCell>
-                  {request.contentType === "userProfileContent"
-                    ? "Personal Profile"
-                    : "Academic Profile"}
+                  <UpdateRequestType contentType={request.contentType} />
                 </TableCell>
-                <TableCell>{renderStatus(request.reviewStatus)}</TableCell>
+                <TableCell>
+                  <UpdateRequestStatus status={request.reviewStatus} />
+                </TableCell>
                 <TableCell>{toDateTimeNumeric(request.requestedAt)}</TableCell>
                 <TableCell>
                   {toDateTimeNumeric(request.reviewedAt) || "-"}

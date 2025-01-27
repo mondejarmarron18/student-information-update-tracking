@@ -10,6 +10,10 @@ import {
 import DashboardBanner from "@/components/common/DashboardBanner";
 import AnnouncementsCard from "@/components/common/AnnouncementsCard";
 import { Link } from "react-router";
+import useUpdateRequests from "@/hooks/useUpdateRequests";
+import { toDateNumeric } from "@/utils/fomatter";
+import UpdateRequestStatus from "@/components/common/UpdateRequestStatus";
+import UpdateRequestType from "@/components/common/UpdateRequestType";
 
 // Mock Data for Trending Discussions
 const trendingDiscussions = [
@@ -44,28 +48,8 @@ const trendingDiscussions = [
 ];
 
 const Dashboard = () => {
-  // Mock Data - Recent Update Requests
-  const updateRequests = [
-    { form: "Academic Profile", updatedFields: 3, status: "Pending" },
-    { form: "Personal Profile", updatedFields: 5, status: "Approved" },
-    { form: "Academic Profile", updatedFields: 2, status: "Rejected" },
-    { form: "Personal Profile", updatedFields: 1, status: "Pending" },
-    { form: "Academic Profile", updatedFields: 4, status: "Approved" },
-  ];
-
-  // Take only the most recent request for each form (using the last occurrence in the list)
-  const recentUpdates = updateRequests.reduce((acc, request) => {
-    if (
-      !acc[request.form] ||
-      acc[request.form].updatedFields < request.updatedFields
-    ) {
-      acc[request.form] = request;
-    }
-    return acc;
-  }, {} as Record<string, { form: string; updatedFields: number; status: string }>);
-
-  // Convert to an array of the most recent updates for rendering
-  const recentUpdatesList = Object.values(recentUpdates);
+  const updateRequests = useUpdateRequests();
+  const updateRequestsList = updateRequests.data?.data || [];
 
   return (
     <div className="space-y-6">
@@ -77,7 +61,7 @@ const Dashboard = () => {
             <CardTitle>Recent Update Requests</CardTitle>
           </CardHeader>
           <CardContent>
-            {recentUpdatesList.length === 0 ? (
+            {updateRequestsList.length === 0 ? (
               <div className="flex items-center justify-center min-h-[200px] text-center text-sm text-gray-500">
                 No recent updates
               </div>
@@ -85,17 +69,21 @@ const Dashboard = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Form Name</TableHead>
-                    <TableHead>Fields Updated</TableHead>
+                    <TableHead>Type</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Date Reviewed</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {recentUpdatesList.map((request) => (
-                    <TableRow key={request.form}>
-                      <TableCell>{request.form}</TableCell>
-                      <TableCell>{request.updatedFields}</TableCell>
-                      <TableCell>{request.status}</TableCell>
+                  {updateRequestsList.slice(0, 3).map((request) => (
+                    <TableRow key={request._id}>
+                      <TableCell>
+                        <UpdateRequestType contentType={request.contentType} />
+                      </TableCell>
+                      <TableCell>
+                        <UpdateRequestStatus status={request.reviewStatus} />
+                      </TableCell>
+                      <TableCell>{toDateNumeric(request.reviewedAt)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

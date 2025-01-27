@@ -29,6 +29,7 @@ const privateRoutes = [
   routePaths.course,
   routePaths.specializations,
   routePaths.specialization,
+  routePaths.profile,
 ];
 
 const routes = createBrowserRouter([
@@ -37,7 +38,6 @@ const routes = createBrowserRouter([
     element: <PublicRoute>{SuspenseWrapper(route.element)}</PublicRoute>,
   })),
   {
-    path: "/",
     element: (
       <PrivateRoute>
         {SuspenseWrapper(

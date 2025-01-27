@@ -1,5 +1,6 @@
 import { updateRequestStatus } from "../../../constants/updateRequest";
 import UpdateRequestModel, { IUpdateRequest } from "../updateRequestModel";
+import { replaceContentIdsWithData } from "./updateRequestPipelines";
 
 export default class updateRequestRepository {
   private updateRequestModel: typeof UpdateRequestModel;
@@ -18,8 +19,20 @@ export default class updateRequestRepository {
     });
   };
 
-  getUpdateRequestById = (id: IUpdateRequest["_id"]) => {
-    return this.updateRequestModel.findById(id);
+  getUpdateRequestById = async (id: IUpdateRequest["_id"]) => {
+    const updateRequest = await this.updateRequestModel.aggregate([
+      {
+        $match: {
+          _id: id,
+        },
+      },
+      ...replaceContentIdsWithData,
+      {
+        $limit: 1,
+      },
+    ]);
+
+    return updateRequest.length > 0 ? updateRequest[0] : null;
   };
 
   getUpdateRequestsByRequesterId = (
@@ -53,13 +66,13 @@ export default class updateRequestRepository {
         },
       },
       {
+        $unwind: { path: "$reviewerProfile", preserveNullAndEmptyArrays: true },
+      },
+      {
         $unwind: {
           path: "$requesterProfile",
           preserveNullAndEmptyArrays: true,
         },
-      },
-      {
-        $unwind: { path: "$reviewerProfile", preserveNullAndEmptyArrays: true },
       },
       {
         $addFields: {
