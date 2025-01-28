@@ -78,7 +78,14 @@
 @layer base {
   * {
     @apply border-border;
+    scrollbar-width: thin;
+    scrollbar-color: #8a8a8a00 transparent;
+
+    &:hover {
+      scrollbar-color: #8a8a8a65 transparent;
+    }
   }
+
   body {
     @apply bg-background text-foreground h-svh;
   }

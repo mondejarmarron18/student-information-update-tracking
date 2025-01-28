@@ -9,6 +9,9 @@ export const schemaName = {
   COURSE: "course",
   YEAR_LEVEL: "yearLevel",
   SPECIALIZATION: "specialization",
+  DISCUSSION: "discussion",
+  COMMENT: "comment",
+  ANNOUNCEMENT: "announcement",
 } as const;
 
 export const schemaNameValues = Object.values(schemaName);

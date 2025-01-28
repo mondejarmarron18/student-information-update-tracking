@@ -1,6 +1,6 @@
 import { updateRequestStatus } from "../../../constants/updateRequest";
 import UpdateRequestModel, { IUpdateRequest } from "../updateRequestModel";
-import { replaceContentIdsWithData } from "./updateRequestPipelines";
+import { replaceContentIdsWithData, requesterProfile, reviewerProfile } from "./updateRequestPipelines";
 
 export default class updateRequestRepository {
   private updateRequestModel: typeof UpdateRequestModel;
@@ -49,43 +49,8 @@ export default class updateRequestRepository {
 
   getUpdateRequests = () => {
     return this.updateRequestModel.aggregate([
-      {
-        $lookup: {
-          from: "userprofiles",
-          localField: "requesterId",
-          foreignField: "userId",
-          as: "requesterProfile",
-        },
-      },
-      {
-        $lookup: {
-          from: "userprofiles",
-          localField: "reviewerId",
-          foreignField: "userId",
-          as: "reviewerProfile",
-        },
-      },
-      {
-        $unwind: { path: "$reviewerProfile", preserveNullAndEmptyArrays: true },
-      },
-      {
-        $unwind: {
-          path: "$requesterProfile",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $addFields: {
-          requesterProfile: {
-            firstName: "$requesterProfile.firstName",
-            lastName: "$requesterProfile.lastName",
-          },
-          reviewerProfile: {
-            firstName: "$reviewerProfile.firstName",
-            lastName: "$reviewerProfile.lastName",
-          },
-        },
-      },
+      ...requesterProfile,
+      ...reviewerProfile,
       {
         $sort: {
           requestedAt: -1,

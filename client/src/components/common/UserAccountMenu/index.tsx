@@ -7,51 +7,29 @@ import {
 import { ReactNode } from "react";
 import LogoutDialog from "../LogoutDialog";
 import { Badge } from "@/components/ui/badge";
-import useAccessToken from "@/hooks/useAccessToken";
-import Tooltip from "../Tooltip";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import ChangePasswordDialog from "../ChangePasswordDialog";
+import { useNavigate } from "react-router";
+import { routePaths } from "@/routes";
 
 type Props = {
   trigger?: ReactNode;
 };
 
 const UserAccountMenu = (props: Props) => {
-  const { decodedAccessToken } = useAccessToken();
-  const user = decodedAccessToken();
-
-  const verificationDate = user?.verifiedAt && format(user?.verifiedAt, "PPpp");
+  const navigate = useNavigate();
 
   return (
     <Popover>
       <PopoverTrigger asChild>{props.trigger}</PopoverTrigger>
-      <PopoverContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        className="flex flex-col p-4 w-72 space-y-2"
-      >
-        <Tooltip
-          trigger={
-            <Button
-              variant="ghost"
-              size="sm"
-              title={user?.email}
-              className="flex"
-            >
-              <span className="truncate flex-1 text-left">{user?.email}</span>
-              <Badge
-                variant="outline"
-                className={cn("text-xs", {
-                  "border-primary": user?.verifiedAt,
-                })}
-              >
-                {user?.verifiedAt ? "Verified" : "Not verified"}
-              </Badge>
-            </Button>
-          }
-          content={`${user?.email} verified at ${verificationDate}`}
-        />
-
+      <PopoverContent className="flex flex-col p-4 w-72 space-y-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center justify-start"
+          onClick={() => navigate(routePaths.accountManagement.path)}
+        >
+          Account Management
+        </Button>
         {/* Status - Coming Soon */}
         <Button
           variant="ghost"

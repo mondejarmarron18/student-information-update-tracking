@@ -88,7 +88,8 @@ const updateRequestSchema = new Schema<IUpdateRequest>(
 // Models
 const UpdateRequestModel = model<IUpdateRequest>(
   schemaName.UPDATE_REQUEST,
-  updateRequestSchema
+  updateRequestSchema,
+  schemaName.UPDATE_REQUEST
 );
 
 // Discriminators

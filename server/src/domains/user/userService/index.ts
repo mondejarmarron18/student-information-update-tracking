@@ -92,9 +92,6 @@ export default class UserService {
     email: IUser["email"],
     verificationCode: IVerificationCode["_id"]
   ) => {
-    console.log("Sending verification code to email:", email);
-    console.log({ EmailVerificationCode: verificationCode });
-
     const { error: sendMailError } = await sendMail({
       to: email,
       subject: "Account Verification",
@@ -113,7 +110,7 @@ export default class UserService {
 
     if (sendMailError) {
       console.log("Failed to send verification email:", sendMailError);
-      CustomError.internalServerError({ details: sendMailError });
+      return CustomError.internalServerError({ details: sendMailError });
     }
 
     console.log("Verification code sent to:", email);
@@ -136,7 +133,7 @@ export default class UserService {
   };
 
   isUserIdExists = (id: IUser["_id"]) => {
-    return this.userRepository.getUserById(id)
+    return this.userRepository.getUserById(id);
   };
 
   deleteUser = (id: IUser["_id"]) => {

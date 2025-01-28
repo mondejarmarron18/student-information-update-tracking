@@ -1,18 +1,14 @@
 import { cn } from "@/lib/utils";
-import { routePaths } from "@/routes";
 import { MdNotifications } from "react-icons/md";
-import { useLocation } from "react-router";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import useActiveRoute from "@/hooks/useActiveRoute";
 
 const Header = () => {
-  const { pathname } = useLocation();
-  const title = Object.values(routePaths).find(({ path }) =>
-    pathname.includes(path)
-  )?.name;
+  const activeRoute = useActiveRoute();
 
   const notifications = [
     {
@@ -38,7 +34,7 @@ const Header = () => {
 
   return (
     <div className="flex items-center justify-between">
-      <h1 className="text-xl font-bold">{title}</h1>
+      <h1 className="text-xl font-bold">{activeRoute?.name}</h1>
 
       <Popover>
         <PopoverTrigger asChild>

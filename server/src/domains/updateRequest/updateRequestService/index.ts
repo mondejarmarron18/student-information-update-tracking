@@ -115,6 +115,23 @@ export default class UpdateRequestService {
     return updateRequest.result;
   };
 
+  getUpdateRequestsByRequesterId = async (
+    id: IUpdateRequest["requesterId"]
+  ) => {
+    const updateRequests = await x8tAsync(
+      this.updateRequestRepository.getUpdateRequestsByRequesterId(id)
+    );
+
+    if (updateRequests.error) {
+      CustomError.badRequest({
+        description: "Failed to get update requests",
+        details: updateRequests.error,
+      });
+    }
+
+    return updateRequests.result;
+  };
+
   getUpdateRequests = async () => {
     const updateRequests = await x8tAsync(
       this.updateRequestRepository.getUpdateRequests()

@@ -21,7 +21,7 @@ const tabs: Tabs[] = [
   },
 ];
 
-const ProgramsSpecializations = () => {
+const AcademicManagement = () => {
   return (
     <Tabs defaultValue="courses">
       <TabsList>
@@ -40,4 +40,4 @@ const ProgramsSpecializations = () => {
   );
 };
 
-export default ProgramsSpecializations;
+export default AcademicManagement;

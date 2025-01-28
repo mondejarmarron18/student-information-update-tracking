@@ -8,6 +8,7 @@ import {
   updateRequestStatusKeys,
   updateRequestStatusValues,
 } from "../../../constants/updateRequest";
+import userRoles from "../../../constants/userRoles";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
 
 export default class UpdateRequestController {
@@ -43,9 +44,23 @@ export default class UpdateRequestController {
   };
 
   getUpdateRequests: IControllerFunction = async (req, res) => {
-    const updateRequests = await x8tAsync(
-      this.updateRequestService.getUpdateRequests()
-    );
+    const user = req.user;
+
+    if (!user) {
+      return CustomResponse.sendHandledError(res, customErrors.unauthorized);
+    }
+
+    let updateRequests;
+
+    if (user?.roleId.name !== userRoles.STUDENT) {
+      updateRequests = await x8tAsync(
+        this.updateRequestService.getUpdateRequests()
+      );
+    } else {
+      updateRequests = await x8tAsync(
+        this.updateRequestService.getUpdateRequestsByRequesterId(user._id)
+      );
+    }
 
     if (updateRequests.error) {
       return CustomResponse.sendHandledError(res, updateRequests.error);

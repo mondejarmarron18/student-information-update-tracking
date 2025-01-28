@@ -51,12 +51,6 @@ const formFields: Fields[] = [
         label: "Female",
         value: "female",
       },
-      {
-        label: "Intersex",
-        value: "intersex",
-        tooltip:
-          "Intersex is a term used for individuals born with physical sex characteristics that don't fit typical male or female categories.",
-      },
     ],
   },
   {

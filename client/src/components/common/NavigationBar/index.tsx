@@ -12,13 +12,14 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/utils/api";
 import { memo, useLayoutEffect, useState } from "react";
 import { UserProfile } from "@/types/userProfile.type";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import screenSize from "@/utils/screenSize";
 import UserAccountMenu from "../UserAccountMenu";
 import { Card } from "@/components/ui/card";
 import { PiChatsCircleFill } from "react-icons/pi";
 import { AiOutlineAudit } from "react-icons/ai";
 import { LiaSchoolSolid } from "react-icons/lia";
+import useActiveRoute from "@/hooks/useActiveRoute";
 
 type NavItems = {
   name: string;
@@ -37,7 +38,7 @@ export const navItems: NavItems[] = [
     iconType: PiChatsCircleFill,
   },
   {
-    ...routePaths.programsSpecializations,
+    ...routePaths.academicManagement,
     iconType: LiaSchoolSolid,
   },
 
@@ -61,13 +62,13 @@ export const navItems: NavItems[] = [
 
 const NavigationBar = () => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { data: userProfileData } = useQuery({
     queryKey: ["user-profile"],
     queryFn: () => api.get("/user-profiles/me"),
   });
   const [navCollapsed, setNavCollapsed] = useState(true);
   const userProfile: UserProfile = userProfileData?.data;
+  const activeRoute = useActiveRoute();
 
   useLayoutEffect(() => {
     window.addEventListener("resize", () => {
@@ -138,9 +139,8 @@ const NavigationBar = () => {
                 className={cn(
                   "rounded-lg flex bg-gray-500/40 items-center opacity-50 hover:bg-gray-500/70 transition-colors p-3",
                   {
-                    "opacity-100 bg-gray-500/80": pathname.includes(
-                      navItem.path
-                    ),
+                    "opacity-100 bg-gray-500/80":
+                      activeRoute?.path === navItem.path,
                   }
                 )}
                 onClick={() => navigate(navItem.path)}

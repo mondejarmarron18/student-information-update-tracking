@@ -63,7 +63,7 @@ const Dashboard = () => {
           <CardContent>
             {updateRequestsList.length === 0 ? (
               <div className="flex items-center justify-center min-h-[200px] text-center text-sm text-gray-500">
-                No recent updates
+                No recent update requests
               </div>
             ) : (
               <Table>

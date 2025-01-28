@@ -14,8 +14,6 @@ import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 import useUserProfileForm from "./useUserProfileForm";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { MdInfoOutline } from "react-icons/md";
-import Tooltip from "@/components/common/Tooltip";
 import { useMemo } from "react";
 import DatePicker from "@/components/common/DatePicker";
 import useUserProfileValues from "./useUserProfileValues";
@@ -51,7 +49,7 @@ const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
                 <RadioGroup
                   onValueChange={field.onChange}
                   defaultValue={field.value as string}
-                  className="flex items-center gap-6"
+                  className="flex items-center gap-6 md:gap-8"
                 >
                   {formField.options.map((option) => (
                     <FormItem
@@ -61,23 +59,8 @@ const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
                       <FormControl>
                         <RadioGroupItem value={option.value.toString()} />
                       </FormControl>
-                      <FormLabel className="font-normal gap-[1px] flex items-center">
+                      <FormLabel>
                         <span>{option.label}</span>
-
-                        {option.tooltip && (
-                          <Tooltip
-                            content={option.tooltip}
-                            trigger={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                className="w-fit p-1 h-fit rounded-full"
-                              >
-                                <MdInfoOutline className="opacity-60" />
-                              </Button>
-                            }
-                          />
-                        )}
                       </FormLabel>
                     </FormItem>
                   ))}

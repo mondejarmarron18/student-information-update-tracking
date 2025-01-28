@@ -9,14 +9,20 @@ import useAccessToken from "@/hooks/useAccessToken";
 import { toDateTimeString } from "@/utils/fomatter";
 import _ from "lodash";
 import { FaPowerOff } from "react-icons/fa";
+import UserProfileDialog from "@/components/common/UserProfileDialog";
+import LogoutDialog from "@/components/common/LogoutDialog";
 
-export default function ProfilePage() {
+const AccountManagement = () => {
   const useProfile = useUserProfile();
   const userProfileData = useProfile.data?.data;
+  const currentAddress = userProfileData?.address.current;
+  const pemanentAddress = userProfileData?.address.permanent;
   const acadProfile = useAcademicProfile();
   const acadProfileData = acadProfile.data?.data;
   const { decodedAccessToken } = useAccessToken();
   const user = decodedAccessToken();
+
+  console.log(userProfileData);
 
   const RenderFiled = ({ label, value }: { label: string; value?: string }) => {
     return (
@@ -28,7 +34,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <Tabs defaultValue="account" className="w-full max-w-4xl mx-auto mt-10">
+    <Tabs defaultValue="account" className="w-full max-w-5xl mx-auto mt-10">
       <TabsList className="flex justify-center mb-4">
         <TabsTrigger value="account" className="flex-1">
           Account
@@ -52,7 +58,7 @@ export default function ProfilePage() {
                 <RenderFiled label="Email" value={user?.email || "-"} />
                 <RenderFiled
                   label="Account Type"
-                  value={_.startCase(_.lowerCase(user?.roleId.name)) || "-"}
+                  value={_.startCase(_.lowerCase(user?.roleId?.name)) || "-"}
                 />
               </div>
               <div className="flex gap-4 flex-wrap">
@@ -72,10 +78,14 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
           <div className="flex justify-end gap-4">
-            <Button variant={"destructive"} onClick={() => {}}>
-              <FaPowerOff />
-              Logout
-            </Button>
+            <LogoutDialog
+              trigger={
+                <Button variant={"destructive"}>
+                  <FaPowerOff />
+                  Logout
+                </Button>
+              }
+            />
           </div>
         </div>
       </TabsContent>
@@ -83,7 +93,6 @@ export default function ProfilePage() {
       {/* Basic Information & Address */}
       <TabsContent value="basic">
         <div className="flex flex-col gap-4">
-          {" "}
           <Card>
             <CardHeader>
               <CardTitle className="text-xl">Basic Information</CardTitle>
@@ -111,28 +120,44 @@ export default function ProfilePage() {
             <CardHeader>
               <CardTitle className="text-xl">Address</CardTitle>
             </CardHeader>
-            {/* <CardContent className="grid gap-4">
-            <RenderFiled
-              label="Current Address"
-              value={`${data.address.current.street}, ${data.address.current.barangay}, ${data.address.current.city}, ${data.address.current.region}, ${data.address.current.country}`}
-            />
-            <RenderFiled
-              label="Permanent Address"
-              value={`${data.address.permanent.street}, ${data.address.permanent.barangay}, ${data.address.permanent.city}, ${data.address.permanent.region}, ${data.address.permanent.country}`}
-            />
-          </CardContent> */}
+            <CardContent className="grid gap-4">
+              <RenderFiled
+                label="Current Address"
+                value={`${currentAddress?.addressLine1}${
+                  currentAddress?.addressLine2
+                    ? `, ${currentAddress?.addressLine2}`
+                    : ""
+                }, ${currentAddress?.city} ${currentAddress?.postalCode}, ${
+                  currentAddress?.state
+                }, ${currentAddress?.country}`}
+              />
+              <RenderFiled
+                label="Permanent Address"
+                value={`${pemanentAddress?.addressLine1}${
+                  pemanentAddress?.addressLine2
+                    ? `, ${pemanentAddress?.addressLine2}`
+                    : ""
+                }, ${pemanentAddress?.city} ${pemanentAddress?.postalCode}, ${
+                  pemanentAddress?.state
+                }, ${pemanentAddress?.country}`}
+              />
+            </CardContent>
           </Card>
           <div className="flex justify-end gap-4">
-            {/* <p className="text-sm text-gray-500">
-            Updating information may take time as it requires approval by the
-            school. Your update request will be sent to the "Update Requests"
-            page where you can monitor its status. Once submitted, you will not
-            be able to make another update until the previous request has been
-            reviewed.
-          </p> */}
-            <Button onClick={() => {}}>
-              <HiOutlinePencil /> Request Update
-            </Button>
+            <p className="text-sm text-gray-500">
+              Updating information may take time as it requires approval by the
+              school. Your update request will be sent to the "Update Requests"
+              page where you can monitor its status. Once submitted, you will
+              not be able to make another update until the previous request has
+              been reviewed.
+            </p>
+            <UserProfileDialog
+              trigger={
+                <Button onClick={() => {}}>
+                  <HiOutlinePencil /> Request Update
+                </Button>
+              }
+            />
           </div>
         </div>
       </TabsContent>
@@ -151,15 +176,15 @@ export default function ProfilePage() {
               />
               <RenderFiled
                 label="Year Level"
-                value={acadProfileData?.yearLevel.name || "-"}
+                value={acadProfileData?.yearLevel?.name || "-"}
               />
               <RenderFiled
                 label="Course"
-                value={`${acadProfileData?.course.name} - ${acadProfileData?.course.description}`}
+                value={`${acadProfileData?.course?.name} - ${acadProfileData?.course?.description}`}
               />
               <RenderFiled
                 label="Specialization"
-                value={acadProfileData?.specialization.name || "-"}
+                value={acadProfileData?.specialization?.name || "-"}
               />
             </CardContent>
           </Card>
@@ -205,4 +230,6 @@ export default function ProfilePage() {
       </TabsContent>
     </Tabs>
   );
-}
+};
+
+export default AccountManagement;

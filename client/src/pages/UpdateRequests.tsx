@@ -70,35 +70,48 @@ const UpdateRequests = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentRequests.map((request) => (
-              <TableRow key={request._id}>
-                <TableCell>
-                  {request.reviewerProfile.firstName}{" "}
-                  {request.reviewerProfile.lastName}
-                </TableCell>
-                <TableCell>
-                  <UpdateRequestType contentType={request.contentType} />
-                </TableCell>
-                <TableCell>
-                  <UpdateRequestStatus status={request.reviewStatus} />
-                </TableCell>
-                <TableCell>{toDateTimeNumeric(request.requestedAt)}</TableCell>
-                <TableCell>
-                  {toDateTimeNumeric(request.reviewedAt) || "-"}
-                </TableCell>
-                <TableCell>
-                  <Link
-                    to={routePaths.updateRequest.path.replace(
-                      ":updateRequestId",
-                      request._id
-                    )}
-                    className="hover:text-primary"
-                  >
-                    View
-                  </Link>
+            {currentRequests.length > 0 ? (
+              currentRequests.map((request) => (
+                <TableRow key={request._id}>
+                  <TableCell>
+                    {request.reviewerProfile.firstName}{" "}
+                    {request.reviewerProfile.lastName}
+                  </TableCell>
+                  <TableCell>
+                    <UpdateRequestType contentType={request.contentType} />
+                  </TableCell>
+                  <TableCell>
+                    <UpdateRequestStatus status={request.reviewStatus} />
+                  </TableCell>
+                  <TableCell>
+                    {toDateTimeNumeric(request.requestedAt)}
+                  </TableCell>
+                  <TableCell>
+                    {toDateTimeNumeric(request.reviewedAt) || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      to={routePaths.updateRequest.path.replace(
+                        ":updateRequestId",
+                        request._id
+                      )}
+                      className="hover:text-primary"
+                    >
+                      View
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-gray-500"
+                >
+                  No update requests found.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </Card>

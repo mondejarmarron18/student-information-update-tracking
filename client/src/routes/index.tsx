@@ -25,11 +25,11 @@ const privateRoutes = [
   routePaths.updateRequest,
   routePaths.conversations,
   routePaths.auditLogs,
-  routePaths.programsSpecializations,
+  routePaths.academicManagement,
   routePaths.course,
   routePaths.specializations,
   routePaths.specialization,
-  routePaths.profile,
+  routePaths.accountManagement,
 ];
 
 const routes = createBrowserRouter([
@@ -38,6 +38,7 @@ const routes = createBrowserRouter([
     element: <PublicRoute>{SuspenseWrapper(route.element)}</PublicRoute>,
   })),
   {
+    path: "/",
     element: (
       <PrivateRoute>
         {SuspenseWrapper(

@@ -77,30 +77,30 @@ const routePaths: Record<string, RoutePath> = {
     name: "Password Reset",
     element: lazy(() => import("../pages/PasswordReset")),
   },
-  programsSpecializations: {
-    path: "/programs-specializations",
-    name: "Programs and Specializations",
-    element: lazy(() => import("../pages/ProgramsSpecializations")),
+  academicManagement: {
+    path: "/academic-management",
+    name: "Academic Management",
+    element: lazy(() => import("../pages/AcademicManagement")),
   },
   course: {
-    path: "/programs-specializations/:courseId",
+    path: "/academic-management/:courseId",
     name: "Course",
     element: lazy(() => import("../pages/Course")),
   },
   specializations: {
-    path: "/programs-specializations/:courseId/specializations",
+    path: "/academic-management/:courseId/specializations",
     name: "Specializations",
     element: lazy(() => import("../pages/Specializations")),
   },
   specialization: {
-    path: "/programs-specializations/:courseId/specializations/:specializationId",
+    path: "/academic-management/:courseId/specializations/:specializationId",
     name: "Specialization",
     element: lazy(() => import("../pages/Specialization")),
   },
-  profile: {
-    path: "/profile",
-    name: "Profile",
-    element: lazy(() => import("../pages/Profile")),
+  accountManagement: {
+    path: "/account-management",
+    name: "Account Management",
+    element: lazy(() => import("../pages/AccountManagement")),
   },
 } as const;
 
