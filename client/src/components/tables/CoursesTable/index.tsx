@@ -23,9 +23,11 @@ import useCourses from "@/hooks/useCourses";
 import { Button } from "@/components/ui/button";
 import CourseDialog from "@/components/common/CourseDialog";
 import { routePaths } from "@/routes";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
+import PopupMenu from "@/components/common/PopupMenu";
 
 const CoursesTable = () => {
+  const navigate = useNavigate();
   const courses = useCourses();
   const coursesList = courses.data?.data || [];
 
@@ -57,7 +59,7 @@ const CoursesTable = () => {
               <TableHead>Specializations</TableHead>
               <TableHead>Updated By</TableHead>
               <TableHead>Date Updated</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="w-0"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -73,15 +75,33 @@ const CoursesTable = () => {
                   </TableCell>
                   <TableCell>{toDateTimeNumeric(course.updatedAt)}</TableCell>
                   <TableCell>
-                    <Link
-                      to={routePaths.course.path.replace(
-                        ":courseId",
-                        course._id
-                      )}
-                      className="text-primary hover:underline"
-                    >
-                      View
-                    </Link>
+                    <PopupMenu
+                      items={[
+                        {
+                          label: "View",
+                          onClick: () => {
+                            navigate(
+                              routePaths.course.path.replace(
+                                ":courseId",
+                                course._id
+                              )
+                            );
+                          },
+                        },
+                        {
+                          label: "Edit",
+                          onClick: () => {
+                            // Handle edit action
+                          },
+                        },
+                        {
+                          label: "Delete",
+                          onClick: () => {
+                            // Handle delete action
+                          },
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))

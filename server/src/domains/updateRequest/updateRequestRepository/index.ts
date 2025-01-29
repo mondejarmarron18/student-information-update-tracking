@@ -1,6 +1,11 @@
+import { Types } from "mongoose";
 import { updateRequestStatus } from "../../../constants/updateRequest";
 import UpdateRequestModel, { IUpdateRequest } from "../updateRequestModel";
-import { replaceContentIdsWithData, requesterProfile, reviewerProfile } from "./updateRequestPipelines";
+import {
+  replaceContentIdsWithData,
+  requesterProfile,
+  reviewerProfile,
+} from "./updateRequestPipelines";
 
 export default class updateRequestRepository {
   private updateRequestModel: typeof UpdateRequestModel;
@@ -38,7 +43,21 @@ export default class updateRequestRepository {
   getUpdateRequestsByRequesterId = (
     requesterId: IUpdateRequest["requesterId"]
   ) => {
-    return this.updateRequestModel.find({ requesterId });
+    return this.updateRequestModel.aggregate([
+      {
+        $match: {
+          requesterId: new Types.ObjectId(requesterId),
+        },
+      },
+      ...requesterProfile,
+      ...reviewerProfile,
+      {
+        $sort: {
+          requestedAt: -1,
+          reviewdAt: -1,
+        },
+      },
+    ]);
   };
 
   getUpdateRequestsByReviewerId = (

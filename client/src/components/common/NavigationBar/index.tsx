@@ -1,5 +1,4 @@
 import { GrFormPrevious } from "react-icons/gr";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HiMiniAcademicCap } from "react-icons/hi2";
 import { MdSpaceDashboard, MdPerson } from "react-icons/md";
 import { HiClipboardDocumentCheck } from "react-icons/hi2";
@@ -8,10 +7,7 @@ import { cn } from "@/lib/utils";
 import Tooltip from "../Tooltip";
 import { IconType } from "react-icons/lib";
 import { routePaths } from "@/routes";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/utils/api";
 import { memo, useLayoutEffect, useState } from "react";
-import { UserProfile } from "@/types/userProfile.type";
 import { useNavigate } from "react-router";
 import screenSize from "@/utils/screenSize";
 import UserAccountMenu from "../UserAccountMenu";
@@ -20,12 +16,12 @@ import { PiChatsCircleFill } from "react-icons/pi";
 import { AiOutlineAudit } from "react-icons/ai";
 import { LiaSchoolSolid } from "react-icons/lia";
 import useActiveRoute from "@/hooks/useActiveRoute";
+import useAccessToken from "@/hooks/useAccessToken";
+import { RoutePath } from "@/routes/routePaths";
 
 type NavItems = {
-  name: string;
-  path: string;
   iconType: IconType;
-};
+} & Pick<RoutePath, "roles" | "name" | "path">;
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const navItems: NavItems[] = [
@@ -62,12 +58,11 @@ export const navItems: NavItems[] = [
 
 const NavigationBar = () => {
   const navigate = useNavigate();
-  const { data: userProfileData } = useQuery({
-    queryKey: ["user-profile"],
-    queryFn: () => api.get("/user-profiles/me"),
-  });
+  const { decodedAccessToken } = useAccessToken();
+  const userRole = decodedAccessToken()?.roleId?.name;
+
   const [navCollapsed, setNavCollapsed] = useState(true);
-  const userProfile: UserProfile = userProfileData?.data;
+
   const activeRoute = useActiveRoute();
 
   useLayoutEffect(() => {
@@ -129,28 +124,34 @@ const NavigationBar = () => {
         }
       />
       <div className="flex lg:flex-col gap-2">
-        {navItems.map((navItem) => (
-          <Tooltip
-            key={navItem.name}
-            content={navItem.name}
-            trigger={
-              <button
-                name={navItem.name}
-                className={cn(
-                  "rounded-lg flex bg-gray-500/40 items-center opacity-50 hover:bg-gray-500/70 transition-colors p-3",
-                  {
-                    "opacity-100 bg-gray-500/80":
-                      activeRoute?.path === navItem.path,
-                  }
-                )}
-                onClick={() => navigate(navItem.path)}
-              >
-                {renderIcon(navItem.iconType)}
-                {renderText(navItem.name)}
-              </button>
-            }
-          />
-        ))}
+        {navItems.map((navItem) => {
+          if (!navItem.roles?.includes(userRole as string) && navItem.roles) {
+            return null;
+          }
+
+          return (
+            <Tooltip
+              key={navItem.name}
+              content={navItem.name}
+              trigger={
+                <button
+                  name={navItem.name}
+                  className={cn(
+                    "rounded-lg flex bg-gray-500/40 items-center opacity-50 hover:bg-gray-500/70 transition-colors p-3",
+                    {
+                      "opacity-100 bg-gray-500/80":
+                        activeRoute?.path === navItem.path,
+                    }
+                  )}
+                  onClick={() => navigate(navItem.path)}
+                >
+                  {renderIcon(navItem.iconType)}
+                  {renderText(navItem.name)}
+                </button>
+              }
+            />
+          );
+        })}
       </div>
 
       <UserAccountMenu
@@ -160,22 +161,14 @@ const NavigationBar = () => {
               "rounded-lg bg-gray-500/40 hover:opacity-100 transition-all p-3 flex items-center opacity-50"
             )}
           >
-            <Avatar
+            <div
               className={cn("w-5 h-5 transition-transform rounded-none", {
                 "scale-75": !navCollapsed,
               })}
             >
-              <AvatarImage
-                src="Academic Profile"
-                alt={`${userProfile?.firstName} ${userProfile?.lastName}`}
-              />
-              <AvatarFallback className="font-extrabold bg-transparent rounded-none text-xs uppercase">
-                {!userProfile
-                  ? renderIcon(MdPerson)
-                  : `${userProfile?.firstName[0]}${userProfile?.lastName[0]}`}
-              </AvatarFallback>
-            </Avatar>
-            {renderText("Account")}
+              {renderIcon(MdPerson)}
+            </div>
+            {renderText("Account Settings")}
           </button>
         }
       />

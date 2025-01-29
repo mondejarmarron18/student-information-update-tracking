@@ -30,7 +30,6 @@ const UpdateRequest = () => {
   const renderChanges = (changes: Record<string, unknown>) => {
     return Object.entries(changes).map(([key, val]) => {
       if (!isArray(val)) {
-        // If the value is an object, recursively render its changes
         return (
           <Card key={key}>
             <CardHeader>
@@ -72,7 +71,6 @@ const UpdateRequest = () => {
         );
       }
 
-      // If it's a simple value, just render it
       return (
         <div key={key} className="flex flex-col gap-1">
           <div className="font-semibold text-sm">{_.startCase(key)}</div>
@@ -132,13 +130,33 @@ const UpdateRequest = () => {
       </Button>
       <div className="flex justify-between flex-wrap gap-4">
         <div>
+          <div className="font-semibold">Requester</div>
+          <p className="text-gray-500">
+            {!updateRequestData?.requesterProfile?.firstName && "-"}
+            {updateRequestData?.requesterProfile?.firstName}{" "}
+            {updateRequestData?.requesterProfile?.lastName}
+          </p>
+        </div>
+
+        <div className="min-w-[200px]">
           <div className="font-semibold">Date Requested</div>
           <p className="text-gray-500">
             {toDateString(updateRequestData?.requestedAt) || "-"}
           </p>
         </div>
+      </div>
 
+      <div className="flex justify-between flex-wrap gap-4">
         <div>
+          <div className="font-semibold">Reviewer</div>
+          <p className="text-gray-500">
+            {!updateRequestData?.reviewerProfile?.firstName && "-"}
+            {updateRequestData?.reviewerProfile?.firstName}{" "}
+            {updateRequestData?.reviewerProfile?.lastName}
+          </p>
+        </div>
+
+        <div className="min-w-[200px]">
           <div className="font-semibold">Date Reviewed</div>
           <p className="text-gray-500">
             {toDateString(updateRequestData?.reviewedAt) || "-"}

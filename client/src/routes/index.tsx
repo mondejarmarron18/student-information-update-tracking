@@ -4,6 +4,8 @@ import { lazy } from "react";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import _routePaths from "./routePaths";
+import NotFound from "@/pages/NotFound";
+import ResourceError from "@/components/common/ResourceError";
 
 export const routePaths = _routePaths;
 
@@ -36,20 +38,28 @@ const routes = createBrowserRouter([
   ...publicRoutes.map((route) => ({
     ...route,
     element: <PublicRoute>{SuspenseWrapper(route.element)}</PublicRoute>,
+    errorElement: <ResourceError />,
   })),
   {
     path: "/",
     element: (
       <PrivateRoute>
         {SuspenseWrapper(
-          lazy(() => import("../components/layouts/StudentView"))
+          lazy(() => import("../components/layouts/PageWrapper"))
         )}
       </PrivateRoute>
     ),
     children: privateRoutes.map((route) => ({
       ...route,
       element: SuspenseWrapper(route.element),
+      errorElement: <ResourceError />,
     })),
+  },
+
+  {
+    path: "*",
+    element: <NotFound />,
+    errorElement: <ResourceError />,
   },
 ]);
 

@@ -23,9 +23,11 @@ import { Button } from "@/components/ui/button";
 import useSpecializations from "@/hooks/useSpecializations";
 import SpecializationDialog from "@/components/common/SpecializationDialog";
 import { routePaths } from "@/routes";
-import { Link, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import PopupMenu from "@/components/common/PopupMenu";
 
 const SpecializationsTable = () => {
+  const navigate = useNavigate();
   const { courseId } = useParams();
   const specilizations = useSpecializations({
     courseId,
@@ -78,14 +80,30 @@ const SpecializationsTable = () => {
                     {toDateTimeNumeric(specialization.updatedAt)}
                   </TableCell>
                   <TableCell>
-                    <Link
-                      to={routePaths.specialization.path
-                        .replace(":specializationId", specialization._id)
-                        .replace(":courseId", courseId as string)}
-                      className="hover:text-primary"
-                    >
-                      View
-                    </Link>
+                    <PopupMenu
+                      items={[
+                        {
+                          label: "View",
+                          onClick: () =>
+                            navigate(
+                              routePaths.specialization.path
+                                .replace(
+                                  ":specializationId",
+                                  specialization._id
+                                )
+                                .replace(":courseId", courseId as string)
+                            ),
+                        },
+                        {
+                          label: "Edit",
+                          onClick: () => {},
+                        },
+                        {
+                          label: "Delete",
+                          onClick: () => {},
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))

@@ -24,7 +24,7 @@ const Course = () => {
       <div className="flex justify-between gap-2 flex-wrap items-center">
         <CustomBreadcrumb
           links={[
-            { name: "Courses", href: routePaths.courses.path },
+            { name: "Courses", href: routePaths.academicManagement.path },
             {
               name: course?.name as string,
               href: "",

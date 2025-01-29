@@ -30,6 +30,7 @@ const UserProfileDialog = (props: Props) => {
   });
   const [isOpen, setIsOpen] = useState(false);
 
+  console.log("userProfile", userProfile);
   useEffect(() => {
     if (data) {
       setUserProfile(data.data);
@@ -74,7 +75,7 @@ const UserProfileDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <div className="w-full max-w-md overflow-y-auto max-h-[700px]">
+        <div className="w-full max-w-md overflow-y-auto max-h-[700px] p-1">
           <UserProfileForm
             onSubmitLabel="Next"
             values={userProfile}
@@ -90,7 +91,7 @@ const UserProfileDialog = (props: Props) => {
             values={userProfile?.address}
             onCancelLabel="Previous"
             onCancel={() => setFormIndex((prev) => prev - 1)}
-            onSubmitLabel={isSuccess ? "Update" : "Save"}
+            onSubmitLabel={isSuccess ? "Submit" : "Save"}
             onSubmitLoading={registerUserProfile.isPending}
             onSubmit={(val) => {
               handleSave({ ...userProfile, address: val } as IUserProfile);

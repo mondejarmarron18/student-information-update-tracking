@@ -10,10 +10,7 @@ import {
 import DashboardBanner from "@/components/common/DashboardBanner";
 import AnnouncementsCard from "@/components/common/AnnouncementsCard";
 import { Link } from "react-router";
-import useUpdateRequests from "@/hooks/useUpdateRequests";
-import { toDateNumeric } from "@/utils/fomatter";
-import UpdateRequestStatus from "@/components/common/UpdateRequestStatus";
-import UpdateRequestType from "@/components/common/UpdateRequestType";
+import UpdateRequestsCard from "@/components/common/UpdateRequestsCard";
 
 // Mock Data for Trending Discussions
 const trendingDiscussions = [
@@ -48,49 +45,12 @@ const trendingDiscussions = [
 ];
 
 const Dashboard = () => {
-  const updateRequests = useUpdateRequests();
-  const updateRequestsList = updateRequests.data?.data || [];
-
   return (
     <div className="space-y-6">
       <DashboardBanner name={"Marvin"} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <AnnouncementsCard />
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Update Requests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {updateRequestsList.length === 0 ? (
-              <div className="flex items-center justify-center min-h-[200px] text-center text-sm text-gray-500">
-                No recent update requests
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Date Reviewed</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {updateRequestsList.slice(0, 3).map((request) => (
-                    <TableRow key={request._id}>
-                      <TableCell>
-                        <UpdateRequestType contentType={request.contentType} />
-                      </TableCell>
-                      <TableCell>
-                        <UpdateRequestStatus status={request.reviewStatus} />
-                      </TableCell>
-                      <TableCell>{toDateNumeric(request.reviewedAt)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        <UpdateRequestsCard />
       </div>
 
       {/* Trending Discussions */}

@@ -9,8 +9,8 @@ export type IUpdateRequest = {
   reviewComment: string;
   requestedAt: Date;
   reviewedAt: Date;
-  requesterProfile: IUserProfile;
-  reviewerProfile: IUserProfile;
+  requesterProfile?: IUserProfile;
+  reviewerProfile?: IUserProfile;
 } & (
   | {
       contentType: "userProfileContent";

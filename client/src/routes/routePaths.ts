@@ -1,9 +1,11 @@
+import { role } from "@/constants/role";
 import { lazy, LazyExoticComponent } from "react";
 
-type RoutePath = {
+export type RoutePath = {
   path: string;
   name: string;
   element: LazyExoticComponent<() => JSX.Element>;
+  roles?: (typeof role)[keyof typeof role][];
 };
 
 const routePaths: Record<string, RoutePath> = {
@@ -39,13 +41,14 @@ const routePaths: Record<string, RoutePath> = {
   },
   userProfile: {
     path: "/personal-profile",
-    name: "Personal Profile",
+    name: "Personal Information",
     element: lazy(() => import("../pages/UserProfile")),
   },
   academicProfile: {
     path: "/academic-profile",
     name: "Academic Profile",
     element: lazy(() => import("../pages/AcedemicProfile")),
+    roles: [role.STUDENT],
   },
   forgotPassword: {
     path: "/forgot-password",
@@ -71,6 +74,7 @@ const routePaths: Record<string, RoutePath> = {
     path: "/audit-logs",
     name: "Audit Logs",
     element: lazy(() => import("../pages/AuditLogs")),
+    roles: [role.ADMIN, role.STAFF],
   },
   passwordReset: {
     path: "/password-reset/:verificationCode",
@@ -81,21 +85,25 @@ const routePaths: Record<string, RoutePath> = {
     path: "/academic-management",
     name: "Academic Management",
     element: lazy(() => import("../pages/AcademicManagement")),
+    roles: [role.ADMIN, role.STAFF],
   },
   course: {
     path: "/academic-management/:courseId",
     name: "Course",
     element: lazy(() => import("../pages/Course")),
+    roles: [role.ADMIN, role.STAFF],
   },
   specializations: {
     path: "/academic-management/:courseId/specializations",
     name: "Specializations",
     element: lazy(() => import("../pages/Specializations")),
+    roles: [role.ADMIN, role.STAFF],
   },
   specialization: {
     path: "/academic-management/:courseId/specializations/:specializationId",
     name: "Specialization",
     element: lazy(() => import("../pages/Specialization")),
+    roles: [role.ADMIN, role.STAFF],
   },
   accountManagement: {
     path: "/account-management",

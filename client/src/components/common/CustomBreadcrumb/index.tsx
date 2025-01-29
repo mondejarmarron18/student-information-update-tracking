@@ -6,6 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Fragment } from "react/jsx-runtime";
 
 type Props = {
   links: {
@@ -19,16 +20,16 @@ const CustomBreadcrumb = ({ links }: Props) => {
     <Breadcrumb>
       <BreadcrumbList>
         {links.map((link, index) => (
-          <BreadcrumbItem key={link.name}>
-            {index === links.length - 1 ? (
-              <BreadcrumbPage>{link.name}</BreadcrumbPage>
-            ) : (
-              <>
+          <Fragment key={link.href}>
+            <BreadcrumbItem>
+              {index === links.length - 1 ? (
+                <BreadcrumbPage>{link.name}</BreadcrumbPage>
+              ) : (
                 <BreadcrumbLink href={link.href}>{link.name}</BreadcrumbLink>
-                <BreadcrumbSeparator />
-              </>
-            )}
-          </BreadcrumbItem>
+              )}
+            </BreadcrumbItem>
+            {index !== links.length - 1 && <BreadcrumbSeparator />}
+          </Fragment>
         ))}
       </BreadcrumbList>
     </Breadcrumb>

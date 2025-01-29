@@ -8,9 +8,12 @@ import { HiOutlinePencil } from "react-icons/hi";
 import useAccessToken from "@/hooks/useAccessToken";
 import { toDateTimeString } from "@/utils/fomatter";
 import _ from "lodash";
-import { FaPowerOff } from "react-icons/fa";
 import UserProfileDialog from "@/components/common/UserProfileDialog";
-import LogoutDialog from "@/components/common/LogoutDialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { CheckedState } from "@radix-ui/react-checkbox";
+import { Label } from "@/components/ui/label";
+import AcademicProfileDialog from "@/components/common/AcademicProfileDialog";
 
 const AccountManagement = () => {
   const useProfile = useUserProfile();
@@ -21,8 +24,7 @@ const AccountManagement = () => {
   const acadProfileData = acadProfile.data?.data;
   const { decodedAccessToken } = useAccessToken();
   const user = decodedAccessToken();
-
-  console.log(userProfileData);
+  const [isAcknowledge, setIsAcknowledge] = useState<CheckedState>(false);
 
   const RenderFiled = ({ label, value }: { label: string; value?: string }) => {
     return (
@@ -77,16 +79,6 @@ const AccountManagement = () => {
               />
             </CardContent>
           </Card>
-          <div className="flex justify-end gap-4">
-            <LogoutDialog
-              trigger={
-                <Button variant={"destructive"}>
-                  <FaPowerOff />
-                  Logout
-                </Button>
-              }
-            />
-          </div>
         </div>
       </TabsContent>
 
@@ -143,18 +135,26 @@ const AccountManagement = () => {
               />
             </CardContent>
           </Card>
-          <div className="flex justify-end gap-4">
-            <p className="text-sm text-gray-500">
-              Updating information may take time as it requires approval by the
-              school. Your update request will be sent to the "Update Requests"
-              page where you can monitor its status. Once submitted, you will
-              not be able to make another update until the previous request has
-              been reviewed.
-            </p>
+          <div className="flex flex-col items-start gap-4">
+            <div className="flex items-start gap-2 text-sm text-gray-500">
+              <Checkbox
+                id="acknowledge"
+                checked={isAcknowledge}
+                onCheckedChange={setIsAcknowledge}
+              />
+              <Label>
+                I acknowledge that updating{" "}
+                <span className="text-white">personal information</span> may
+                take time as it requires approval by the school. Your update
+                request will be sent to the "Update Requests" page where you can
+                monitor its status. Once submitted, you will not be able to make
+                another update until the previous request has been reviewed.
+              </Label>
+            </div>
             <UserProfileDialog
               trigger={
-                <Button onClick={() => {}}>
-                  <HiOutlinePencil /> Request Update
+                <Button disabled={!isAcknowledge}>
+                  <HiOutlinePencil /> Request an Update
                 </Button>
               }
             />
@@ -221,10 +221,29 @@ const AccountManagement = () => {
               ))}
             </CardContent>
           </Card>
-          <div className="flex justify-end gap-4">
-            <Button onClick={() => {}}>
-              <HiOutlinePencil /> Request Update
-            </Button>
+          <div className="flex flex-col items-start gap-4">
+            <div className="flex items-start gap-2 text-sm text-gray-500">
+              <Checkbox
+                id="acknowledge"
+                checked={isAcknowledge}
+                onCheckedChange={setIsAcknowledge}
+              />
+              <Label>
+                I acknowledge that updating{" "}
+                <span className="text-white">academic profile</span> may take
+                time as it requires approval by the school. Your update request
+                will be sent to the "Update Requests" page where you can monitor
+                its status. Once submitted, you will not be able to make another
+                update until the previous request has been reviewed.
+              </Label>
+            </div>
+            <AcademicProfileDialog
+              trigger={
+                <Button disabled={!isAcknowledge}>
+                  <HiOutlinePencil /> Request an Update
+                </Button>
+              }
+            />
           </div>
         </div>
       </TabsContent>

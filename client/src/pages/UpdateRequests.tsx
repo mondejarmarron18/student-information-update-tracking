@@ -25,10 +25,14 @@ import { routePaths } from "@/routes";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import UpdateRequestStatus from "@/components/common/UpdateRequestStatus";
 import UpdateRequestType from "@/components/common/UpdateRequestType";
+import useAccessToken from "@/hooks/useAccessToken";
+import { role } from "@/constants/role";
 
 const UpdateRequests = () => {
   const { data } = useUpdateRequests();
   const updateRequests = data?.data || ([] as IUpdateRequest[]);
+  const { decodedAccessToken } = useAccessToken();
+  const userRoleName = decodedAccessToken()?.roleId.name;
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,6 +65,10 @@ const UpdateRequests = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              {userRoleName !== role.STUDENT && (
+                <TableHead>Requester</TableHead>
+              )}
+
               <TableHead>Reviewer</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
@@ -73,10 +81,19 @@ const UpdateRequests = () => {
             {currentRequests.length > 0 ? (
               currentRequests.map((request) => (
                 <TableRow key={request._id}>
-                  <TableCell>
-                    {request.reviewerProfile.firstName}{" "}
-                    {request.reviewerProfile.lastName}
-                  </TableCell>
+                  {userRoleName !== role.STUDENT && (
+                    <TableCell>
+                      {request.requesterProfile?.firstName}{" "}
+                      {request.requesterProfile?.lastName}
+                    </TableCell>
+                  )}
+                  {userRoleName === role.STUDENT && (
+                    <TableCell>
+                      {request.reviewerProfile?.firstName}{" "}
+                      {request.reviewerProfile?.lastName}
+                    </TableCell>
+                  )}
+
                   <TableCell>
                     <UpdateRequestType contentType={request.contentType} />
                   </TableCell>

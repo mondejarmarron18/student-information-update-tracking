@@ -56,7 +56,7 @@ const YearLevelsTable = () => {
               <TableHead>Description</TableHead>
               <TableHead>Updated By</TableHead>
               <TableHead>Date Updated</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="w-0"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

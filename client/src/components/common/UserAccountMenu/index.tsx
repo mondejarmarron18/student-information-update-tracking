@@ -36,15 +36,7 @@ const UserAccountMenu = (props: Props) => {
           size="sm"
           className="flex items-center justify-start"
         >
-          Dark/Light Mode <Badge variant="outline">Coming soon</Badge>
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center justify-start"
-        >
-          Activity Log <Badge variant="outline">Coming soon</Badge>
+          Theme <Badge variant="outline">Coming soon</Badge>
         </Button>
 
         {/* Change Password */}
@@ -55,6 +47,14 @@ const UserAccountMenu = (props: Props) => {
             </Button>
           }
         />
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center justify-start"
+        >
+          Activity Logs <Badge variant="outline">Coming soon</Badge>
+        </Button>
 
         {/* Logout */}
         <LogoutDialog
