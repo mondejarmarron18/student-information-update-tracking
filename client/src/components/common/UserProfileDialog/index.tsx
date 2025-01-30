@@ -30,7 +30,7 @@ const UserProfileDialog = (props: Props) => {
   });
   const [isOpen, setIsOpen] = useState(false);
 
-  console.log("userProfile", userProfile);
+
   useEffect(() => {
     if (data) {
       setUserProfile(data.data);

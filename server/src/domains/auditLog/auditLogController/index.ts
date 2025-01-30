@@ -1,10 +1,11 @@
-import { uniqueId, update } from "lodash";
+import { uniqueId } from "lodash";
 import { IControllerFunction } from "../../../types/controller";
 import CustomResponse from "../../../utils/CustomResponse";
 import { faker } from "@faker-js/faker";
 import { parse } from "json2csv";
-import { x8tSync } from "x8t";
+import { x8tAsync, x8tSync } from "x8t";
 import customErrors from "../../../constants/customErrors";
+import AuditLogService from "../auditLogService";
 
 const auditLogAction = {
   created: "created",
@@ -50,6 +51,12 @@ const data: IAuditLog[] = [...Array(20)].map(() => {
 });
 
 export default class AuditLogController {
+  private auditLogService: AuditLogService;
+
+  constructor() {
+    this.auditLogService = new AuditLogService();
+  }
+
   getAuditLogs: IControllerFunction = async (req, res) => {
     //  {
     //   ipAddress: req.ip?.split(":").pop(),
@@ -88,5 +95,29 @@ export default class AuditLogController {
     }
 
     res.send(result);
+  };
+
+  createAuditLog: IControllerFunction = async (req, res) => {
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    const { result, error } = await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.body,
+        userId,
+      }),
+      { log: true }
+    );
+
+    if (error) return CustomResponse.sendHandledError(res, error);
+
+    CustomResponse.sendSuccess(res, {
+      status: 201,
+      message: "Audit log created successfully",
+      data: result,
+    });
   };
 }

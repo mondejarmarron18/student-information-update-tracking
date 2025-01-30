@@ -25,8 +25,6 @@ const UpdateRequest = () => {
   const { decodedAccessToken } = useAccessToken();
   const roleName = decodedAccessToken()?.roleId?.name;
 
-  console.log(updateRequest);
-
   const renderChanges = (changes: Record<string, unknown>) => {
     return Object.entries(changes).map(([key, val]) => {
       if (!isArray(val)) {
