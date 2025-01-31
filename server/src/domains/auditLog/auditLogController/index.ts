@@ -6,49 +6,8 @@ import { parse } from "json2csv";
 import { x8tAsync, x8tSync } from "x8t";
 import customErrors from "../../../constants/customErrors";
 import AuditLogService from "../auditLogService";
-
-const auditLogAction = {
-  created: "created",
-  updated: "updated",
-  deleted: "deleted",
-  approved: "approved",
-  rejected: "rejected",
-  viewed: "viewed",
-  exported: "exported",
-  archived: "archived",
-  restored: "restored",
-  submitted: "submitted",
-  loggedIn: "logged in",
-  loggedOut: "logged out",
-  requested: "requested",
-};
-
-type IAuditLog = {
-  _id: string;
-  ipAddress: string;
-  userAgent: string;
-  userId: string;
-  action: (typeof auditLogAction)[keyof typeof auditLogAction];
-  details: string;
-  timestamp: Date;
-};
-
-const data: IAuditLog[] = [...Array(20)].map(() => {
-  const action =
-    Object.keys(auditLogAction)[
-      Math.floor(Math.random() * Object.keys(auditLogAction).length)
-    ];
-
-  return {
-    _id: uniqueId(),
-    ipAddress: faker.internet.ipv4(),
-    userAgent: faker.internet.userAgent(),
-    userId: uniqueId(),
-    timestamp: faker.date.past(),
-    action,
-    details: `${action} ${faker.lorem.sentence()}`,
-  };
-});
+import { auditLogAction } from "../../../constants/auditLog";
+import { AuditLog } from "../auditLogModel";
 
 export default class AuditLogController {
   private auditLogService: AuditLogService;
@@ -58,30 +17,46 @@ export default class AuditLogController {
   }
 
   getAuditLogs: IControllerFunction = async (req, res) => {
-    //  {
-    //   ipAddress: req.ip?.split(":").pop(),
-    //   userAgent: req.headers["user-agent"],
-    //   userId: req.user?._id,
-    //   details: "Logged in",
-    //   timestamp: faker,
-    // };
+    const { result, error } = await x8tAsync(
+      this.auditLogService.getAuditLogs(),
+      { log: true }
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
 
     CustomResponse.sendSuccess(res, {
       status: 200,
       message: "Audit logs retrieved successfully",
-      data,
+      data: result,
     });
   };
 
   downloadAuditLogs: IControllerFunction = async (req, res) => {
-    const formattedData = data.map((log) => {
+    const auditLogs = await x8tAsync(this.auditLogService.getAuditLogs(), {
+      log: true,
+    });
+
+    if (auditLogs.error) {
+      return CustomResponse.sendHandledError(res, auditLogs.error);
+    }
+
+    if (!auditLogs.result?.length) {
+      return CustomResponse.sendError(res, customErrors.notFound);
+    }
+
+    const formattedData = auditLogs.result.map((log: AuditLog) => {
       return {
+        ID: log._id,
         "User ID": log.userId,
-        "IP Address": log.ipAddress,
+        "Entity Name (Database Collection Name)": log.entityName,
+        "Entity ID (Database Document ID)": log.entityId,
         Action: log.action,
         Details: log.details,
+        "IP Address": log.ipAddress,
         "User Agent": log.userAgent,
-        Timestamp: log.timestamp.toISOString(),
+        "Time Stamp": log.timestamp,
       };
     });
 

@@ -123,7 +123,8 @@ const userProfileSchema = new Schema<IUserProfile>({
 
 const UserProfileModel = model<IUserProfile>(
   schemaName.USER_PROFILE,
-  userProfileSchema
+  userProfileSchema,
+  schemaName.USER_PROFILE
 );
 
 export default UserProfileModel;

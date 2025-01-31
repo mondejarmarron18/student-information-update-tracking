@@ -32,6 +32,10 @@ const discussionSchema = new Schema<Discussion>({
   },
 });
 
-const DiscussionModel = model(schemaName.DISCUSSION, discussionSchema);
+const DiscussionModel = model(
+  schemaName.DISCUSSION,
+  discussionSchema,
+  schemaName.DISCUSSION
+);
 
 export default DiscussionModel;

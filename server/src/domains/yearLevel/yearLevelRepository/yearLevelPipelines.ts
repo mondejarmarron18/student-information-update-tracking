@@ -1,9 +1,10 @@
 import { PipelineStage } from "mongoose";
+import { schemaName } from "../../../constants/schemaName";
 
 export const updaterProfile: PipelineStage[] = [
   {
     $lookup: {
-      from: "userprofiles",
+      from: schemaName.USER_PROFILE,
       localField: "updaterId",
       foreignField: "userId",
       as: "updaterProfile",
@@ -20,7 +21,7 @@ export const updaterProfile: PipelineStage[] = [
 export const creatorProfile: PipelineStage[] = [
   {
     $lookup: {
-      from: "userprofiles",
+      from: schemaName.USER_PROFILE,
       localField: "creatorId",
       foreignField: "userId",
       as: "creatorProfile",
@@ -37,7 +38,7 @@ export const creatorProfile: PipelineStage[] = [
 export const studentsCount: PipelineStage[] = [
   {
     $lookup: {
-      from: "academicprofiles",
+      from: schemaName.ACAD_PROFILE,
       let: { yearLevelId: "$_id" },
       pipeline: [
         {

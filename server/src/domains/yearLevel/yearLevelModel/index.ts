@@ -42,6 +42,10 @@ const yearLevelSchema = new Schema<YearLevel>({
   deletedAt: Date,
 });
 
-const yearLevelModel = model<YearLevel>(schemaName.YEAR_LEVEL, yearLevelSchema);
+const yearLevelModel = model<YearLevel>(
+  schemaName.YEAR_LEVEL,
+  yearLevelSchema,
+  schemaName.YEAR_LEVEL
+);
 
 export default yearLevelModel;

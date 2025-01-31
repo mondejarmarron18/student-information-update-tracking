@@ -49,6 +49,10 @@ const commentSchema = new Schema<Comment>({
   },
 });
 
-const CommentModel = model(schemaName.COMMENT, commentSchema);
+const CommentModel = model(
+  schemaName.COMMENT,
+  commentSchema,
+  schemaName.COMMENT
+);
 
 export default CommentModel;

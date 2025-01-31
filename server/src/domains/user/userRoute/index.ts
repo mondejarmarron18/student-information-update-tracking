@@ -28,7 +28,7 @@ userRoute.post("/login", userMiddleware.loginUser, userController.loginUser);
 userRoute.post("/logout", [authMiddleware], userController.logoutUser);
 //Verify email
 userRoute.get(
-  "/verify-email/:verificationCode",
+  "/email-verification/:verificationCode",
   userMiddleware.verifyUser,
   userController.verifyUser
 );

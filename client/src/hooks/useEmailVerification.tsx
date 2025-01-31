@@ -7,7 +7,7 @@ const useEmailVerification = (verificationCode: string) => {
     queryKey: ["email-verification", verificationCode],
     queryFn: () => {
       return api.get<Omit<ApiResponseSuccess, "accessToken">>(
-        `/users/verify-email/${verificationCode}`
+        `/users/email-verification/${verificationCode}`
       );
     },
     enabled: !!verificationCode,

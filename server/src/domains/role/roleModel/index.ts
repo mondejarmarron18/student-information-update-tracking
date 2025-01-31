@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 import { UserRoles, userRolesValues } from "../../../constants/userRoles";
+import { schemaName } from "../../../constants/schemaName";
 
 export interface IRole {
   _id: Types.ObjectId;
@@ -44,6 +45,6 @@ roleSchema.pre("save", function (next) {
   next();
 });
 
-const RoleModel = model<IRole>("role", roleSchema);
+const RoleModel = model<IRole>(schemaName.ROLE, roleSchema, schemaName.ROLE);
 
 export default RoleModel;

@@ -96,7 +96,7 @@ export default class UserService {
       to: email,
       subject: "Account Verification",
       html: await hbs("email", {
-        verificationUrl: `${config.clientUrl}/verify-email/${verificationCode}`,
+        verificationUrl: `${config.clientUrl}/email-verification/${verificationCode}`,
         supportEmail: config.smtp.sender,
         appName: config.appName,
         unsubscribeUrl: `${config.clientUrl}/unsubscribe/${verificationCode}`,

@@ -95,12 +95,14 @@ const UpdateRequestModel = model<IUpdateRequest>(
 // Discriminators
 UpdateRequestModel.discriminator(
   updateRequestContentType.USER_PROFILE,
-  userProfileContentSchema
+  userProfileContentSchema,
+  updateRequestContentType.USER_PROFILE
 );
 
 UpdateRequestModel.discriminator(
   updateRequestContentType.ACAD_PROFILE,
-  acadProfileContentSchema
+  acadProfileContentSchema,
+  updateRequestContentType.ACAD_PROFILE
 );
 
 export default UpdateRequestModel;

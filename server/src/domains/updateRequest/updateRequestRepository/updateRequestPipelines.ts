@@ -1,9 +1,10 @@
 import { PipelineStage } from "mongoose";
+import { schemaName } from "../../../constants/schemaName";
 
 export const requesterProfile: PipelineStage[] = [
   {
     $lookup: {
-      from: "userprofiles",
+      from: schemaName.USER_PROFILE,
       localField: "requesterId",
       foreignField: "userId",
       as: "requesterProfile",
@@ -28,7 +29,7 @@ export const requesterProfile: PipelineStage[] = [
 export const reviewerProfile: PipelineStage[] = [
   {
     $lookup: {
-      from: "userprofiles",
+      from: schemaName.USER_PROFILE,
       localField: "reviewerId",
       foreignField: "userId",
       as: "reviewerProfile",
@@ -53,7 +54,7 @@ export const replaceContentIdsWithData: PipelineStage[] = [
   ...reviewerProfile,
   {
     $lookup: {
-      from: "courses",
+      from: schemaName.COURSE,
       localField: "content.previous.courseId",
       foreignField: "_id",
       as: "previousCourses",
@@ -61,7 +62,7 @@ export const replaceContentIdsWithData: PipelineStage[] = [
   },
   {
     $lookup: {
-      from: "courses",
+      from: schemaName.COURSE,
       localField: "content.current.courseId",
       foreignField: "_id",
       as: "currentCourses",
@@ -69,7 +70,7 @@ export const replaceContentIdsWithData: PipelineStage[] = [
   },
   {
     $lookup: {
-      from: "specializations",
+      from: schemaName.SPECIALIZATION,
       localField: "content.previous.specializationId",
       foreignField: "_id",
       as: "previousSpecializations",
@@ -77,7 +78,7 @@ export const replaceContentIdsWithData: PipelineStage[] = [
   },
   {
     $lookup: {
-      from: "specializations",
+      from: schemaName.SPECIALIZATION,
       localField: "content.current.specializationId",
       foreignField: "_id",
       as: "currentSpecializations",
@@ -85,7 +86,7 @@ export const replaceContentIdsWithData: PipelineStage[] = [
   },
   {
     $lookup: {
-      from: "yearlevels",
+      from: schemaName.YEAR_LEVEL,
       localField: "content.previous.yearLevelId",
       foreignField: "_id",
       as: "previousYearLevels",
@@ -93,7 +94,7 @@ export const replaceContentIdsWithData: PipelineStage[] = [
   },
   {
     $lookup: {
-      from: "yearlevels",
+      from: schemaName.YEAR_LEVEL,
       localField: "content.current.yearLevelId",
       foreignField: "_id",
       as: "currentYearLevels",

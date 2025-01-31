@@ -40,7 +40,8 @@ const announcementSchema = new Schema<Announcement>({
 
 const AnnouncementModel = model<Announcement>(
   schemaName.ANNOUNCEMENT,
-  announcementSchema
+  announcementSchema,
+  schemaName.ANNOUNCEMENT
 );
 
 export default AnnouncementModel;

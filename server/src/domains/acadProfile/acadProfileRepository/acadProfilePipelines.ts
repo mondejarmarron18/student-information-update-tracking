@@ -1,9 +1,10 @@
 import { PipelineStage } from "mongoose";
+import { schemaName } from "../../../constants/schemaName";
 
 export const yearLevel: PipelineStage[] = [
   {
     $lookup: {
-      from: "yearlevels",
+      from: schemaName.YEAR_LEVEL,
       localField: "yearLevelId",
       foreignField: "_id",
       as: "yearLevel",
@@ -20,7 +21,7 @@ export const yearLevel: PipelineStage[] = [
 export const course: PipelineStage[] = [
   {
     $lookup: {
-      from: "courses",
+      from: schemaName.COURSE,
       localField: "courseId",
       foreignField: "_id",
       as: "course",
@@ -37,7 +38,7 @@ export const course: PipelineStage[] = [
 export const specialization: PipelineStage[] = [
   {
     $lookup: {
-      from: "specializations",
+      from: schemaName.SPECIALIZATION,
       localField: "specializationId",
       foreignField: "_id",
       as: "specialization",

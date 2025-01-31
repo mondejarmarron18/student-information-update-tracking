@@ -62,7 +62,8 @@ const acadProfileSchema = new Schema<IAcadProfile>({
 
 const AcadProfileModel = model<IAcadProfile>(
   schemaName.ACAD_PROFILE,
-  acadProfileSchema
+  acadProfileSchema,
+  schemaName.ACAD_PROFILE
 );
 
 export default AcadProfileModel;

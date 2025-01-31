@@ -59,7 +59,8 @@ specializationSchema.index({ courseId: 1, name: 1 }, { unique: true });
 
 const SpecializationModel = model<ISpecialization>(
   schemaName.SPECIALIZATION,
-  specializationSchema
+  specializationSchema,
+  schemaName.SPECIALIZATION
 );
 
 export default SpecializationModel;

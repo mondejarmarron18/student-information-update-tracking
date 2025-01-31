@@ -5,6 +5,7 @@ import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import { dbConnect } from "./utils/config/database";
 
 const app = Express();
 const port = config.port;
@@ -20,15 +21,8 @@ app.use(
 app.use(cookieParser());
 app.use(routes);
 
-mongoose
-  .connect(config.dbUrl as string)
-  .then(() => {
-    console.log("Connected to MongoDB");
-
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
-  })
-  .catch((error) => {
-    console.log(error);
+dbConnect(() => {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
   });
+});

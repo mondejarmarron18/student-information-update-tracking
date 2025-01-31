@@ -1,5 +1,6 @@
 import { schemaName } from "../../../constants/schemaName";
 import CustomError from "../../../utils/CustomError";
+import { convertToObjectId } from "../../../utils/mongooseUtil";
 import { AuditLog } from "../auditLogModel";
 import AuditLogRepository from "../auditLogRepository";
 
