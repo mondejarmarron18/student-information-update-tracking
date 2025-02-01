@@ -32,6 +32,7 @@ const privateRoutes = [
   routePaths.specializations,
   routePaths.specialization,
   routePaths.accountManagement,
+  routePaths.userAccounts,
 ];
 
 const routes = createBrowserRouter([

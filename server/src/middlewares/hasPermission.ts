@@ -1,5 +1,5 @@
 // import { NextFunction, Request, Response } from "express";
-// import { IMiddlware } from "../types/middleware";
+// import { IMiddleware } from "../types/middleware";
 
 // const hasPermission = (permissions: string[]) => {
 //     return (req: Request, res: Response, next:NextFunction) => {

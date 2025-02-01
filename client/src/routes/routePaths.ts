@@ -19,6 +19,11 @@ const routePaths: Record<string, RoutePath> = {
     name: "User Account",
     element: lazy(() => import("../pages/UserAccount")),
   },
+  userAccounts: {
+    path: "/user-accounts",
+    name: "User Accounts",
+    element: lazy(() => import("../pages/UserAccounts")),
+  },
   signIn: {
     path: "/sign-in",
     name: "Sign In",

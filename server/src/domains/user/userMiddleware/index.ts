@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 import { validatePassword } from "./validationSchema";
-import { IMiddlware } from "../../../types/middleware";
+import { IMiddleware } from "../../../types/middleware";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
 
 export default class UserMiddleware {
-  createUser: IMiddlware = (req, res, next) => {
+  createUser: IMiddleware = (req, res, next) => {
     const isLoggedIn = req.user;
 
     const validate = z.object({
@@ -27,7 +27,7 @@ export default class UserMiddleware {
     next();
   };
 
-  loginUser: IMiddlware = (req, res, next) => {
+  loginUser: IMiddleware = (req, res, next) => {
     const validate = z.object({
       email: z.string().email().nonempty("Email is required"),
       password: z.string().nonempty("Password is required"),
@@ -45,7 +45,7 @@ export default class UserMiddleware {
     next();
   };
 
-  verifyUser: IMiddlware = (req, res, next) => {
+  verifyUser: IMiddleware = (req, res, next) => {
     const validate = z.object({
       verificationCode: z.string().nonempty("Verification code is required"),
     });
@@ -62,7 +62,7 @@ export default class UserMiddleware {
     next();
   };
 
-  updatePassword: IMiddlware = (req, res, next) => {
+  updatePassword: IMiddleware = (req, res, next) => {
     const validate = z.object({
       currentPassword: z.string().nonempty("Current password is required"),
       newPassword: validatePassword,
@@ -80,7 +80,7 @@ export default class UserMiddleware {
     next();
   };
 
-  sendPasswordResetEmail: IMiddlware = (req, res, next) => {
+  sendPasswordResetEmail: IMiddleware = (req, res, next) => {
     const validate = z.object({
       email: z.string().email().nonempty("Email is required"),
     });
@@ -97,7 +97,7 @@ export default class UserMiddleware {
     next();
   };
 
-  resetPassword: IMiddlware = (req, res, next) => {
+  resetPassword: IMiddleware = (req, res, next) => {
     const validate = z.object({
       password: validatePassword,
       verificationCode: z.string().nonempty("Verification code is required"),

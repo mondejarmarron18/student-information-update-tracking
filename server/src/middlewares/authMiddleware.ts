@@ -1,6 +1,6 @@
 import { x8tSync } from "x8t";
 import customErrors from "../constants/customErrors";
-import { IMiddlware } from "../types/middleware";
+import { IMiddleware } from "../types/middleware";
 import CustomResponse from "../utils/CustomResponse";
 import {
   generateToken,
@@ -10,7 +10,7 @@ import {
 } from "../utils/token";
 import { TokenExpiredError } from "jsonwebtoken";
 
-const authMiddleware: IMiddlware = (req, res, next) => {
+const authMiddleware: IMiddleware = (req, res, next) => {
   const token = getAccessToken(req);
 
   // Try to verify the access token

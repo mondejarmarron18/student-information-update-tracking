@@ -108,7 +108,7 @@ const CoursesTable = () => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={6}
                   className="h-24 text-center text-gray-500"
                 >
                   No courses found.

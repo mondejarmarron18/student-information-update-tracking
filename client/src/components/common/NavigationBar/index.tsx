@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/card";
 import { PiChatsCircleFill } from "react-icons/pi";
 import { AiOutlineAudit } from "react-icons/ai";
 import { LiaSchoolSolid } from "react-icons/lia";
+import { TbUsersGroup } from "react-icons/tb";
 import useActiveRoute from "@/hooks/useActiveRoute";
 import useAccessToken from "@/hooks/useAccessToken";
 import { RoutePath } from "@/routes/routePaths";
@@ -49,6 +50,10 @@ export const navItems: NavItems[] = [
   {
     ...routePaths.updateRequests,
     iconType: HiClipboardDocumentCheck,
+  },
+  {
+    ...routePaths.userAccounts,
+    iconType: TbUsersGroup,
   },
   {
     ...routePaths.auditLogs,

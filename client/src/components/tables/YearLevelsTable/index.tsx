@@ -101,7 +101,7 @@ const YearLevelsTable = () => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={5}
                   className="h-24 text-center text-gray-500"
                 >
                   No year levels found.

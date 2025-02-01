@@ -1,4 +1,5 @@
 const userRoles = {
+  SUPER_ADMIN: "superAdmin",
   ADMIN: "admin",
   STUDENT: "student",
   PARENT: "parent",

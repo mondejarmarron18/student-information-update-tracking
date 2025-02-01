@@ -1,10 +1,10 @@
 import { z } from "zod";
 import customErrors from "../../../constants/customErrors";
-import { IMiddlware } from "../../../types/middleware";
+import { IMiddleware } from "../../../types/middleware";
 import CustomResponse from "../../../utils/CustomResponse";
 
 export default class SpecializationMiddleware {
-  getSpecializations: IMiddlware = (req, res, next) => {
+  getSpecializations: IMiddleware = (req, res, next) => {
     const validateQueryParams = z.object({
       courseId: z.string().optional(),
     });
@@ -21,7 +21,7 @@ export default class SpecializationMiddleware {
     next();
   };
 
-  getSpecializationsByCourseId: IMiddlware = async (req, res, next) => {
+  getSpecializationsByCourseId: IMiddleware = async (req, res, next) => {
     const validate = z.object({
       courseId: z.string().nonempty("Course ID is required"),
     });
@@ -38,7 +38,7 @@ export default class SpecializationMiddleware {
     next();
   };
 
-  createSpecialization: IMiddlware = (req, res, next) => {
+  createSpecialization: IMiddleware = (req, res, next) => {
     const validate = z.object({
       courseId: z.string().nonempty("Course ID is required"),
       name: z.string().nonempty("Name is required"),
@@ -59,7 +59,7 @@ export default class SpecializationMiddleware {
     next();
   };
 
-  updateSpecialization: IMiddlware = (req, res, next) => {
+  updateSpecialization: IMiddleware = (req, res, next) => {
     const validate = z.object({
       specializationId: z.string().nonempty("Specialization ID is required"),
       name: z.string().nonempty("Name is required"),
@@ -82,7 +82,7 @@ export default class SpecializationMiddleware {
     next();
   };
 
-  getSpecializationById: IMiddlware = (req, res, next) => {
+  getSpecializationById: IMiddleware = (req, res, next) => {
     const validate = z.object({
       specializationId: z.string().nonempty("Specialization ID is required"),
     });

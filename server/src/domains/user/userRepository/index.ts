@@ -1,3 +1,4 @@
+import { schemaName } from "../../../constants/schemaName";
 import { passwordEncrypt } from "../../../utils/password";
 import userModel, { IUser } from "../userModel";
 
@@ -21,7 +22,41 @@ export default class UserRepository {
   };
 
   getUsers = () => {
-    return this.userModel.find();
+    return this.userModel.aggregate([
+      {
+        $lookup: {
+          from: schemaName.ROLE,
+          localField: "roleId",
+          foreignField: "_id",
+          as: "role",
+        },
+      },
+      {
+        $unwind: {
+          path: "$role",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: schemaName.USER_PROFILE,
+          localField: "_id",
+          foreignField: "roleId",
+          as: "profile",
+        },
+      },
+      {
+        $unwind: {
+          path: "$profile",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          password: 0,
+        },
+      },
+    ]);
   };
 
   updateUserPassword = (id: IUser["_id"], password: IUser["password"]) => {

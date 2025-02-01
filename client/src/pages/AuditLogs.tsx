@@ -92,24 +92,35 @@ const AuditLogTable = () => {
               <TableHead>Timestamp</TableHead>
               <TableHead>User Agent</TableHead>
               <TableHead>IP Address</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentLogs.map((log, index) => (
-              <TableRow key={index}>
-                <TableCell>{log.action}</TableCell>
-                <TableCell>{log.userId}</TableCell>
-                <TableCell>
-                  {toDateTimeNumeric(new Date(log.timestamp))}
-                </TableCell>
-                <TableCell>{log.userAgent}</TableCell>
-                <TableCell>{log.ipAddress}</TableCell>
-                <TableCell>
-                  <Link to={`/audit-logs/${log._id}`}>View Details</Link>
+            {currentLogs.length > 0 ? (
+              currentLogs.map((log, index) => (
+                <TableRow key={index}>
+                  <TableCell>{log.action}</TableCell>
+                  <TableCell>{log.userId}</TableCell>
+                  <TableCell>
+                    {toDateTimeNumeric(new Date(log.timestamp))}
+                  </TableCell>
+                  <TableCell>{log.userAgent}</TableCell>
+                  <TableCell>{log.ipAddress}</TableCell>
+                  <TableCell>
+                    <Link to={`/audit-logs/${log._id}`}>View Details</Link>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-gray-500"
+                >
+                  No audit logs found.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </Card>

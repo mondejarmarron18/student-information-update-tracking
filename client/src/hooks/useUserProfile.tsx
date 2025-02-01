@@ -13,7 +13,6 @@ const useUserProfile = () => {
   const { error, ...rest } = useQuery<ApiResponseSuccess<IUserProfile>>({
     queryKey: ["user-profile"],
     queryFn: async () => api.get("/user-profiles/me"),
-    retry: 1,
   });
 
   const handledError = error ? reactQueryError(error) : null;

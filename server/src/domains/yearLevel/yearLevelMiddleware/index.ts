@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { IMiddlware } from "../../../types/middleware";
+import { IMiddleware } from "../../../types/middleware";
 
 export default class YearLevelMiddleware {
-  createYearLevel: IMiddlware = (req, res, next) => {
+  createYearLevel: IMiddleware = (req, res, next) => {
     const validate = z.object({
       name: z.string().nonempty("Name is required"),
       description: z.string().optional(),
@@ -18,7 +18,7 @@ export default class YearLevelMiddleware {
     next();
   };
 
-  getYearLevelById: IMiddlware = (req, res, next) => {
+  getYearLevelById: IMiddleware = (req, res, next) => {
     const validate = z.object({
       yearLevelId: z.string().nonempty("Year Level ID is required"),
     });
@@ -33,7 +33,7 @@ export default class YearLevelMiddleware {
     next();
   };
 
-  updateYearLevel: IMiddlware = (req, res, next) => {
+  updateYearLevel: IMiddleware = (req, res, next) => {
     const validate = z.object({
       yearLevelId: z.string().nonempty("Year Level ID is required"),
       name: z.string().nonempty("Name is required"),

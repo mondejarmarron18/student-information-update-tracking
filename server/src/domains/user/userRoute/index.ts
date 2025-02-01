@@ -3,13 +3,18 @@ import UserController from "../userController";
 import UserMiddleware from "../userMiddleware";
 import authMiddleware from "../../../middlewares/authMiddleware";
 import authReCaptcha from "../../../middlewares/authCaptcha";
+import authRole from "../../../middlewares/authRole";
 
 const userRoute = Router();
 const userController = new UserController();
 const userMiddleware = new UserMiddleware();
 
 //Get all users
-userRoute.get("/", [authMiddleware], userController.getUsers);
+userRoute.get(
+  "/",
+  [authMiddleware, authRole().isAdmin().isStaff().apply],
+  userController.getUsers
+);
 //Create user
 userRoute.post(
   "/",

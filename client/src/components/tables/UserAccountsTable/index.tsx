@@ -20,24 +20,23 @@ import {
 } from "@/components/ui/pagination";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import { Button } from "@/components/ui/button";
-import useSpecializations from "@/hooks/useSpecializations";
-import SpecializationDialog from "@/components/common/SpecializationDialog";
-import { routePaths } from "@/routes";
-import { useNavigate, useParams } from "react-router";
+import YearLevelDialog from "@/components/common/YearLevelDialog";
+import useUserAccounts from "@/hooks/useUserAccounts";
+import _ from "lodash";
 import PopupMenu from "@/components/common/PopupMenu";
+import { routePaths } from "@/routes";
+import { useNavigate } from "react-router";
 
-const SpecializationsTable = () => {
+const UserAccountsTable = () => {
   const navigate = useNavigate();
-  const { courseId } = useParams();
-  const specilizations = useSpecializations({
-    courseId,
-  });
-  const specilizationsList = specilizations.data?.data || [];
+  const userAccounts = useUserAccounts();
+  const userAccountsData = userAccounts.data?.data || [];
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Set how many items you want to display per page
 
-  const totalPages = Math.ceil(specilizationsList.length / itemsPerPage);
+  const totalPages = Math.ceil(userAccountsData.length / itemsPerPage);
 
   return (
     <div className="flex flex-col gap-8 mt-4 p-1">
@@ -48,59 +47,65 @@ const SpecializationsTable = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/3 mr-4"
         />
-        <SpecializationDialog trigger={<Button>Add Specialization</Button>} />
+        <YearLevelDialog trigger={<Button>Add User</Button>} />
       </div>
 
+      {/* Table */}
       <Card>
         <Table>
           <TableHeader>
             <TableRow>
-              {!courseId && <TableHead>Course</TableHead>}
               <TableHead>Name</TableHead>
-              <TableHead>Students</TableHead>
-              <TableHead>Updated By</TableHead>
-              <TableHead>Date Updated</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead>Verified</TableHead>
+              <TableHead className="w-0"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {specilizationsList.length > 0 ? (
-              specilizationsList.map((specialization) => (
-                <TableRow key={specialization._id}>
-                  {!courseId && (
-                    <TableCell>{specialization.course?.name}</TableCell>
-                  )}
-                  <TableCell>{specialization.studentsCount}</TableCell>
-                  <TableCell>{specialization.name}</TableCell>
+            {userAccountsData.length > 0 ? (
+              userAccountsData.map((useAccount) => (
+                <TableRow key={useAccount._id}>
                   <TableCell>
-                    {specialization.updaterProfile?.firstName}{" "}
-                    {specialization.updaterProfile?.lastName}
+                    {!useAccount.profile
+                      ? "-"
+                      : useAccount.profile.firstName +
+                        " " +
+                        useAccount.profile.lastName}
+                  </TableCell>
+                  <TableCell>{useAccount.email}</TableCell>
+                  <TableCell>
+                    {useAccount.role?.name
+                      ? _.startCase(_.toLower(useAccount.role.name))
+                      : "-"}
                   </TableCell>
                   <TableCell>
-                    {toDateTimeNumeric(specialization.updatedAt)}
+                    {toDateTimeNumeric(useAccount.createdAt)}
+                  </TableCell>
+                  <TableCell>
+                    {useAccount.verifiedAt
+                      ? toDateTimeNumeric(useAccount.verifiedAt)
+                      : "Unverified"}
                   </TableCell>
                   <TableCell>
                     <PopupMenu
                       items={[
                         {
                           label: "View",
-                          onClick: () =>
-                            navigate(
-                              routePaths.specialization.path
-                                .replace(
-                                  ":specializationId",
-                                  specialization._id
-                                )
-                                .replace(":courseId", courseId as string)
-                            ),
+                          onClick: () => {},
                         },
                         {
                           label: "Edit",
-                          onClick: () => {},
+                          onClick: () => {
+                            // Handle edit action
+                          },
                         },
                         {
-                          label: "Delete",
-                          onClick: () => {},
+                          label: "Deactivate",
+                          onClick: () => {
+                            // Handle delete action
+                          },
                         },
                       ]}
                     />
@@ -110,10 +115,10 @@ const SpecializationsTable = () => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={!courseId ? 6 : 5}
+                  colSpan={6}
                   className="h-24 text-center text-gray-500"
                 >
-                  No courses found.
+                  No user accounts found.
                 </TableCell>
               </TableRow>
             )}
@@ -167,4 +172,4 @@ const SpecializationsTable = () => {
   );
 };
 
-export default SpecializationsTable;
+export default UserAccountsTable;

@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
+import { IMiddleware } from "../../../types/middleware";
 
 export default class RoleMiddleware {
-  createRole = (req: Request, res: Response, next: NextFunction) => {
+  createRole: IMiddleware = (req, res, next) => {
     const validate = z.object({
       name: z.string().nonempty("Name is required"),
       description: z.string().nonempty("Description is required"),
@@ -18,7 +18,7 @@ export default class RoleMiddleware {
     next();
   };
 
-  updateRole = (req: Request, res: Response, next: NextFunction) => {
+  updateRole: IMiddleware = (req, res, next) => {
     const validate = z.object({
       name: z.string().nonempty("Name is required"),
       description: z.string().nonempty("Description is required"),
@@ -34,7 +34,7 @@ export default class RoleMiddleware {
     next();
   };
 
-  deleteRole = (req: Request, res: Response, next: NextFunction) => {
+  deleteRole: IMiddleware = (req, res, next) => {
     const validate = z.object({
       id: z.string().nonempty("ID is required"),
     });
@@ -49,7 +49,7 @@ export default class RoleMiddleware {
     next();
   };
 
-  getRoleById = (req: Request, res: Response, next: NextFunction) => {
+  getRoleById: IMiddleware = (req, res, next) => {
     const validate = z.object({
       id: z.string().nonempty("ID is required"),
     });

@@ -1,11 +1,12 @@
+import { Role } from "./role.type";
+import { UserProfile } from "./userProfile.type";
+
 export type UserAccount = {
-  id: string;
-  roleId: {
-    _id: string;
-    name: string;
-    description: string;
-  };
+  _id: string;
+  roleId?: Role;
   userProfileId: string;
+  role?: Role;
+  profile?: UserProfile;
   email: string;
   password: string;
   verifiedAt: Date;
