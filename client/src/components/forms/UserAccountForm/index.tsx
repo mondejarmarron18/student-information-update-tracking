@@ -9,26 +9,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { UserAccountFormProps } from "./schema";
+import useUserAccountForm from "./useUserAccountForm";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
-import { YearLevelFormProps } from "./schema";
-import useYearLevelForm from "./useYearLevelForm";
-import { Textarea } from "@/components/ui/textarea";
-import FormError from "@/components/common/FormError";
-import RichText from "@/components/common/RichText";
-import useCourseValues from "./useCourseValues";
 import AnimatedSpinner from "@/components/common/AnimatedSpinner";
+import FormError from "@/components/common/FormError";
+import SelectRole from "@/components/common/SelectRole";
+const RegisterForm = (props: FormProps<UserAccountFormProps>) => {
+  const { form } = useUserAccountForm();
 
-const YearLevelForm = (props: FormProps<YearLevelFormProps>) => {
-  const { form } = useYearLevelForm();
-
-  useCourseValues({
-    values: props.values,
-    form,
-  });
-
-  const onSubmit = (data: YearLevelFormProps) => {
-    props.onSubmit(data);
+  const onSubmit = (values: UserAccountFormProps) => {
+    props.onSubmit(values);
   };
 
   return (
@@ -45,29 +37,32 @@ const YearLevelForm = (props: FormProps<YearLevelFormProps>) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{formField.label}</FormLabel>
-                <FormControl>
-                  {formField.type === "textarea" ? (
-                    <Textarea placeholder={formField.placeholder} {...field} />
-                  ) : formField.type === "richtext" ? (
-                    <RichText
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder={formField.placeholder}
-                    />
-                  ) : (
+                {formField.name === "roledId" ? (
+                  <SelectRole
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  />
+                ) : (
+                  <FormControl>
                     <Input
                       type={formField.type}
                       placeholder={formField.placeholder}
                       {...field}
                     />
-                  )}
-                </FormControl>
+                  </FormControl>
+                )}
 
                 <FormMessage />
               </FormItem>
             )}
           />
         ))}
+
+        <p className="text-sm text-muted-foreground">
+          <strong>Note:</strong> Password will be auto-generated and sent to the
+          user's email address. For better security, we recommend resetting
+          password after logging in to something that can easily remember.
+        </p>
 
         {!!props.error && <FormError {...props.error} />}
 
@@ -83,7 +78,7 @@ const YearLevelForm = (props: FormProps<YearLevelFormProps>) => {
             </Button>
           )}
 
-          <Button disabled={props.onSubmitLoading} type="submit" className="flex-1">
+          <Button type="submit" className="flex-1">
             {props.onSubmitLoading ? (
               <AnimatedSpinner />
             ) : (
@@ -96,4 +91,4 @@ const YearLevelForm = (props: FormProps<YearLevelFormProps>) => {
   );
 };
 
-export default YearLevelForm;
+export default RegisterForm;

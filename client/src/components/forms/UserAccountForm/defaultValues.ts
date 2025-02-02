@@ -1,8 +1,8 @@
-import { YearLevelFormProps } from "./schema";
+import { UserAccountFormProps } from "./schema";
 
-const defaultValues: YearLevelFormProps = {
-  name: "",
-  description: "",
+const defaultValues: UserAccountFormProps = {
+  roledId: "",
+  email: "",
 };
 
 export default defaultValues;

@@ -11,6 +11,11 @@ const authRole = () => {
   let allowedRoles = new Set<AllowedRole>();
 
   return {
+    isSuperAdmin() {
+      allowedRoles.add(userRoles.SUPER_ADMIN);
+      return this;
+    },
+
     isAdmin() {
       allowedRoles.add(userRoles.ADMIN);
       return this; // Return the object to enable chaining

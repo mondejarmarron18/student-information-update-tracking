@@ -1,6 +1,6 @@
 export type Role = {
-  id: string;
-  name: "student" | "admin" | "staff";
+  _id: string;
+  name: "student" | "admin" | "super-admin" | "staff";
   description: string;
   createdAt: Date;
   updatedAt: Date;

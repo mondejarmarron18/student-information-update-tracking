@@ -6,7 +6,10 @@ const formSchema = z
     email: z.string().email("Please enter a valid email"),
     password: z
       .string()
-      .min(allowedLength, "Password must be at least 6 characters long"),
+      .min(
+        allowedLength,
+        `Password must be at least ${allowedLength} characters long`
+      ),
     confirmPassword: z.string(),
     captcha: z.string({
       required_error: "Verify that you are not a robot",

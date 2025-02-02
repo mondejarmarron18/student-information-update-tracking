@@ -20,12 +20,12 @@ import {
 } from "@/components/ui/pagination";
 import { toDateTimeNumeric } from "@/utils/fomatter";
 import { Button } from "@/components/ui/button";
-import YearLevelDialog from "@/components/common/YearLevelDialog";
 import useUserAccounts from "@/hooks/useUserAccounts";
 import _ from "lodash";
 import PopupMenu from "@/components/common/PopupMenu";
 import { routePaths } from "@/routes";
 import { useNavigate } from "react-router";
+import UserAccountDialog from "@/components/common/UserAccountDialog";
 
 const UserAccountsTable = () => {
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const UserAccountsTable = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/3 mr-4"
         />
-        <YearLevelDialog trigger={<Button>Add User</Button>} />
+        <UserAccountDialog trigger={<Button>Add User</Button>} />
       </div>
 
       {/* Table */}

@@ -1,18 +1,23 @@
 import { FormField } from "@/types/form.type";
-import { YearLevelFormProps } from "./schema";
+import { UserAccountFormProps } from "./schema";
 
-const formFields: (FormField & { name: keyof YearLevelFormProps })[] = [
+type Fields = FormField & {
+  name: keyof UserAccountFormProps;
+};
+
+const formFields: Fields[] = [
   {
-    name: "name",
-    label: "Name",
-    type: "text",
-    placeholder: "Year level name...",
+    name: "roledId",
+    label: "Role",
+    type: "select",
+    placeholder: "Select role",
+    options: [],
   },
   {
-    name: "description",
-    label: "Description",
-    type: "textarea",
-    placeholder: "Year level description...",
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "jude.cruz.au@phinmaed.com",
   },
 ];
 

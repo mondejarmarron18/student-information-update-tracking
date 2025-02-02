@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import defaultValues from "./defaultValues";
-import formSchema, { YearLevelFormProps } from "./schema";
+import formSchema, { UserAccountFormProps } from "./schema";
 
-const useYearLevelForm = () => {
-  const form = useForm<YearLevelFormProps>({
+const useUserAccountForm = () => {
+  const form = useForm<UserAccountFormProps>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
@@ -16,4 +16,4 @@ const useYearLevelForm = () => {
   };
 };
 
-export default useYearLevelForm;
+export default useUserAccountForm;

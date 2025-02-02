@@ -31,7 +31,7 @@ export default class RoleRepository {
   };
 
   getRoles = () => {
-    return this.roleModel.find();
+    return this.roleModel.find().lean();
   };
 
   createRoles = (roles: Pick<IRole, "name" | "description">[]) => {

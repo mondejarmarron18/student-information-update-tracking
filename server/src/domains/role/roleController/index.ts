@@ -3,6 +3,7 @@ import RoleService from "../roleService";
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import CustomResponse from "../../../utils/CustomResponse";
 
 export default class RoleController {
   private roleService: RoleService;
@@ -43,7 +44,7 @@ export default class RoleController {
       this.roleService.updateRole(id, req.body)
     );
 
-    if (error !== null || result === null) {
+    if (error || !result) {
       console.error("Error updating role:", error);
       res.status(500).send({ error: "Internal server error" });
       return;
@@ -74,13 +75,15 @@ export default class RoleController {
   getRoles = async (req: Request, res: Response) => {
     const { result, error } = await x8tAsync(this.roleService.getRoles());
 
-    if (error !== null || result === null) {
-      console.error("Error getting roles:", error);
-      res.status(500).send({ error: "Internal server error" });
-      return;
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
     }
 
-    res.status(201).send({ data: result });
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Roles retrieved successfully",
+      data: result,
+    });
   };
 
   getRoleById = async (req: Request, res: Response) => {
