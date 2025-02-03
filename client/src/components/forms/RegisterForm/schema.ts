@@ -11,9 +11,7 @@ const formSchema = z
         `Password must be at least ${allowedLength} characters long`
       ),
     confirmPassword: z.string(),
-    captcha: z.string({
-      required_error: "Verify that you are not a robot",
-    }),
+    captcha: z.string().nonempty("Verify that you are not a robot"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

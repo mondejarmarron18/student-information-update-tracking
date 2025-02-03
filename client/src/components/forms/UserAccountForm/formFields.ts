@@ -7,7 +7,7 @@ type Fields = FormField & {
 
 const formFields: Fields[] = [
   {
-    name: "roledId",
+    name: "roleId",
     label: "Role",
     type: "select",
     placeholder: "Select role",
@@ -18,6 +18,12 @@ const formFields: Fields[] = [
     label: "Email",
     type: "email",
     placeholder: "jude.cruz.au@phinmaed.com",
+  },
+  {
+    name: "password",
+    label: "Temporary Password",
+    type: "text",
+    placeholder: "Enter or generate temporary password",
   },
 ];
 

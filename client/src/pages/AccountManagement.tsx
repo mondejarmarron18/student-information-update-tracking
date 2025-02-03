@@ -14,6 +14,7 @@ import { useState } from "react";
 import { CheckedState } from "@radix-ui/react-checkbox";
 import { Label } from "@/components/ui/label";
 import AcademicProfileDialog from "@/components/common/AcademicProfileDialog";
+import { role } from "@/constants/role";
 
 const AccountManagement = () => {
   const useProfile = useUserProfile();
@@ -44,9 +45,11 @@ const AccountManagement = () => {
         <TabsTrigger value="basic" className="flex-1">
           Personal Information
         </TabsTrigger>
-        <TabsTrigger value="academic" className="flex-1">
-          Academic Profile
-        </TabsTrigger>
+        {user?.roleId?.name === role.STUDENT && (
+          <TabsTrigger value="academic" className="flex-1">
+            Academic Profile
+          </TabsTrigger>
+        )}
       </TabsList>
 
       <TabsContent value="account">
@@ -90,22 +93,30 @@ const AccountManagement = () => {
               <CardTitle className="text-xl">Basic Information</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <RenderFiled
-                label="First Name"
-                value={userProfileData?.firstName || "-"}
-              />
-              <RenderFiled
-                label="Middle Name"
-                value={userProfileData?.middleName || "-"}
-              />
-              <RenderFiled
-                label="Last Name"
-                value={userProfileData?.lastName || "-"}
-              />
-              <RenderFiled
-                label="Phone Number"
-                value={userProfileData?.phoneNumber || "-"}
-              />
+              {!userProfileData ? (
+                <div className="text-center flex items-center justify-center text-gray-500 min-h-[150px]">
+                  No data, Please add your basic information
+                </div>
+              ) : (
+                <>
+                  <RenderFiled
+                    label="First Name"
+                    value={userProfileData?.firstName || "-"}
+                  />
+                  <RenderFiled
+                    label="Middle Name"
+                    value={userProfileData?.middleName || "-"}
+                  />
+                  <RenderFiled
+                    label="Last Name"
+                    value={userProfileData?.lastName || "-"}
+                  />
+                  <RenderFiled
+                    label="Phone Number"
+                    value={userProfileData?.phoneNumber || "-"}
+                  />
+                </>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -113,26 +124,35 @@ const AccountManagement = () => {
               <CardTitle className="text-xl">Address</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <RenderFiled
-                label="Current Address"
-                value={`${currentAddress?.addressLine1}${
-                  currentAddress?.addressLine2
-                    ? `, ${currentAddress?.addressLine2}`
-                    : ""
-                }, ${currentAddress?.city} ${currentAddress?.postalCode}, ${
-                  currentAddress?.state
-                }, ${currentAddress?.country}`}
-              />
-              <RenderFiled
-                label="Permanent Address"
-                value={`${pemanentAddress?.addressLine1}${
-                  pemanentAddress?.addressLine2
-                    ? `, ${pemanentAddress?.addressLine2}`
-                    : ""
-                }, ${pemanentAddress?.city} ${pemanentAddress?.postalCode}, ${
-                  pemanentAddress?.state
-                }, ${pemanentAddress?.country}`}
-              />
+              {!userProfileData?.address ? (
+                <div className="text-center flex items-center justify-center text-gray-500 min-h-[150px]">
+                  No data, Please add your address
+                </div>
+              ) : (
+                <>
+                  {" "}
+                  <RenderFiled
+                    label="Current Address"
+                    value={`${currentAddress?.addressLine1}${
+                      currentAddress?.addressLine2
+                        ? `, ${currentAddress?.addressLine2}`
+                        : ""
+                    }, ${currentAddress?.city} ${currentAddress?.postalCode}, ${
+                      currentAddress?.state
+                    }, ${currentAddress?.country}`}
+                  />
+                  <RenderFiled
+                    label="Permanent Address"
+                    value={`${pemanentAddress?.addressLine1}${
+                      pemanentAddress?.addressLine2
+                        ? `, ${pemanentAddress?.addressLine2}`
+                        : ""
+                    }, ${pemanentAddress?.city} ${
+                      pemanentAddress?.postalCode
+                    }, ${pemanentAddress?.state}, ${pemanentAddress?.country}`}
+                  />
+                </>
+              )}
             </CardContent>
           </Card>
           <div className="flex flex-col items-start gap-4">
@@ -142,19 +162,42 @@ const AccountManagement = () => {
                 checked={isAcknowledge}
                 onCheckedChange={setIsAcknowledge}
               />
-              <Label>
-                I acknowledge that updating{" "}
-                <span className="text-white">personal information</span> may
-                take time as it requires approval by the school. Your update
-                request will be sent to the "Update Requests" page where you can
-                monitor its status. Once submitted, you will not be able to make
-                another update until the previous request has been reviewed.
-              </Label>
+
+              {!userProfileData ? (
+                <Label>
+                  I acknowledge that adding{" "}
+                  <span className="text-black dark:text-white">
+                    personal information
+                  </span>{" "}
+                  for the first time will be applied immediately and appear
+                  without requiring approval. However, any future updates to
+                  this information will require school approval and will be sent
+                  to the "Update Requests" page, where I can monitor their
+                  status. I understand the importance of reviewing my
+                  information carefully before saving, as further updates cannot
+                  be made until the previous request has been reviewed.
+                </Label>
+              ) : (
+                <Label>
+                  I acknowledge that updating{" "}
+                  <span className="text-black dark:text-white">
+                    personal information
+                  </span>{" "}
+                  may take time as it requires approval by the school. Your
+                  update request will be sent to the "Update Requests" page
+                  where you can monitor its status. Once submitted, you will not
+                  be able to make another update until the previous request has
+                  been reviewed.
+                </Label>
+              )}
             </div>
             <UserProfileDialog
               trigger={
                 <Button disabled={!isAcknowledge}>
-                  <HiOutlinePencil /> Request an Update
+                  <HiOutlinePencil />
+                  {!userProfileData
+                    ? "Add Personal Information"
+                    : "Request an Update"}
                 </Button>
               }
             />
@@ -163,90 +206,132 @@ const AccountManagement = () => {
       </TabsContent>
 
       {/* Academic Profile & Guardians */}
-      <TabsContent value="academic">
-        <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">Academic Profile</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <RenderFiled
-                label="LRN"
-                value={acadProfileData?.learnerReferenceNumber || "-"}
-              />
-              <RenderFiled
-                label="Year Level"
-                value={acadProfileData?.yearLevel?.name || "-"}
-              />
-              <RenderFiled
-                label="Course"
-                value={`${acadProfileData?.course?.name} - ${acadProfileData?.course?.description}`}
-              />
-              <RenderFiled
-                label="Specialization"
-                value={acadProfileData?.specialization?.name || "-"}
-              />
-            </CardContent>
-          </Card>
+      {user?.roleId?.name === role.STUDENT && (
+        <TabsContent value="academic">
+          <div className="flex flex-col gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Academic Profile</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                {!acadProfileData ? (
+                  <div className="text-center flex items-center justify-center text-gray-500 min-h-[150px]">
+                    No data, Please add your academic profile
+                  </div>
+                ) : (
+                  <>
+                    {" "}
+                    <RenderFiled
+                      label="LRN"
+                      value={acadProfileData?.learnerReferenceNumber || "-"}
+                    />
+                    <RenderFiled
+                      label="Year Level"
+                      value={acadProfileData?.yearLevel?.name || "-"}
+                    />
+                    <RenderFiled
+                      label="Course"
+                      value={`${acadProfileData?.course?.name} - ${acadProfileData?.course?.description}`}
+                    />
+                    <RenderFiled
+                      label="Specialization"
+                      value={acadProfileData?.specialization?.name || "-"}
+                    />
+                  </>
+                )}
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl">Guardians</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              {acadProfileData?.guardians.map((guardian, index) => (
-                <div
-                  key={index}
-                  className={cn("grid gap-4", {
-                    "borer-t": index !== 0,
-                  })}
-                >
-                  <RenderFiled
-                    label="Guardian Name"
-                    value={`${guardian.firstName} ${guardian.middleName} ${guardian.lastName}`}
-                  />
-                  <RenderFiled
-                    label="Relationship"
-                    value={`${guardian.relationship}`}
-                  />
-                  <RenderFiled
-                    label="Email Address"
-                    value={`${guardian.email}`}
-                  />
-                  <RenderFiled
-                    label="Phone Number"
-                    value={`${guardian.phoneNumber}`}
-                  />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-          <div className="flex flex-col items-start gap-4">
-            <div className="flex items-start gap-2 text-sm text-gray-500">
-              <Checkbox
-                id="acknowledge"
-                checked={isAcknowledge}
-                onCheckedChange={setIsAcknowledge}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Guardians</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                {!acadProfileData?.guardians ? (
+                  <div className="text-center flex items-center justify-center text-gray-500 min-h-[150px]">
+                    No data, Please add your guardians
+                  </div>
+                ) : (
+                  <>
+                    {acadProfileData?.guardians.map((guardian, index) => (
+                      <div
+                        key={index}
+                        className={cn("grid gap-4", {
+                          "borer-t": index !== 0,
+                        })}
+                      >
+                        <RenderFiled
+                          label="Guardian Name"
+                          value={`${guardian.firstName} ${guardian.middleName} ${guardian.lastName}`}
+                        />
+                        <RenderFiled
+                          label="Relationship"
+                          value={`${guardian.relationship}`}
+                        />
+                        <RenderFiled
+                          label="Email Address"
+                          value={`${guardian.email}`}
+                        />
+                        <RenderFiled
+                          label="Phone Number"
+                          value={`${guardian.phoneNumber}`}
+                        />
+                      </div>
+                    ))}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+            <div className="flex flex-col items-start gap-4">
+              <div className="flex items-start gap-2 text-sm text-gray-500">
+                <Checkbox
+                  id="acknowledge"
+                  checked={isAcknowledge}
+                  onCheckedChange={setIsAcknowledge}
+                />
+
+                {!acadProfileData ? (
+                  <Label>
+                    I acknowledge that adding{" "}
+                    <span className="text-black dark:text-white">
+                      academic profile
+                    </span>{" "}
+                    for the first time will be applied immediately and appear
+                    without requiring approval. However, any future updates to
+                    this information will require school approval and will be
+                    sent to the "Update Requests" page, where I can monitor
+                    their status. I understand the importance of reviewing my
+                    information carefully before saving, as further updates
+                    cannot be made until the previous request has been reviewed.
+                  </Label>
+                ) : (
+                  <Label>
+                    I acknowledge that updating{" "}
+                    <span className="text-black dark:text-white">
+                      academic profile
+                    </span>{" "}
+                    may take time as it requires approval by the school. Your
+                    update request will be sent to the "Update Requests" page
+                    where you can monitor its status. Once submitted, you will
+                    not be able to make another update until the previous
+                    request has been reviewed.
+                  </Label>
+                )}
+              </div>
+              <AcademicProfileDialog
+                trigger={
+                  <Button disabled={!isAcknowledge}>
+                    <HiOutlinePencil />{" "}
+                    {!acadProfileData
+                      ? "Add Academic Profile"
+                      : "Request an Update"}
+                  </Button>
+                }
               />
-              <Label>
-                I acknowledge that updating{" "}
-                <span className="text-white">academic profile</span> may take
-                time as it requires approval by the school. Your update request
-                will be sent to the "Update Requests" page where you can monitor
-                its status. Once submitted, you will not be able to make another
-                update until the previous request has been reviewed.
-              </Label>
             </div>
-            <AcademicProfileDialog
-              trigger={
-                <Button disabled={!isAcknowledge}>
-                  <HiOutlinePencil /> Request an Update
-                </Button>
-              }
-            />
           </div>
-        </div>
-      </TabsContent>
+        </TabsContent>
+      )}
     </Tabs>
   );
 };

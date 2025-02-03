@@ -1,8 +1,9 @@
 import { UserAccountFormProps } from "./schema";
 
 const defaultValues: UserAccountFormProps = {
-  roledId: "",
+  roleId: "",
   email: "",
+  password: "",
 };
 
 export default defaultValues;

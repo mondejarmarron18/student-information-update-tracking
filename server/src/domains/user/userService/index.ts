@@ -17,7 +17,6 @@ import { IVerificationCode } from "../../verificationCode/verificationCodeModel"
 import VerificationCodeService from "../../verificationCode/verificationCodeService";
 import CustomError from "../../../utils/CustomError";
 import { Request } from "express";
-import { convertToObjectId } from "../../../utils/mongooseUtil";
 import { passwordCompare } from "../../../utils/password";
 
 export default class UserService {
@@ -32,34 +31,33 @@ export default class UserService {
   }
 
   createUser = async (params: Pick<IUser, "email" | "password" | "roleId">) => {
-    const existingUser = await this.userRepository.getUserByEmail(params.email);
-    let user = existingUser;
+    const isUserEmailExists = await this.userRepository.isUserEmailExists(
+      params.email
+    );
 
-    // Check if user already exists
-    if (!user) {
-      const isRoleExist = await this.roleService.isRoleIdExist(params.roleId);
-
-      if (!isRoleExist) {
-        return CustomError.notFound({ details: "Role not found" });
-      }
-
-      const newUser = await x8tAsync(this.userRepository.createUser(params));
-
-      if (newUser.error || !newUser.result) {
-        return CustomError.internalServerError({
-          details: newUser.error || "Failed to create user",
-        });
-      }
-
-      user = newUser.result;
+    if (isUserEmailExists) {
+      return CustomError.badRequest({ description: "Email already exists" });
     }
 
-    if (user?.verifiedAt) {
-      return CustomError.badRequest({ details: "Email already exists" });
+    const isRoleExist = await this.roleService.isRoleIdExist(params.roleId);
+
+    if (!isRoleExist) {
+      return CustomError.notFound({ description: "Role not found" });
+    }
+
+    const { result: user, error } = await x8tAsync(
+      this.userRepository.createUser(params)
+    );
+
+    if (error || !user) {
+      return CustomError.internalServerError({
+        details: error || "Failed to create user",
+      });
     }
 
     const verificationCode = await this.generateVerificationCode(user._id);
 
+    //Include password in email if the account is created by admin or super admin
     await this.sendVerificationEmail(user.email, verificationCode);
 
     return _.omit(user.toJSON(), "password");
@@ -95,11 +93,10 @@ export default class UserService {
     const { error: sendMailError } = await sendMail({
       to: email,
       subject: "Account Verification",
-      html: await hbs("email", {
+      html: await hbs("emailVerification", {
         verificationUrl: `${config.clientUrl}/email-verification/${verificationCode}`,
         supportEmail: config.smtp.sender,
         appName: config.appName,
-        unsubscribeUrl: `${config.clientUrl}/unsubscribe/${verificationCode}`,
         expireIn: "24 hours",
         website: {
           domain: config.clientUrl?.replace(/(http|https):\/\//, ""),

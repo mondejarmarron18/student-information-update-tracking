@@ -3,11 +3,7 @@ import { IControllerFunction } from "../../../types/controller";
 import UpdateRequestService from "../updateRequestService";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
-import {
-  updateRequestStatus,
-  updateRequestStatusKeys,
-  updateRequestStatusValues,
-} from "../../../constants/updateRequest";
+import { updateRequestStatus } from "../../../constants/updateRequest";
 import userRoles from "../../../constants/userRoles";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
 

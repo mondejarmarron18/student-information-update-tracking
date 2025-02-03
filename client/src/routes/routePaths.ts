@@ -14,15 +14,17 @@ const routePaths: Record<string, RoutePath> = {
     name: "Dashboard",
     element: lazy(() => import("../pages/Dashboard")),
   },
-  userAccount: {
-    path: "/user-account",
-    name: "User Account",
-    element: lazy(() => import("../pages/UserAccount")),
-  },
   userAccounts: {
     path: "/user-accounts",
     name: "User Accounts",
     element: lazy(() => import("../pages/UserAccounts")),
+    roles: [role.SUPER_ADMIN, role.ADMIN],
+  },
+  userAccount: {
+    path: "/user-accounts/:userAccountId",
+    name: "User Account",
+    element: lazy(() => import("../pages/UserAccount")),
+    roles: [role.SUPER_ADMIN, role.ADMIN],
   },
   signIn: {
     path: "/sign-in",

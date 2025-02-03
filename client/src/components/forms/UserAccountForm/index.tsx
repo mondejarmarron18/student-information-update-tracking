@@ -16,11 +16,81 @@ import { FormProps } from "@/types/form.type";
 import AnimatedSpinner from "@/components/common/AnimatedSpinner";
 import FormError from "@/components/common/FormError";
 import SelectRole from "@/components/common/SelectRole";
+import { ControllerRenderProps } from "react-hook-form";
+import generateRandomPassword from "@/utils/generateRandomPassword";
+import { LiaRandomSolid } from "react-icons/lia";
+import PasswordValidator from "@/components/common/PasswordValidator";
+import { BsCopy } from "react-icons/bs";
+import { toast } from "@/hooks/use-toast";
+
 const RegisterForm = (props: FormProps<UserAccountFormProps>) => {
   const { form } = useUserAccountForm();
 
   const onSubmit = (values: UserAccountFormProps) => {
     props.onSubmit(values);
+  };
+
+  const generatePassword = () => {
+    const password = generateRandomPassword();
+    form.setValue("password", password);
+  };
+
+  const copy = () => {
+    navigator.clipboard.writeText(form.getValues("password"));
+
+    toast({
+      description: "Password copied to clipboard",
+    });
+  };
+
+  const renderFied = (
+    formField: (typeof formFields)[number],
+    field: ControllerRenderProps<UserAccountFormProps>
+  ) => {
+    if (formField.name === "roleId")
+      return <SelectRole value={field.value} onValueChange={field.onChange} />;
+
+    if (formField.name === "password")
+      return (
+        <FormControl>
+          <>
+            <div className="flex gap-2 items-center">
+              <div className="flex-1 flex items-center relative">
+                <Input
+                  type={formField.type}
+                  placeholder={formField.placeholder}
+                  {...field}
+                />
+                <BsCopy
+                  onClick={copy}
+                  className="absolute right-3 hover:cursor-pointer hover:text-primary"
+                  size={18}
+                  title="Copy Password"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={generatePassword}
+                className="flex gap-1 p-2 items-center hover:text-primary text-sm font-semibold"
+                title="Generate Random Password"
+              >
+                <LiaRandomSolid /> Generate
+              </button>
+            </div>{" "}
+            <PasswordValidator password={field.value} />
+          </>
+        </FormControl>
+      );
+
+    return (
+      <FormControl>
+        <Input
+          type={formField.type}
+          placeholder={formField.placeholder}
+          {...field}
+        />
+      </FormControl>
+    );
   };
 
   return (
@@ -37,20 +107,7 @@ const RegisterForm = (props: FormProps<UserAccountFormProps>) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{formField.label}</FormLabel>
-                {formField.name === "roledId" ? (
-                  <SelectRole
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  />
-                ) : (
-                  <FormControl>
-                    <Input
-                      type={formField.type}
-                      placeholder={formField.placeholder}
-                      {...field}
-                    />
-                  </FormControl>
-                )}
+                {renderFied(formField, field)}
 
                 <FormMessage />
               </FormItem>
@@ -59,9 +116,8 @@ const RegisterForm = (props: FormProps<UserAccountFormProps>) => {
         ))}
 
         <p className="text-sm text-muted-foreground">
-          <strong>Note:</strong> Password will be auto-generated and sent to the
-          user's email address. For better security, we recommend resetting
-          password after logging in to something that can easily remember.
+          Please advise the user to reset their password after email
+          verification in order to set a new, memorable password.
         </p>
 
         {!!props.error && <FormError {...props.error} />}

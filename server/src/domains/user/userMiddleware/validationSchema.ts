@@ -1,10 +1,12 @@
 import { z } from "zod";
-
-const passwordSpecialCharacters = "@#$&_";
+import {
+  passwordMinLength,
+  passwordSpecialCharacters,
+} from "../../../utils/password";
 
 export const validatePassword = z
   .string()
-  .min(8, "Password must have at least 8 characters")
+  .min(passwordMinLength, "Password must have at least 8 characters")
   .refine((val) => /[A-Z]/.test(val), {
     message: "Password must have at least one uppercase character",
   })

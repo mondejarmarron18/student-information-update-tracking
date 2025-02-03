@@ -22,13 +22,11 @@ import { toDateTimeNumeric } from "@/utils/fomatter";
 import { Button } from "@/components/ui/button";
 import useUserAccounts from "@/hooks/useUserAccounts";
 import _ from "lodash";
-import PopupMenu from "@/components/common/PopupMenu";
 import { routePaths } from "@/routes";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import UserAccountDialog from "@/components/common/UserAccountDialog";
 
 const UserAccountsTable = () => {
-  const navigate = useNavigate();
   const userAccounts = useUserAccounts();
   const userAccountsData = userAccounts.data?.data || [];
 
@@ -47,7 +45,7 @@ const UserAccountsTable = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/3 mr-4"
         />
-        <UserAccountDialog trigger={<Button>Add User</Button>} />
+        <UserAccountDialog trigger={<Button>Create User Account</Button>} />
       </div>
 
       {/* Table */}
@@ -60,7 +58,7 @@ const UserAccountsTable = () => {
               <TableHead>Role</TableHead>
               <TableHead>Created</TableHead>
               <TableHead>Verified</TableHead>
-              <TableHead className="w-0"></TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -89,26 +87,12 @@ const UserAccountsTable = () => {
                       : "Unverified"}
                   </TableCell>
                   <TableCell>
-                    <PopupMenu
-                      items={[
-                        {
-                          label: "View",
-                          onClick: () => {},
-                        },
-                        {
-                          label: "Edit",
-                          onClick: () => {
-                            // Handle edit action
-                          },
-                        },
-                        {
-                          label: "Deactivate",
-                          onClick: () => {
-                            // Handle delete action
-                          },
-                        },
-                      ]}
-                    />
+                    <Link
+                      to={`${routePaths.userAccounts.path}/${useAccount._id}`}
+                      className="text-primary"
+                    >
+                      View
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))

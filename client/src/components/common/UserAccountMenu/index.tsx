@@ -18,6 +18,11 @@ type Props = {
 const UserAccountMenu = (props: Props) => {
   const navigate = useNavigate();
 
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    html.classList.toggle("dark");
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>{props.trigger}</PopoverTrigger>
@@ -35,8 +40,9 @@ const UserAccountMenu = (props: Props) => {
           variant="ghost"
           size="sm"
           className="flex items-center justify-start"
+          onClick={toggleTheme}
         >
-          Theme <Badge variant="outline">Coming soon</Badge>
+          Toggle Theme
         </Button>
 
         {/* Change Password */}

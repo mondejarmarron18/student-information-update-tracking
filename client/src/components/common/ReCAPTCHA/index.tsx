@@ -19,7 +19,7 @@ const AppRecaptcha = ({ onChange }: AppRecaptchaProps) => {
     <ReCAPTCHA
       ref={recaptchaRef}
       sitekey={config.RECAPTCHA_SITE_KEY}
-      size="normal"
+      size={"normal"}
       theme="dark"
       onChange={onChange}
     />

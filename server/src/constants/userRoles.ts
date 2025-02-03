@@ -5,6 +5,7 @@ const userRoles = {
   PARENT: "parent",
   TEACHER: "teacher",
   STAFF: "staff",
+  NO_ROLE: "",
 } as const;
 
 export const userRolesValues = Object.values(userRoles);

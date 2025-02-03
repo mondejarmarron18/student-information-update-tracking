@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import * as passwordValidator from "@/utils/validator";
+import { FaCheck } from "react-icons/fa6";
 
 type Props = {
   password: string;
@@ -30,23 +31,19 @@ const conditions = [
   },
 ];
 
-const RenderIcon = (props: { satisfied: boolean }) => {
-  if (props.satisfied) {
-    return <span className="text-green-500">&#10004;</span>;
-  }
-
-  return <span className="text-red-500">&#10006;</span>;
-};
-
 const PasswordValidator = (props: Props) => {
   return (
-    <div>
+    <div className="flex flex-col gap-1">
       {conditions.map(({ label, validate }) => {
         const satisfied = validate(props.password);
 
         return (
           <div key={label} className="flex gap-2 items-center">
-            <RenderIcon satisfied={satisfied} />
+            <FaCheck
+              className={cn("text-gray-500", {
+                "text-green-500": satisfied,
+              })}
+            />
             <p
               className={cn("text-sm text-gray-500", {
                 "text-green-500": satisfied,

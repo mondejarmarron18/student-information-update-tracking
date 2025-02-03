@@ -56,6 +56,12 @@ export default class UserRepository {
           password: 0,
         },
       },
+      {
+        $sort: {
+          createdAt: -1,
+          verifiedAt: -1,
+        },
+      },
     ]);
   };
 

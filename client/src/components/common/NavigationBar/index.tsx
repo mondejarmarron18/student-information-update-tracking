@@ -100,9 +100,12 @@ const NavigationBar = () => {
   const renderIcon = (Icon: IconType) => {
     return (
       <Icon
-        className={cn("w-5 h-5 shink-0 transition-transform", {
-          "scale-75": !navCollapsed,
-        })}
+        className={cn(
+          "w-5 h-5 shink-0 text-gray-800 dark:text-white transition-transform",
+          {
+            "scale-75": !navCollapsed,
+          }
+        )}
       />
     );
   };

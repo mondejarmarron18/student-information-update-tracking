@@ -1,9 +1,5 @@
 import { toast } from "@/hooks/use-toast";
-import useRegisterUserProfile from "@/hooks/useRegisterUserProfile";
-import useUpdateUserProfile, {
-  contentType,
-} from "@/hooks/useCreateUpdateRequest";
-import useUserProfile, { IUserProfile } from "@/hooks/useUserProfile";
+
 import { ReactNode, useEffect, useState } from "react";
 import {
   Dialog,
@@ -13,37 +9,30 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import UserAccountForm from "@/components/forms/UserAccountForm";
-import { UserAccount } from "@/types/user.type";
+import { UserAccountFormProps } from "@/components/forms/UserAccountForm/schema";
+import useCreateUserAccount from "@/hooks/useCreateUserAccount";
 
 type Props = {
   trigger: ReactNode;
 };
 
 const UserAccountDialog = (props: Props) => {
-  const { data, error, isSuccess } = useUserProfile();
-  const registerUserProfile = useRegisterUserProfile();
+  const { error, isPending, isSuccess, mutate } = useCreateUserAccount();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (data) {
-      //   setUserProfile(data.data);
-    }
-    if (error) if (error && error?.status !== 404) toast(error);
-  }, [data, error]);
-
-  useEffect(() => {
-    if (registerUserProfile.isSuccess) {
+    if (isSuccess) {
       toast({
-        title: "User Account Created",
-        description: "Email verification link has been sent to their email.",
+        title: "User Account",
+        description: "Email verification link has been sent to user's email.",
       });
 
       setIsOpen(false);
     }
-  }, [registerUserProfile.isSuccess]);
+  }, [isSuccess]);
 
-  const handleSave = (data: UserAccount) => {
-    console.log(data);
+  const handleSave = (data: UserAccountFormProps) => {
+    mutate(data);
   };
 
   return (
@@ -53,15 +42,15 @@ const UserAccountDialog = (props: Props) => {
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <div className="w-full max-w-md overflow-y-auto max-h-[700px] p-1">
-          <UserAccountForm
-            onCancelLabel="Cancel"
-            onCancel={() => setIsOpen(false)}
-            onSubmitLabel={isSuccess ? "Submit" : "Save"}
-            onSubmitLoading={registerUserProfile.isPending}
-            onSubmit={handleSave}
-          />
-        </div>
+        <UserAccountForm
+          className="overflow-y-auto max-h-[700px] p-1"
+          onCancelLabel="Cancel"
+          onCancel={() => setIsOpen(false)}
+          onSubmitLabel={"Save"}
+          onSubmitLoading={isPending}
+          onSubmit={handleSave}
+          error={error ? { description: error.description } : undefined}
+        />
       </DialogContent>
     </Dialog>
   );

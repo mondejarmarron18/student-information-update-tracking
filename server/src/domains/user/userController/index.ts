@@ -1,5 +1,4 @@
-import { x8tAsync, x8tSync } from "x8t";
-import { IUser } from "../userModel";
+import { x8tAsync } from "x8t";
 import UserService from "../userService";
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
@@ -11,6 +10,8 @@ import tokens, { refreshTokenCookieOptions } from "../../../constants/tokens";
 import userRoles from "../../../constants/userRoles";
 import { UpdateOwnPasswordDto } from "../userDtos/updateOwnPasswordDto";
 import { ResetPasswordDto } from "../userDtos/resetPasswordDto";
+import isRole from "../../../utils/isRole";
+import _ from "lodash";
 
 export default class UserController {
   userService: UserService;
@@ -21,22 +22,23 @@ export default class UserController {
 
   registerUser = async (req: Request, res: Response) => {
     const role = req.user?.roleId;
+    const roleName = role?.name as string;
 
-    // Create user based on role
+    //Role based user creation
     let createdUser = null;
 
-    if (!role?.name) {
+    if (!roleName) {
+      //Default role is student if no role is provided
       createdUser = await x8tAsync(this.userService.createStudent(req.body));
-    } else {
-      // Prevent registering user with same role
-      if (role?._id === req.body.roleId) {
-        return CustomResponse.sendError(res, {
-          ...customErrors.forbidden,
-          details: "You can not register user with same role",
-        });
-      }
-
+    } else if (isRole(roleName).isAdmin().isSuperAdmin()) {
+      //Manual registration by super admin or admin
+      //Only super admin and admin can create users
       createdUser = await x8tAsync(this.userService.createUser(req.body));
+    } else {
+      return CustomResponse.sendError(res, {
+        ...customErrors.forbidden,
+        description: "You do not have permission to create a user.",
+      });
     }
 
     if (!createdUser) {
@@ -147,6 +149,28 @@ export default class UserController {
     CustomResponse.sendSuccess(res, {
       message: "User retrieved successfully",
       data: user,
+    });
+  };
+
+  getUserById = async (req: Request, res: Response) => {
+    const { error, id } = convertToObjectId(req.params.userId);
+
+    if (error || !id) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error || "Invalid user ID",
+      });
+    }
+
+    const user = await x8tAsync(this.userService.getUserById(id));
+
+    if (user.error) {
+      return CustomResponse.sendHandledError(res, user.error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      message: "User retrieved successfully",
+      data: _.omit(user.result, "password"),
     });
   };
 

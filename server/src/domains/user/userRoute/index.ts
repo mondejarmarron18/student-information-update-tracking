@@ -15,6 +15,11 @@ userRoute.get(
   [authMiddleware, authRole().isAdmin().isStaff().apply],
   userController.getUsers
 );
+userRoute.get(
+  "/:userId",
+  [authMiddleware, authRole().isAdmin().isStaff().apply],
+  userController.getUserById
+);
 //Create user
 userRoute.post(
   "/",

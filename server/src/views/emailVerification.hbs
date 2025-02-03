@@ -15,6 +15,17 @@
 
     <p><a href="{{verificationUrl}}">Verify Your Email</a></p>
 
+    {{#if password}}
+      <p>
+        Below is your temporary password. Please change it to something you can
+        remember after verifying your account.
+      </p>
+      <p><strong>Temporary Password:</strong></p>
+      <p><code
+          style="display: inline-block; padding: 8px; background: #7777777e; border-radius: 4px;"
+        >{{password}}</code></p>
+    {{/if}}
+
     <p>If you didn’t sign up for
       <strong>{{appName}}</strong>, please ignore this email. If you have any
       questions or concerns, feel free to reach out to us at
