@@ -117,6 +117,11 @@ const routePaths: Record<string, RoutePath> = {
     name: "Account Management",
     element: lazy(() => import("../pages/AccountManagement")),
   },
+  announcements: {
+    path: "/announcements",
+    name: "Announcements",
+    element: lazy(() => import("../pages/Announcements")),
+  },
 } as const;
 
 export default routePaths;

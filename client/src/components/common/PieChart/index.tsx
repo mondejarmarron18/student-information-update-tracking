@@ -1,8 +1,5 @@
 import {
   Chart as ChartJs,
-  CategoryScale,
-  LinearScale,
-  PointElement,
   ArcElement,
   Tooltip,
   Legend,
@@ -11,14 +8,7 @@ import {
 import { ComponentProps } from "react";
 import { Pie } from "react-chartjs-2";
 
-ChartJs.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  ArcElement,
-  Tooltip,
-  Legend
-);
+ChartJs.register(ArcElement, Tooltip, Legend);
 
 export type PieChartData = ChartData<"pie", unknown[], unknown>;
 type Props = ComponentProps<typeof Pie>;

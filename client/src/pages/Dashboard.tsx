@@ -3,8 +3,8 @@ import AnnouncementsCard from "@/components/common/AnnouncementsCard";
 import UpdateRequestsCard from "@/components/common/UpdateRequestsCard";
 import AnnualUpdateRequestsCard from "@/components/common/AnnualUpdateRequestsCard";
 import MonthlyUpdateRequestsCard from "@/components/common/MonthlyUpdateRequestsCard";
-import TrendingDiscussionsCard from "@/components/common/TrendingDiscussionsCard";
-import RecentMessagesCard from "@/components/common/RecentMessagesCard";
+// import TrendingDiscussionsCard from "@/components/common/TrendingDiscussionsCard";
+// import RecentMessagesCard from "@/components/common/RecentMessagesCard";
 
 const Dashboard = () => {
   return (

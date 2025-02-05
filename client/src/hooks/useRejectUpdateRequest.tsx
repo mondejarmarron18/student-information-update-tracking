@@ -1,11 +1,9 @@
 import { ApiResponseSuccess } from "@/types/apiResponse.type";
 import api from "@/utils/api";
 import { reactQueryError } from "@/utils/errorHandler";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "./use-toast";
 import { IUserProfile } from "./useUserProfile";
-import useUpdateRequests from "./useUpdateRequests";
-import useUpdateRequest from "./useUpdateRequest";
 
 type Props = {
   updateRequestId: string;
@@ -13,9 +11,7 @@ type Props = {
 
 const useRejectUpdateRequest = (props: Props) => {
   const { updateRequestId } = props;
-
-  const updateRequests = useUpdateRequests({ enabled: false });
-  const updateRequest = useUpdateRequest({ updateRequestId, enabled: false });
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (reviewComment: string) => {
@@ -27,8 +23,7 @@ const useRejectUpdateRequest = (props: Props) => {
       );
     },
     onSuccess: () => {
-      updateRequests.refetch();
-      updateRequest.refetch();
+      queryClient.invalidateQueries({ queryKey: ["update-requests"] });
     },
     onError: (error) => {
       const apiError = reactQueryError(error);

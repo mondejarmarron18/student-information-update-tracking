@@ -38,7 +38,7 @@ const CoursesTable = () => {
   const totalPages = Math.ceil(coursesList.length / itemsPerPage);
 
   return (
-    <div className="flex flex-col gap-8 mt-4 p-1">
+    <div className="flex flex-col gap-8 mt-4">
       <div className="flex items-center justify-between">
         <Input
           placeholder="Search by requester, reviewer, or status..."

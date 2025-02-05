@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useMemo } from "react";
 import DatePicker from "@/components/common/DatePicker";
 import useUserProfileValues from "./useUserProfileValues";
+import { subYears } from "date-fns";
 
 const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
   const { form } = useUserProfileForm();
@@ -70,6 +71,8 @@ const UserProfileForm = (props: FormProps<UserProfileFormProps>) => {
                   onSelect={field.onChange}
                   className="w-full"
                   value={field.value as Date}
+                  fromDate={subYears(new Date(), 80)}
+                  toDate={subYears(new Date(), 15)}
                 />
               ) : (
                 <Input

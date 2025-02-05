@@ -114,10 +114,14 @@
 }
 
 .ql-editor {
-  @apply min-h-[100px] px-3 py-1;
+  @apply min-h-[100px] px-3 py-1 text-sm;
 
   &.readonly {
     @apply min-h-fit p-0;
+  }
+
+  &.ql-blank::before {
+    @apply text-inherit opacity-70 not-italic !important;
   }
 }
 

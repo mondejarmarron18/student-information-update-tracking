@@ -1,8 +1,9 @@
 import { GrFormPrevious } from "react-icons/gr";
-import { HiMiniAcademicCap } from "react-icons/hi2";
+// import { HiMiniAcademicCap } from "react-icons/hi2";
 import { MdSpaceDashboard, MdPerson } from "react-icons/md";
 import { HiClipboardDocumentCheck } from "react-icons/hi2";
-import { RiProfileFill } from "react-icons/ri";
+import { GrAnnounce } from "react-icons/gr";
+// import { RiProfileFill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import Tooltip from "../Tooltip";
 import { IconType } from "react-icons/lib";
@@ -12,7 +13,7 @@ import { useNavigate } from "react-router";
 import screenSize from "@/utils/screenSize";
 import UserAccountMenu from "../UserAccountMenu";
 import { Card } from "@/components/ui/card";
-import { PiChatsCircleFill } from "react-icons/pi";
+// import { PiChatsCircleFill } from "react-icons/pi";
 import { AiOutlineAudit } from "react-icons/ai";
 import { LiaSchoolSolid } from "react-icons/lia";
 import { TbUsersGroup } from "react-icons/tb";
@@ -30,23 +31,26 @@ export const navItems: NavItems[] = [
     ...routePaths.dashboard,
     iconType: MdSpaceDashboard,
   },
+  // {
+  //   ...routePaths.conversations,
+  //   iconType: PiChatsCircleFill,
+  // },
   {
-    ...routePaths.conversations,
-    iconType: PiChatsCircleFill,
+    ...routePaths.announcements,
+    iconType: GrAnnounce,
   },
   {
     ...routePaths.academicManagement,
     iconType: LiaSchoolSolid,
   },
-
-  {
-    ...routePaths.userProfile,
-    iconType: RiProfileFill,
-  },
-  {
-    ...routePaths.academicProfile,
-    iconType: HiMiniAcademicCap,
-  },
+  // {
+  //   ...routePaths.userProfile,
+  //   iconType: RiProfileFill,
+  // },
+  // {
+  //   ...routePaths.academicProfile,
+  //   iconType: HiMiniAcademicCap,
+  // },
   {
     ...routePaths.updateRequests,
     iconType: HiClipboardDocumentCheck,
