@@ -74,7 +74,7 @@ const UpdateRequests = () => {
               <TableHead>Status</TableHead>
               <TableHead>Date Requested</TableHead>
               <TableHead>Date Reviewed</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -83,16 +83,14 @@ const UpdateRequests = () => {
                 <TableRow key={request._id}>
                   {userRoleName !== role.STUDENT && (
                     <TableCell>
-                      {request.requesterProfile?.firstName}{" "}
+                      {request.requesterProfile?.firstName || "-"}{" "}
                       {request.requesterProfile?.lastName}
                     </TableCell>
                   )}
-                  {userRoleName === role.STUDENT && (
-                    <TableCell>
-                      {request.reviewerProfile?.firstName}{" "}
-                      {request.reviewerProfile?.lastName}
-                    </TableCell>
-                  )}
+                  <TableCell>
+                    {request.reviewerProfile?.firstName || "-"}{" "}
+                    {request.reviewerProfile?.lastName}
+                  </TableCell>
 
                   <TableCell>
                     <UpdateRequestType contentType={request.contentType} />

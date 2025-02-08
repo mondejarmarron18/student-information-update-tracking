@@ -1,5 +1,6 @@
 import { IUserProfile } from "@/hooks/useUserProfile";
 import { IAcademicProfile } from "./academicProfile.type";
+import { updateRequestStatus } from "@/constants/updateRequest";
 
 export type IUpdateRequest = {
   _id: string;
@@ -27,3 +28,22 @@ export type IUpdateRequest = {
       };
     }
 );
+
+export type UpdateRequestsPassedDays = {
+  totalReviews: number;
+  reviews: {
+    status: (typeof updateRequestStatus)[keyof typeof updateRequestStatus];
+    count: number;
+  }[];
+};
+
+export type UpdateRequestsPassedMonths = {
+  _id: string;
+  totalReviews: number;
+  month: string;
+  year: string;
+  reviews: {
+    month: string;
+    count: number;
+  }[];
+}[];

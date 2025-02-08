@@ -151,3 +151,175 @@ export const replaceContentIdsWithData: PipelineStage[] = [
     },
   },
 ];
+
+export const updateRequestsPassedDays = (days: number): PipelineStage[] => {
+  return [
+    {
+      $set: {
+        startDate: {
+          $dateSubtract: {
+            startDate: "$$NOW",
+            unit: "day",
+            amount: days,
+          },
+        },
+        endDate: "$$NOW", // Current date and time
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $or: [
+            {
+              $and: [
+                { $gte: ["$requestedAt", "$startDate"] },
+                { $lt: ["$requestedAt", "$endDate"] },
+              ],
+            },
+            {
+              $and: [
+                { $gte: ["$reviewedAt", "$startDate"] },
+                { $lt: ["$reviewedAt", "$endDate"] },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    {
+      $project: {
+        reviewStatus: 1, // Include only the reviewStatus field
+      },
+    },
+    {
+      $group: {
+        _id: null, // Group everything together
+        reviews: { $push: "$reviewStatus" }, // Gather all reviewStatus values
+        totalReviews: { $sum: 1 }, // Count total documents
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Remove the _id field
+        totalReviews: 1, // Include the totalReviews count
+        reviews: {
+          $map: {
+            input: [1, 2, 3], // Specify all possible statuses
+            as: "status",
+            in: {
+              status: "$$status", // Each possible status (1, 2, 3)
+              count: {
+                $size: {
+                  $filter: {
+                    input: "$reviews", // Count occurrences of each status
+                    as: "item",
+                    cond: { $eq: ["$$item", "$$status"] },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ];
+};
+
+export const updateRequestsPassedMonths = (months: number): PipelineStage[] => {
+  return [
+    {
+      $set: {
+        startDate: {
+          $dateSubtract: {
+            startDate: "$$NOW",
+            unit: "month",
+            amount: months,
+          },
+        },
+        endDate: "$$NOW",
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $or: [
+            {
+              $and: [
+                { $gte: ["$requestedAt", "$startDate"] },
+                { $lt: ["$requestedAt", "$endDate"] },
+              ],
+            },
+            {
+              $and: [
+                { $gte: ["$reviewedAt", "$startDate"] },
+                { $lt: ["$reviewedAt", "$endDate"] },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    {
+      $project: {
+        requestedAt: 1,
+        reviewedAt: 1,
+        reviewStatus: 1,
+        month: {
+          $month: {
+            $ifNull: ["$requestedAt", "$reviewedAt"],
+          },
+        },
+        year: {
+          $year: {
+            $ifNull: ["$requestedAt", "$reviewedAt"],
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          month: "$month",
+          year: "$year",
+        },
+        totalReviews: {
+          $sum: 1,
+        },
+        reviewStatuses: {
+          $push: "$reviewStatus",
+        },
+      },
+    },
+    {
+      $project: {
+        month: "$_id.month",
+        year: "$_id.year",
+        totalReviews: 1,
+        reviews: {
+          $map: {
+            input: [1, 2, 3], // All possible review statuses
+            as: "status",
+            in: {
+              status: "$$status",
+              count: {
+                $size: {
+                  $filter: {
+                    input: "$reviewStatuses",
+                    as: "item",
+                    cond: { $eq: ["$$item", "$$status"] },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $sort: {
+        year: 1,
+        month: 1,
+      },
+    },
+  ];
+};

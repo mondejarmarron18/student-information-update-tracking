@@ -5,6 +5,8 @@ import {
   replaceContentIdsWithData,
   requesterProfile,
   reviewerProfile,
+  updateRequestsPassedDays,
+  updateRequestsPassedMonths,
 } from "./updateRequestPipelines";
 
 export default class updateRequestRepository {
@@ -123,5 +125,19 @@ export default class updateRequestRepository {
       contentType: params.contentType,
       reviewStatus: updateRequestStatus.pending,
     });
+  };
+
+  getUpdateRequestsPassedDays = async (days: number) => {
+    const updateRequests = await this.updateRequestModel.aggregate(
+      updateRequestsPassedDays(days)
+    );
+
+    return updateRequests.length > 0 ? updateRequests[0] : null;
+  };
+
+  getUpdateRequestsPassedMonths = (months: number) => {
+    return this.updateRequestModel.aggregate(
+      updateRequestsPassedMonths(months)
+    );
   };
 }

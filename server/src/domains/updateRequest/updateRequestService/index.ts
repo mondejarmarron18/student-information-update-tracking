@@ -221,4 +221,34 @@ export default class UpdateRequestService {
 
     return updateRequest.result;
   };
+
+  getUpdateRequestsPassedDays = async (days: number) => {
+    const updateRequests = await x8tAsync(
+      this.updateRequestRepository.getUpdateRequestsPassedDays(days)
+    );
+
+    if (updateRequests.error) {
+      CustomError.badRequest({
+        description: "Failed to get update requests",
+        details: updateRequests.error,
+      });
+    }
+
+    return updateRequests.result;
+  };
+
+  getUpdateRequestsPassedMonths = async (months: number) => {
+    const updateRequests = await x8tAsync(
+      this.updateRequestRepository.getUpdateRequestsPassedMonths(months)
+    );
+
+    if (updateRequests.error) {
+      CustomError.badRequest({
+        description: "Failed to get update requests",
+        details: updateRequests.error,
+      });
+    }
+
+    return updateRequests.result;
+  };
 }

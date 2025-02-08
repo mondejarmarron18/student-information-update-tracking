@@ -6,6 +6,7 @@ import customErrors from "../../../constants/customErrors";
 import { updateRequestStatus } from "../../../constants/updateRequest";
 import userRoles from "../../../constants/userRoles";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import { toInteger } from "lodash";
 
 export default class UpdateRequestController {
   updateRequestService: UpdateRequestService;
@@ -170,6 +171,48 @@ export default class UpdateRequestController {
       status: 200,
       message: `Update Request Rejected`,
       data: updateRequest.result,
+    });
+  };
+
+  getUpdateRequestsPassedDays: IControllerFunction = async (req, res) => {
+    const days = toInteger(req.query.days) || 30;
+
+    const { result, error } = await x8tAsync(
+      this.updateRequestService.getUpdateRequestsPassedDays(days),
+      {
+        log: true,
+      }
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Update Requests Passed Days",
+      data: result,
+    });
+  };
+
+  getUpdateRequestsPassedMonths: IControllerFunction = async (req, res) => {
+    const months = toInteger(req.query.months) || 12;
+
+    const { result, error } = await x8tAsync(
+      this.updateRequestService.getUpdateRequestsPassedMonths(months),
+      {
+        log: true,
+      }
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Update Requests Passed Months",
+      data: result,
     });
   };
 }

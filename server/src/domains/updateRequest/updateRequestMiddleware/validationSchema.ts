@@ -32,3 +32,11 @@ export const validateCreateUpdateRequest = z
       }
     }
   });
+
+export const validateGetUpdateRequestsPassedDays = z.object({
+  days: z.coerce.number().nonnegative(),
+});
+
+export const validateGetUpdateRequestsPassedMonths = z.object({
+  months: z.coerce.number().nonnegative(),
+});
