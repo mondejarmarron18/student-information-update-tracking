@@ -40,10 +40,10 @@ export type UpdateRequestsPassedDays = {
 export type UpdateRequestsPassedMonths = {
   _id: string;
   totalReviews: number;
-  month: string;
-  year: string;
+  month: number;
+  year: number;
   reviews: {
-    month: string;
+    status: (typeof updateRequestStatus)[keyof typeof updateRequestStatus];
     count: number;
   }[];
 }[];

@@ -1,6 +1,7 @@
 import {
   validateCreateUpdateRequest,
   validateGetUpdateRequestsPassedDays,
+  validateGetUpdateRequestsPassedMonths,
 } from "./validationSchema";
 import { IMiddleware } from "../../../types/middleware";
 import CustomResponse from "../../../utils/CustomResponse";
@@ -34,7 +35,9 @@ export default class UpdateRequestMiddleware {
   };
 
   getUpdateRequestsPassedMonths: IMiddleware = (req, res, next) => {
-    const { error } = validateGetUpdateRequestsPassedDays.safeParse(req.query);
+    const { error } = validateGetUpdateRequestsPassedMonths.safeParse(
+      req.query
+    );
 
     if (error) {
       return CustomResponse.sendError(res, {

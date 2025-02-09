@@ -227,18 +227,25 @@ export const updateRequestsPassedDays = (days: number): PipelineStage[] => {
 
 export const updateRequestsPassedMonths = (months: number): PipelineStage[] => {
   return [
+    // Step 1: Calculate the start and end dates dynamically
     {
-      $set: {
+      $addFields: {
         startDate: {
-          $dateSubtract: {
-            startDate: "$$NOW",
+          $dateTrunc: {
+            date: {
+              $dateSubtract: {
+                startDate: "$$NOW",
+                unit: "month",
+                amount: months,
+              },
+            },
             unit: "month",
-            amount: months,
           },
         },
         endDate: "$$NOW",
       },
     },
+    // Step 2: Filter documents based on the date range (12 months back to current month)
     {
       $match: {
         $expr: {
@@ -259,59 +266,162 @@ export const updateRequestsPassedMonths = (months: number): PipelineStage[] => {
         },
       },
     },
+    // Step 3: Duplicate the document for requestedAt and reviewedAt
+    {
+      $facet: {
+        requested: [
+          {
+            $match: {
+              requestedAt: {
+                $exists: true,
+              },
+            },
+          },
+          {
+            $project: {
+              year: {
+                $year: "$requestedAt",
+              },
+              month: {
+                $month: "$requestedAt",
+              },
+              status: {
+                $ifNull: ["$status", 1],
+              }, // Default status for requestedAt
+            },
+          },
+        ],
+        reviewed: [
+          {
+            $match: {
+              reviewedAt: {
+                $exists: true,
+              },
+            },
+          },
+          {
+            $project: {
+              year: {
+                $year: "$reviewedAt",
+              },
+              month: {
+                $month: "$reviewedAt",
+              },
+              status: {
+                $ifNull: ["$reviewStatus", 1],
+              }, // Status for reviewedAt, default to 1 if missing
+            },
+          },
+        ],
+      },
+    },
+    // Step 4: Merge the two arrays (requested and reviewed)
     {
       $project: {
-        requestedAt: 1,
-        reviewedAt: 1,
-        reviewStatus: 1,
-        month: {
-          $month: {
-            $ifNull: ["$requestedAt", "$reviewedAt"],
-          },
-        },
-        year: {
-          $year: {
-            $ifNull: ["$requestedAt", "$reviewedAt"],
-          },
+        allDates: {
+          $concatArrays: ["$requested", "$reviewed"],
         },
       },
     },
+    {
+      $unwind: "$allDates",
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$allDates",
+      },
+    },
+    // Step 5: Group by year and month, then by status
     {
       $group: {
         _id: {
-          month: "$month",
           year: "$year",
+          month: "$month",
         },
-        totalReviews: {
-          $sum: 1,
-        },
-        reviewStatuses: {
-          $push: "$reviewStatus",
+        reviews: {
+          $push: {
+            status: "$status",
+          },
         },
       },
     },
+    // Step 6: Format the output and calculate counts
     {
       $project: {
-        month: "$_id.month",
         year: "$_id.year",
-        totalReviews: 1,
+        month: "$_id.month",
         reviews: {
-          $map: {
-            input: [1, 2, 3], // All possible review statuses
-            as: "status",
+          $reduce: {
+            input: "$reviews",
+            initialValue: [],
             in: {
-              status: "$$status",
-              count: {
-                $size: {
-                  $filter: {
-                    input: "$reviewStatuses",
-                    as: "item",
-                    cond: { $eq: ["$$item", "$$status"] },
+              $let: {
+                vars: {
+                  existingStatus: {
+                    $arrayElemAt: [
+                      {
+                        $filter: {
+                          input: "$$value",
+                          as: "v",
+                          cond: {
+                            $eq: ["$$v.status", "$$this.status"],
+                          },
+                        },
+                      },
+                      0,
+                    ],
                   },
+                },
+                in: {
+                  $cond: [
+                    {
+                      $not: ["$$existingStatus"],
+                    },
+                    {
+                      $concatArrays: [
+                        "$$value",
+                        [
+                          {
+                            status: "$$this.status",
+                            count: 1,
+                          },
+                        ],
+                      ],
+                    },
+                    {
+                      $concatArrays: [
+                        {
+                          $filter: {
+                            input: "$$value",
+                            as: "v",
+                            cond: {
+                              $ne: ["$$v.status", "$$this.status"],
+                            },
+                          },
+                        },
+                        [
+                          {
+                            status: "$$existingStatus.status",
+                            count: {
+                              $add: ["$$existingStatus.count", 1],
+                            },
+                          },
+                        ],
+                      ],
+                    },
+                  ],
                 },
               },
             },
           },
+        },
+      },
+    },
+    // Step 7: Add totalReviews field
+    {
+      $addFields: {
+        totalReviews: {
+          $sum: "$reviews.count",
         },
       },
     },

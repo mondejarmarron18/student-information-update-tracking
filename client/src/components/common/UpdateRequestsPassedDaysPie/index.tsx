@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import PieChart, { PieChartData } from "../PieChart";
 import useUpdateRequestsPassedDays from "@/hooks/useUpdateRequestsPassedDays";
+import AnimatedSpinner from "../AnimatedSpinner";
 
 type Props = {
   days: number;
@@ -54,7 +55,11 @@ const UpdateRequestsPassedDaysPie = ({ days }: Props) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[250px]">
-        {isUpdateRequestsCountEmpty ? (
+        {updateRequestsPassedDays.isLoading ? (
+          <div className="flex justify-center items-center h-full">
+            <AnimatedSpinner />
+          </div>
+        ) : isUpdateRequestsCountEmpty ? (
           <div className="text-center flex justify-center items-center h-full text-gray-500">
             No update requests found
           </div>
