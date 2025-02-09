@@ -4,12 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { routePaths } from "@/routes";
+import useAccessToken from "@/hooks/useAccessToken";
+import { role } from "@/constants/role";
 
 interface DashboardBannerProps {
   name?: string; // Make name optional
 }
 
 const DashboardBanner: React.FC<DashboardBannerProps> = ({ name }) => {
+  const { decodedAccessToken } = useAccessToken();
+  const user = decodedAccessToken();
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState("");
   const [icon, setIcon] = useState(
@@ -44,8 +48,9 @@ const DashboardBanner: React.FC<DashboardBannerProps> = ({ name }) => {
       </CardHeader>
       <CardContent className="flex flex-col items-center">
         <p className="text-gray-600">
-          Stay up-to-date with your recent requests. Keep track of all your
-          updates here!
+          {user?.role?.name === role.STUDENT
+            ? "Stay up-to-date with your recent requests. Keep track of all your updates here!"
+            : "Stay up-to-date with recent update requests. Keep track of all the students updates here!"}
         </p>
         <Button
           onClick={() => navigate(routePaths.updateRequests.path)}

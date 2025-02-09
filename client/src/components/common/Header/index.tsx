@@ -33,7 +33,7 @@ const Header = () => {
   ];
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between p-1 pb-0">
       <h1 className="text-xl font-bold">{activeRoute?.name}</h1>
 
       <Popover>

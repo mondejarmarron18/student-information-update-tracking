@@ -32,12 +32,12 @@ const UpdateRequestsPassedDaysPie = ({ days }: Props) => {
         label: "Count", // Optional dataset label
         data: updateRequestsCount, // Values for each category
         backgroundColor: [
-          "rgba(59, 130, 246, 0.6)", // Color for "Pending"
+          "rgba(234, 179, 8, 0.6)", // Color for "Pending"
           "rgba(34, 197, 94, 0.6)", // Color for "Approved"
           "rgba(239, 68, 68, 0.6)", // Color for "Rejected"
         ],
         borderColor: [
-          "rgb(59, 130, 246)",
+          "rgb(234, 179, 8)",
           "rgb(34, 197, 94)",
           "rgb(239, 68, 68)",
         ],
@@ -51,7 +51,8 @@ const UpdateRequestsPassedDaysPie = ({ days }: Props) => {
       <CardHeader>
         <CardTitle>Update Requests</CardTitle>
         <CardDescription>
-          In the last {days} days: {updateRequestsPassedDaysData?.totalReviews}
+          From the last {days} days
+          {/* In the last {days} days: {updateRequestsPassedDaysData?.totalReviews} */}
         </CardDescription>
       </CardHeader>
       <CardContent className="h-[250px]">

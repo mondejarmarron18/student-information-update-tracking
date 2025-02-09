@@ -1,5 +1,5 @@
 import DashboardBanner from "@/components/common/DashboardBanner";
-import AnnouncementsCard from "@/components/common/AnnouncementsCard";
+// import AnnouncementsCard from "@/components/common/AnnouncementsCard";
 import UpdateRequestsCard from "@/components/common/UpdateRequestsCard";
 import UpdateRequestsPassedDaysPie from "@/components/common/UpdateRequestsPassedDaysPie";
 import AnnualUpdateRequestsPassedMonthsBar from "@/components/common/AnnualUpdateRequestPassedMonthsBar";
@@ -16,8 +16,8 @@ const Dashboard = () => {
         <UpdateRequestsPassedDaysPie days={60} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <AnnouncementsCard />
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+        {/* <AnnouncementsCard /> */}
         <UpdateRequestsCard />
       </div>
 

@@ -18,7 +18,7 @@ const UpdateRequestsCard = () => {
   const updateRequests = useUpdateRequests();
   const updateRequestsList = updateRequests.data?.data || [];
   const { decodedAccessToken } = useAccessToken();
-  const userRoleName = decodedAccessToken()?.roleId.name;
+  const userRoleName = decodedAccessToken()?.roleId?.name;
 
   return (
     <Card>

@@ -24,7 +24,7 @@ const PageWrapper = () => {
       <NavigationBar />
       <div className="flex-1 flex flex-col gap-2 lg:gap-4 overflow-hidden">
         <Header />
-        <div className="flex-1 h-full overflow-auto">
+        <div className="flex-1 h-full overflow-auto px-1">
           {isAccessible ? <Outlet /> : <ResourceForbidden />}
         </div>
       </div>

@@ -9,48 +9,29 @@ import {
 import useUpdateRequestsPassedMonths from "@/hooks/useUpdateRequestsPassedMonths";
 import { getMonthRange, getMonthString } from "@/utils/fomatter";
 import { subMonths, getYear } from "date-fns";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import AnimatedSpinner from "../AnimatedSpinner";
-import { enUS } from "date-fns/locale";
+import datasetsData from "./datasetsData";
 
 type Props = {
   months: number;
 };
 
-const statusLabels = {
-  1: "Pending",
-  2: "Approved",
-  3: "Rejected",
-};
-
-const initialDatesets = [
-  {
-    label: statusLabels[1],
-    data: [],
-    borderColor: "rgb(59, 130, 246)",
-    backgroundColor: "rgba(59, 130, 246, 0.6)",
-  },
-  {
-    label: statusLabels[2],
-    data: [],
-    borderColor: "rgb(34, 197, 94)",
-    backgroundColor: "rgba(34, 197, 94, 0.6)",
-  },
-  {
-    label: statusLabels[3],
-    data: [],
-    borderColor: "rgb(239, 68, 68)",
-    backgroundColor: "rgba(239, 68, 68, 0.6)",
-  },
-];
-
 const AnnualUpdateRequestsPassedMonthsBar = ({ months }: Props) => {
   const updateRequests = useUpdateRequestsPassedMonths({ months });
-  const updateRequestsData = updateRequests.data?.data || [];
-  const [datasets, setDatasets] = useState(initialDatesets);
   const monthRange = getMonthRange(
     subMonths(new Date(), months - 1),
     new Date()
+  );
+
+  const updateRequestsData = useMemo(
+    () => updateRequests.data?.data || [],
+    [updateRequests.data]
+  );
+
+  const datasets = useMemo(
+    () => datasetsData(updateRequestsData, monthRange),
+    [updateRequestsData, monthRange]
   );
 
   const data: BarChartData = {
@@ -81,7 +62,20 @@ const AnnualUpdateRequestsPassedMonthsBar = ({ months }: Props) => {
             No update requests found
           </div>
         ) : (
-          <BarChart data={data} className="h-full" />
+          <BarChart
+            data={data}
+            className="h-full"
+            options={{
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1,
+                  },
+                },
+              },
+            }}
+          />
         )}
       </CardContent>
     </Card>
