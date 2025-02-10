@@ -8,6 +8,8 @@ import customErrors from "../../../constants/customErrors";
 import AuditLogService from "../auditLogService";
 import { auditLogAction } from "../../../constants/auditLog";
 import { AuditLog } from "../auditLogModel";
+import { schemaName } from "../../../constants/schemaName";
+import { IUserProfile } from "../../userProfile/userProfileModel";
 
 export default class AuditLogController {
   private auditLogService: AuditLogService;
@@ -46,53 +48,50 @@ export default class AuditLogController {
       return CustomResponse.sendError(res, customErrors.notFound);
     }
 
-    const formattedData = auditLogs.result.map((log: AuditLog) => {
-      return {
-        ID: log._id,
-        "User ID": log.userId,
-        "Entity Name (Database Collection Name)": log.entityName,
-        "Entity ID (Database Document ID)": log.entityId,
-        Action: log.action,
-        Details: log.details,
-        "IP Address": log.ipAddress,
-        "User Agent": log.userAgent,
-        "Time Stamp": log.timestamp,
-      };
-    });
+    const formattedData = auditLogs.result.map(
+      (
+        log: AuditLog & {
+          userEmail: string;
+        }
+      ) => {
+        return {
+          "Time Stamp": log.timestamp,
+          ID: log._id,
+          "User ID": log.userId,
+          "User Email": log.userEmail,
+          "Target Entity": log.entity,
+          Action: log.action,
+          Details: log.details,
+          "IP Address": log.ipAddress,
+          "User Agent": log.userAgent,
+          "Requested URL": log.requestedUrl,
+          "Requested Filter": JSON.stringify(log.requestedFilter),
+        };
+      }
+    );
 
     const { error, result } = x8tSync(() => parse(formattedData));
 
     res.header("Content-Type", "text/csv");
     res.attachment("audit-logs.csv");
 
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.EXPORTED,
+        details: "Exported the audit logs",
+        entity: schemaName.AUDIT_LOG,
+      }),
+      {
+        log: true,
+      }
+    );
+
     if (error) {
       return CustomResponse.sendError(res, customErrors.internalServerError);
     }
 
     res.send(result);
-  };
-
-  createAuditLog: IControllerFunction = async (req, res) => {
-    const userId = req.user?._id;
-
-    if (!userId) {
-      return CustomResponse.sendError(res, customErrors.unauthorized);
-    }
-
-    const { result, error } = await x8tAsync(
-      this.auditLogService.createAuditLog({
-        ...req.body,
-        userId,
-      }),
-      { log: true }
-    );
-
-    if (error) return CustomResponse.sendHandledError(res, error);
-
-    CustomResponse.sendSuccess(res, {
-      status: 201,
-      message: "Audit log created successfully",
-      data: result,
-    });
   };
 }

@@ -6,12 +6,17 @@ import customErrors from "../../../constants/customErrors";
 import { ICourse } from "../courseModel";
 import { x8tAsync, x8tSync } from "x8t";
 import CourseService from "../courseService";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
 
 export default class CourseController {
-  courseService: CourseService;
+  private courseService: CourseService;
+  private auditLogService: AuditLogService;
 
   constructor() {
     this.courseService = new CourseService();
+    this.auditLogService = new AuditLogService();
   }
 
   getCourses = async (req: Request, res: Response) => {
@@ -91,6 +96,19 @@ export default class CourseController {
     if (newCourse.error)
       return CustomResponse.sendHandledError(res, newCourse.error);
 
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.CREATED,
+        details: "Created a new course",
+        entity: schemaName.COURSE,
+      }),
+      {
+        log: true,
+      }
+    );
+
     CustomResponse.sendSuccess(res, {
       status: 201,
       message: "Course created successfully",
@@ -125,6 +143,19 @@ export default class CourseController {
 
     if (updatedCourse.error)
       return CustomResponse.sendHandledError(res, updatedCourse.error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.UPDATED,
+        details: "Updated a course",
+        entity: schemaName.COURSE,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 200,

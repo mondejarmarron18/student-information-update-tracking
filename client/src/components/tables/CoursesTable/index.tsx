@@ -70,8 +70,10 @@ const CoursesTable = () => {
                   <TableCell>{course.studentsCount}</TableCell>
                   <TableCell>{course.specializationsCount}</TableCell>
                   <TableCell>
-                    {course.updaterProfile?.firstName}{" "}
-                    {course.updaterProfile?.lastName}
+                    {!course.updaterProfile
+                      ? "-"
+                      : `${course.updaterProfile?.firstName} 
+                    ${course.updaterProfile?.lastName}`}
                   </TableCell>
                   <TableCell>{toDateTimeNumeric(course.updatedAt)}</TableCell>
                   <TableCell>

@@ -5,12 +5,17 @@ import CustomResponse from "../../../utils/CustomResponse";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
 import customErrors from "../../../constants/customErrors";
 import { ISpecialization } from "../specializationModel";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
 
 export default class SpecializationController {
   private specializationService: SpecializationService;
+  private auditLogService: AuditLogService;
 
   constructor() {
     this.specializationService = new SpecializationService();
+    this.auditLogService = new AuditLogService();
   }
 
   createSpecialization: IControllerFunction = async (req, res) => {
@@ -40,6 +45,19 @@ export default class SpecializationController {
     );
 
     if (error || !result) return CustomResponse.sendHandledError(res, error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.CREATED,
+        details: "Created a new specialization",
+        entity: schemaName.SPECIALIZATION,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 201,
@@ -149,6 +167,19 @@ export default class SpecializationController {
 
     if (error || !result) return CustomResponse.sendHandledError(res, error);
 
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.UPDATED,
+        details: "Updated an specialization",
+        entity: schemaName.SPECIALIZATION,
+      }),
+      {
+        log: true,
+      }
+    );
+
     CustomResponse.sendSuccess(res, {
       status: 200,
       data: result,
@@ -171,6 +202,19 @@ export default class SpecializationController {
     );
 
     if (error || !result) return CustomResponse.sendHandledError(res, error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.DELETED,
+        details: "Deleted an specialization",
+        entity: schemaName.SPECIALIZATION,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res);
   };

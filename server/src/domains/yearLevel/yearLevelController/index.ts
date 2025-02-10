@@ -4,11 +4,17 @@ import { IControllerFunction } from "../../../types/controller";
 import CustomResponse from "../../../utils/CustomResponse";
 import YearLevelService from "../yearLevelService";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
 
 export default class YearLevelController {
   private yearLevelService: YearLevelService;
+  private auditLogService: AuditLogService;
+
   constructor() {
     this.yearLevelService = new YearLevelService();
+    this.auditLogService = new AuditLogService();
   }
 
   createYearLevel: IControllerFunction = async (req, res) => {
@@ -30,6 +36,19 @@ export default class YearLevelController {
 
     if (yearLevel.error)
       return CustomResponse.sendHandledError(res, yearLevel.error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.CREATED,
+        details: "Created a new year level",
+        entity: schemaName.YEAR_LEVEL,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 201,
@@ -106,6 +125,19 @@ export default class YearLevelController {
 
     if (yearLevel.error)
       return CustomResponse.sendHandledError(res, yearLevel.error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.UPDATED,
+        details: "Updated a year level",
+        entity: schemaName.YEAR_LEVEL,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 200,

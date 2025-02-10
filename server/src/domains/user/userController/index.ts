@@ -12,12 +12,17 @@ import { UpdateOwnPasswordDto } from "../userDtos/updateOwnPasswordDto";
 import { ResetPasswordDto } from "../userDtos/resetPasswordDto";
 import isRole from "../../../utils/isRole";
 import _ from "lodash";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
 
 export default class UserController {
-  userService: UserService;
+  private userService: UserService;
+  private auditLogService: AuditLogService;
 
   constructor() {
     this.userService = new UserService();
+    this.auditLogService = new AuditLogService();
   }
 
   registerUser = async (req: Request, res: Response) => {
@@ -48,6 +53,23 @@ export default class UserController {
     if (createdUser.error) {
       return CustomResponse.sendHandledError(res, createdUser.error);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id || createdUser.result?._id,
+        action: req.user?._id
+          ? auditLogAction.CREATED
+          : auditLogAction.REGISTERED,
+        details: req.user?._id
+          ? "Created a user account"
+          : "Register an account",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 201,
@@ -87,6 +109,19 @@ export default class UserController {
       refreshTokenCookieOptions
     );
 
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: result?.user._id,
+        action: auditLogAction.LOGGED_IN,
+        details: "User logged in",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
+
     CustomResponse.sendSuccess(res, {
       message: "Access Token",
       data: result.token,
@@ -101,6 +136,19 @@ export default class UserController {
     }
 
     res.clearCookie(tokens.REFRESH_TOKEN, refreshTokenCookieOptions);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.LOGGED_OUT,
+        details: "Logout a user account",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res);
   };
@@ -135,6 +183,19 @@ export default class UserController {
 
       return CustomResponse.sendError(res, customErrors.internalServerError);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: user.result?._id,
+        action: auditLogAction.VERIFIED,
+        details: "Verified a user account",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res);
   };
@@ -204,19 +265,45 @@ export default class UserController {
       return CustomResponse.sendHandledError(res, error);
     }
 
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.UPDATED,
+        details: "Updated a password",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
+
     CustomResponse.sendSuccess(res, {
       message: "Password updated successfully",
     });
   };
 
   sendPasswordResetEmail = async (req: Request, res: Response) => {
-    const { error } = await x8tAsync(
+    const { error, result } = await x8tAsync(
       this.userService.sendPasswordResetEmail(req.body.email)
     );
 
     if (error) {
       return CustomResponse.sendHandledError(res, error);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: result?._id,
+        action: auditLogAction.REQUESTED,
+        details: "Requested a password reset",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res);
   };
@@ -236,7 +323,7 @@ export default class UserController {
       });
     }
 
-    const { error } = await x8tAsync(
+    const { error, result } = await x8tAsync(
       this.userService.resetPassword({
         password,
         verificationCode: validVerificationCode.id,
@@ -246,6 +333,19 @@ export default class UserController {
     if (error) {
       return CustomResponse.sendHandledError(res, error);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: result?._id,
+        action: auditLogAction.UPDATED,
+        details: "Reset a password",
+        entity: schemaName.USER,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res);
   };

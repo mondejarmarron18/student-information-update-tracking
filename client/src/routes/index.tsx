@@ -27,6 +27,7 @@ const privateRoutes = [
   routePaths.updateRequest,
   routePaths.conversations,
   routePaths.auditLogs,
+  routePaths.auditLog,
   routePaths.academicManagement,
   routePaths.course,
   routePaths.specializations,

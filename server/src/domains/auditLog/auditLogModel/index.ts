@@ -3,24 +3,22 @@ import { schemaName } from "../../../constants/schemaName";
 
 export type AuditLog = {
   _id: Types.ObjectId;
-  entityName: (typeof schemaName)[keyof typeof schemaName];
-  entityId: Types.ObjectId;
+  entity: (typeof schemaName)[keyof typeof schemaName];
   timestamp: Date;
+  requestedFilter: Record<string, unknown>;
+  requestedUrl: string;
   ipAddress: string;
   userAgent: string;
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId;
   action: string;
   details: string;
 };
 
 const auditLogSchema = new Schema<AuditLog>({
-  entityName: {
+  entity: {
     type: String,
     enum: schemaName,
     required: true,
-  },
-  entityId: {
-    type: Schema.Types.ObjectId, //Optional for multiple entity ids
   },
   timestamp: {
     type: Date,
@@ -46,6 +44,15 @@ const auditLogSchema = new Schema<AuditLog>({
   details: {
     type: String,
     required: true,
+  },
+  requestedUrl: {
+    type: String,
+    required: true,
+  },
+  requestedFilter: {
+    type: Object,
+    required: true,
+    default: {},
   },
 });
 

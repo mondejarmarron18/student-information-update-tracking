@@ -20,9 +20,7 @@ export default class AuditLogService {
   }
 
   createAuditLog(params: Omit<AuditLog, "_id" | "timestamp">) {
-    const validEntityName = Object.values(schemaName).includes(
-      params.entityName
-    );
+    const validEntityName = Object.values(schemaName).includes(params.entity);
 
     if (!validEntityName) {
       CustomError.badRequest({

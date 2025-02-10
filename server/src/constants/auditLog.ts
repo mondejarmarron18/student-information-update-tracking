@@ -6,6 +6,8 @@ export const auditLogAction = {
   APPROVED: "approved",
   REJECTED: "rejected",
   VIEWED: "viewed",
+  VERIFIED: "verified",
+  REGISTERED: "registered",
   DOWNLOADED: "downloaded",
   EXPORTED: "exported",
   ARCHIVED: "archived",

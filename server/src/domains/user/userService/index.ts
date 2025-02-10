@@ -201,6 +201,7 @@ export default class UserService {
     return {
       token,
       refreshToken,
+      user,
     };
   };
 
@@ -250,7 +251,7 @@ export default class UserService {
 
     const verificationCode = await this.generateVerificationCode(user._id);
 
-    const { error: sendMailError, result: sendMailResult } = await sendMail({
+    const { error: sendMailError } = await sendMail({
       to: email,
       subject: "Forgot Password - Reset Your Password",
       html: await hbs("passwordReset", {
@@ -270,7 +271,7 @@ export default class UserService {
       return CustomError.internalServerError({ details: sendMailError });
     }
 
-    return sendMailResult;
+    return user;
   };
 
   resetPassword = async (

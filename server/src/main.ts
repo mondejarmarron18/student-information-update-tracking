@@ -6,6 +6,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { dbConnect } from "./utils/config/database";
+import auditLog from "./middlewares/auditLog";
 
 const app = Express();
 const port = config.port;
@@ -19,6 +20,7 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.use(auditLog);
 app.use(routes);
 
 dbConnect(() => {

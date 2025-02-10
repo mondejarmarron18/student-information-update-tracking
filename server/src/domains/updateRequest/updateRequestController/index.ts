@@ -7,12 +7,18 @@ import { updateRequestStatus } from "../../../constants/updateRequest";
 import userRoles from "../../../constants/userRoles";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
 import { toInteger } from "lodash";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
+import { sendMail } from "../../../utils/email";
 
 export default class UpdateRequestController {
-  updateRequestService: UpdateRequestService;
+  private updateRequestService: UpdateRequestService;
+  private auditLogService: AuditLogService;
 
   constructor() {
     this.updateRequestService = new UpdateRequestService();
+    this.auditLogService = new AuditLogService();
   }
 
   createUpdateRequest: IControllerFunction = async (req, res) => {
@@ -32,6 +38,19 @@ export default class UpdateRequestController {
     if (updateRequest.error) {
       return CustomResponse.sendHandledError(res, updateRequest.error);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.REQUESTED,
+        details: "Requested an update",
+        entity: schemaName.UPDATE_REQUEST,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 201,
@@ -131,6 +150,25 @@ export default class UpdateRequestController {
       return CustomResponse.sendHandledError(res, updateRequest.error);
     }
 
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.APPROVED,
+        details: "Approved an update request",
+        entity: schemaName.UPDATE_REQUEST,
+      }),
+      {
+        log: true,
+      }
+    );
+
+    await sendMail({
+      to: req.user?.email,
+      subject: "Update Request Status - Approved",
+      text: "We're pleased to inform you that your update request has been approved. Please log in to your account to review the changes. If you have any questions, feel free to contact our support team.",
+    });
+
     return CustomResponse.sendSuccess(res, {
       status: 200,
       message: `Update Request Approved`,
@@ -166,6 +204,25 @@ export default class UpdateRequestController {
     if (updateRequest.error) {
       return CustomResponse.sendHandledError(res, updateRequest.error);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.REJECTED,
+        details: "Rejected an update request",
+        entity: schemaName.UPDATE_REQUEST,
+      }),
+      {
+        log: true,
+      }
+    );
+
+    await sendMail({
+      to: req.user?.email,
+      subject: "Update Request Status - Rejected",
+      text: "We regret to inform you that your update request has been rejected. Please log in to your account to review the details and take any necessary actions. If you have any questions, feel free to contact our support team.",
+    });
 
     return CustomResponse.sendSuccess(res, {
       status: 200,

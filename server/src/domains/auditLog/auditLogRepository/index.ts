@@ -9,7 +9,37 @@ export default class AuditLogRepository {
   }
 
   getAuditLogs = async () => {
-    return this.auditLogModel.aggregate([]);
+    return this.auditLogModel.aggregate([
+      {
+        $lookup: {
+          from: schemaName.USER,
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          userEmail: "$user.email",
+        },
+      },
+      {
+        $project: {
+          user: 0,
+        },
+      },
+      {
+        $sort: {
+          timestamp: -1,
+        },
+      },
+    ]);
   };
 
   getAuditLogById = async (id: AuditLog["_id"]) => {

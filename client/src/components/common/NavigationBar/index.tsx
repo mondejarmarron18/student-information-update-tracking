@@ -2,7 +2,7 @@ import { GrFormPrevious } from "react-icons/gr";
 // import { HiMiniAcademicCap } from "react-icons/hi2";
 import { MdSpaceDashboard, MdPerson } from "react-icons/md";
 import { HiClipboardDocumentCheck } from "react-icons/hi2";
-import { GrAnnounce } from "react-icons/gr";
+// import { GrAnnounce } from "react-icons/gr";
 // import { RiProfileFill } from "react-icons/ri";
 import { cn } from "@/lib/utils";
 import Tooltip from "../Tooltip";
@@ -35,10 +35,10 @@ export const navItems: NavItems[] = [
   //   ...routePaths.conversations,
   //   iconType: PiChatsCircleFill,
   // },
-  {
-    ...routePaths.announcements,
-    iconType: GrAnnounce,
-  },
+  // {
+  //   ...routePaths.announcements,
+  //   iconType: GrAnnounce,
+  // },
   {
     ...routePaths.academicManagement,
     iconType: LiaSchoolSolid,

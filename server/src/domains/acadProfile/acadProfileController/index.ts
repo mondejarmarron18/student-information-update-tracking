@@ -4,12 +4,17 @@ import AcadProfileService from "../acadProfileService";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
 
 export default class AcadProfileController {
   private acadProfileService: AcadProfileService;
+  private auditLogService: AuditLogService;
 
   constructor() {
     this.acadProfileService = new AcadProfileService();
+    this.auditLogService = new AuditLogService();
   }
 
   createAcadProfile: IControllerFunction = async (req, res) => {
@@ -26,6 +31,19 @@ export default class AcadProfileController {
     if (acadProfile.error) {
       return CustomResponse.sendHandledError(res, acadProfile.error);
     }
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.CREATED,
+        details: "Created an academic profile",
+        entity: schemaName.ACAD_PROFILE,
+      }),
+      {
+        log: true,
+      }
+    );
 
     CustomResponse.sendSuccess(res, {
       status: 201,

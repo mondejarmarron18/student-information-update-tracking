@@ -6,12 +6,17 @@ import CustomResponse from "../../../utils/CustomResponse";
 import CustomError from "../../../utils/CustomError";
 import customErrors from "../../../constants/customErrors";
 import { IControllerFunction } from "../../../types/controller";
+import AuditLogService from "../../auditLog/auditLogService";
+import { auditLogAction } from "../../../constants/auditLog";
+import { schemaName } from "../../../constants/schemaName";
 
 export default class UserProfileController {
-  userProfileService: UserProfileService;
+  private userProfileService: UserProfileService;
+  private auditLogService: AuditLogService;
 
   constructor() {
     this.userProfileService = new UserProfileService();
+    this.auditLogService = new AuditLogService();
   }
 
   getUserProfiles: IControllerFunction = async (req, res) => {
@@ -63,6 +68,19 @@ export default class UserProfileController {
           details: error.message,
         });
       }
+
+      await x8tAsync(
+        this.auditLogService.createAuditLog({
+          ...req.auditLog!,
+          userId: req.user?._id,
+          action: auditLogAction.CREATED,
+          details: "Created an user profile",
+          entity: schemaName.USER_PROFILE,
+        }),
+        {
+          log: true,
+        }
+      );
 
       return CustomResponse.sendError(res, customErrors.internalServerError);
     }
