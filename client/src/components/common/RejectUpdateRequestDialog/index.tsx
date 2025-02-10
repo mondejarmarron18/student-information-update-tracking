@@ -24,6 +24,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import useRejectUpdateRequest from "@/hooks/useRejectUpdateRequest";
+import { toast } from "@/hooks/use-toast";
 
 type Props = {
   trigger: ReactNode;
@@ -48,6 +49,10 @@ const RejectUpdateRequestDialog = (props: Props) => {
 
   useEffect(() => {
     if (isSuccess) {
+      toast({
+        title: "Success",
+        description: "Update request has been rejected.",
+      });
       setIsOpen(false);
     }
   }, [isSuccess]);

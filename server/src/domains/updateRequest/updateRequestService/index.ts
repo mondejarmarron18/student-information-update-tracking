@@ -11,6 +11,7 @@ import AcadProfileService from "../../acadProfile/acadProfileService";
 import UserProfileService from "../../userProfile/userProfileService";
 import { IUserProfile } from "../../userProfile/userProfileModel";
 import { IAcadProfile } from "../../acadProfile/acadProfileModel";
+import { sendMail } from "../../../utils/email";
 
 export default class UpdateRequestService {
   private updateRequestRepository: updateRequestRepository;
@@ -90,6 +91,22 @@ export default class UpdateRequestService {
         details: updateRequest.error,
       });
     }
+
+    //Send update request notif to staff's emails
+    //  await sendMail({
+    //   to: email,
+    //   subject: "Account Verification",
+    //   html: await hbs("emailVerification", {
+    //     verificationUrl: `${config.clientUrl}/email-verification/${verificationCode}`,
+    //     supportEmail: config.smtp.sender,
+    //     appName: config.appName,
+    //     expireIn: "24 hours",
+    //     website: {
+    //       domain: config.clientUrl?.replace(/(http|https):\/\//, ""),
+    //       url: config.clientUrl,
+    //     },
+    //   }),
+    // });
 
     return updateRequest.result;
   };
@@ -222,10 +239,24 @@ export default class UpdateRequestService {
     return updateRequest.result;
   };
 
-  getUpdateRequestsPassedDays = async (days: number) => {
-    const updateRequests = await x8tAsync(
-      this.updateRequestRepository.getUpdateRequestsPassedDays(days)
-    );
+  getUpdateRequestsPassedDays = async (
+    days: number,
+    userId?: IUpdateRequest["requesterId"]
+  ) => {
+    let updateRequests;
+
+    if (!userId) {
+      updateRequests = await x8tAsync(
+        this.updateRequestRepository.getUpdateRequestsPassedDays(days)
+      );
+    } else {
+      updateRequests = await x8tAsync(
+        this.updateRequestRepository.getOwnUpdateRequestsPassedDays(
+          days,
+          userId
+        )
+      );
+    }
 
     if (updateRequests.error) {
       CustomError.badRequest({
@@ -237,10 +268,24 @@ export default class UpdateRequestService {
     return updateRequests.result;
   };
 
-  getUpdateRequestsPassedMonths = async (months: number) => {
-    const updateRequests = await x8tAsync(
-      this.updateRequestRepository.getUpdateRequestsPassedMonths(months)
-    );
+  getUpdateRequestsPassedMonths = async (
+    months: number,
+    userId?: IUpdateRequest["requesterId"]
+  ) => {
+    let updateRequests;
+
+    if (!userId) {
+      updateRequests = await x8tAsync(
+        this.updateRequestRepository.getUpdateRequestsPassedMonths(months)
+      );
+    } else {
+      updateRequests = await x8tAsync(
+        this.updateRequestRepository.getOwnUpdateRequestsPassedMonths(
+          months,
+          userId
+        )
+      );
+    }
 
     if (updateRequests.error) {
       CustomError.badRequest({

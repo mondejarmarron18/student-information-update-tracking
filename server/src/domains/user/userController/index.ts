@@ -35,7 +35,7 @@ export default class UserController {
     if (!roleName) {
       //Default role is student if no role is provided
       createdUser = await x8tAsync(this.userService.createStudent(req.body));
-    } else if (isRole(roleName).isAdmin().isSuperAdmin()) {
+    } else if (isRole(roleName).isAdmin().isSuperAdmin().apply()) {
       //Manual registration by super admin or admin
       //Only super admin and admin can create users
       createdUser = await x8tAsync(this.userService.createUser(req.body));
@@ -142,7 +142,7 @@ export default class UserController {
         ...req.auditLog!,
         userId: req.user?._id,
         action: auditLogAction.LOGGED_OUT,
-        details: "Logout a user account",
+        details: "User logged out",
         entity: schemaName.USER,
       }),
       {

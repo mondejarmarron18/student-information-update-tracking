@@ -11,6 +11,7 @@ import AuditLogService from "../../auditLog/auditLogService";
 import { auditLogAction } from "../../../constants/auditLog";
 import { schemaName } from "../../../constants/schemaName";
 import { sendMail } from "../../../utils/email";
+import isRole from "../../../utils/isRole";
 
 export default class UpdateRequestController {
   private updateRequestService: UpdateRequestService;
@@ -233,9 +234,14 @@ export default class UpdateRequestController {
 
   getUpdateRequestsPassedDays: IControllerFunction = async (req, res) => {
     const days = toInteger(req.query.days) || 30;
+    const roleName = req.user?.roleId.name;
+
+    const userId = isRole(`${roleName}`).isStudent().apply()
+      ? req.user?._id
+      : undefined;
 
     const { result, error } = await x8tAsync(
-      this.updateRequestService.getUpdateRequestsPassedDays(days),
+      this.updateRequestService.getUpdateRequestsPassedDays(days, userId),
       {
         log: true,
       }
@@ -254,9 +260,14 @@ export default class UpdateRequestController {
 
   getUpdateRequestsPassedMonths: IControllerFunction = async (req, res) => {
     const months = toInteger(req.query.months) || 12;
+    const roleName = req.user?.roleId.name;
+
+    const userId = isRole(`${roleName}`).isStudent().apply()
+      ? req.user?._id
+      : undefined;
 
     const { result, error } = await x8tAsync(
-      this.updateRequestService.getUpdateRequestsPassedMonths(months),
+      this.updateRequestService.getUpdateRequestsPassedMonths(months, userId),
       {
         log: true,
       }

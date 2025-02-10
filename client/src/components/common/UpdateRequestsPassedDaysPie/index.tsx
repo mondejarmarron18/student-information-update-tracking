@@ -49,7 +49,7 @@ const UpdateRequestsPassedDaysPie = ({ days }: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Update Requests</CardTitle>
+        <CardTitle>Recent Update Requests</CardTitle>
         <CardDescription>
           From the last {days} days
           {/* In the last {days} days: {updateRequestsPassedDaysData?.totalReviews} */}

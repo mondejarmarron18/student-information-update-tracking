@@ -11,7 +11,6 @@ import UpdatePasswordForm from "@/components/forms/UpdatePasswordForm";
 import { UpdatePasswordFormProps } from "@/components/forms/UpdatePasswordForm/schema";
 import useUpdatePassword from "@/hooks/useUpdatePassword";
 import _ from "lodash";
-import useLogout from "@/hooks/useLogout";
 import { toast } from "@/hooks/use-toast";
 
 type Props = {
@@ -19,29 +18,19 @@ type Props = {
 };
 
 const RejectUpdateRequestDialog = (props: Props) => {
-  const { mutate: logout } = useLogout();
   const { trigger } = props;
-  const { mutate, isPending, isSuccess, error, isIdle, reset } =
-    useUpdatePassword();
+  const { mutate, isPending, isSuccess, error } = useUpdatePassword();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (isSuccess && !isIdle) {
-      logout();
-    }
-
-    if (error && !isIdle) {
+    if (isSuccess) {
       toast({
-        title: error?.message,
-        description: error?.description,
-        variant: "destructive",
+        title: "Success",
+        description: "Your password has been updated successfully.",
       });
+      setIsOpen(false);
     }
-
-    return () => {
-      reset();
-    };
-  }, [error, isIdle, isSuccess, logout]);
+  }, [isSuccess]);
 
   const onSubmit = (data: UpdatePasswordFormProps) => {
     mutate(_.omit(data, "confirmPassword"));
@@ -51,14 +40,15 @@ const RejectUpdateRequestDialog = (props: Props) => {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Change Password</DialogTitle>
           <DialogDescription>
-            You'll be logged out once saved and asked to log in again.
+            Secure your account by updating your password below.
           </DialogDescription>
         </DialogHeader>
         <UpdatePasswordForm
+          error={error ? { description: error.description } : undefined}
           onCancelLabel="Cancel"
           onCancel={() => setIsOpen(false)}
           onSubmitLabel="Save Changes"

@@ -1,5 +1,6 @@
 import { schemaName } from "../../../constants/schemaName";
 import AuditLogModel, { AuditLog } from "../auditLogModel";
+import { userAccount } from "./auditLogPipelines";
 
 export default class AuditLogRepository {
   private auditLogModel: typeof AuditLogModel;
@@ -10,20 +11,7 @@ export default class AuditLogRepository {
 
   getAuditLogs = async () => {
     return this.auditLogModel.aggregate([
-      {
-        $lookup: {
-          from: schemaName.USER,
-          localField: "userId",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $unwind: {
-          path: "$user",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      ...userAccount,
       {
         $addFields: {
           userEmail: "$user.email",
@@ -43,13 +31,34 @@ export default class AuditLogRepository {
   };
 
   getAuditLogById = async (id: AuditLog["_id"]) => {
-    return this.auditLogModel.aggregate([
+    const auditLogs = await this.auditLogModel.aggregate([
       {
         $match: {
           _id: id,
         },
       },
+      ...userAccount,
+      {
+        $addFields: {
+          userEmail: "$user.email",
+        },
+      },
+      {
+        $project: {
+          user: 0,
+        },
+      },
+      {
+        $sort: {
+          timestamp: -1,
+        },
+      },
+      {
+        $limit: 1,
+      },
     ]);
+
+    return auditLogs.length > 0 ? auditLogs[0] : null;
   };
 
   createAuditLog = async (params: Omit<AuditLog, "_id" | "timestamp">) => {

@@ -14,6 +14,8 @@ import useStudentGiardianForm from "./useUpdatePasswordForm";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FormProps } from "@/types/form.type";
+import FormError from "@/components/common/FormError";
+import AnimatedSpinner from "@/components/common/AnimatedSpinner";
 
 const UpdatePasswordForm = (props: FormProps<UpdatePasswordFormProps>) => {
   const { form } = useStudentGiardianForm();
@@ -47,6 +49,8 @@ const UpdatePasswordForm = (props: FormProps<UpdatePasswordFormProps>) => {
             )}
           />
         ))}
+        {!!props.error && <FormError {...props.error} />}
+
         <div className="mt-2 flex gap-2">
           {props.onCancelLabel && (
             <Button
@@ -59,8 +63,16 @@ const UpdatePasswordForm = (props: FormProps<UpdatePasswordFormProps>) => {
             </Button>
           )}
 
-          <Button type="submit" className="flex-1">
-            {props.onSubmitLabel || "Submit"}
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={props.onSubmitLoading}
+          >
+            {props.onSubmitLoading ? (
+              <AnimatedSpinner />
+            ) : (
+              props.onSubmitLabel || "Submit"
+            )}
           </Button>
         </div>
       </form>

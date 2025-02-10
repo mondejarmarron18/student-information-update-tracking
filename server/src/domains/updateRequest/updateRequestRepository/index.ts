@@ -135,9 +135,35 @@ export default class updateRequestRepository {
     return updateRequests.length > 0 ? updateRequests[0] : null;
   };
 
+  getOwnUpdateRequestsPassedDays = async (
+    days: number,
+    userId: IUpdateRequest["requesterId"]
+  ) => {
+    const updateRequests = await this.updateRequestModel.aggregate([
+      {
+        $match: {
+          requesterId: userId,
+        },
+      },
+      ...updateRequestsPassedDays(days),
+    ]);
+
+    return updateRequests.length > 0 ? updateRequests[0] : null;
+  };
+
   getUpdateRequestsPassedMonths = (months: number) => {
     return this.updateRequestModel.aggregate(
       updateRequestsPassedMonths(months)
     );
+  };
+
+  getOwnUpdateRequestsPassedMonths = (
+    months: number,
+    userId: IUpdateRequest["requesterId"]
+  ) => {
+    return this.updateRequestModel.aggregate([
+      { $match: { requesterId: userId } },
+      ...updateRequestsPassedMonths(months),
+    ]);
   };
 }

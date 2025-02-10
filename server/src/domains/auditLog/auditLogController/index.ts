@@ -10,6 +10,7 @@ import { auditLogAction } from "../../../constants/auditLog";
 import { AuditLog } from "../auditLogModel";
 import { schemaName } from "../../../constants/schemaName";
 import { IUserProfile } from "../../userProfile/userProfileModel";
+import { convertToObjectId } from "../../../utils/mongooseUtil";
 
 export default class AuditLogController {
   private auditLogService: AuditLogService;
@@ -35,6 +36,32 @@ export default class AuditLogController {
     });
   };
 
+  getAuditLogById: IControllerFunction = async (req, res) => {
+    const { auditLogId } = req.params;
+    const { id } = convertToObjectId(auditLogId);
+
+    if (!id) {
+      return CustomResponse.sendHandledError(res, {
+        ...customErrors.badRequest,
+        description: "Invalid audit log ID",
+      });
+    }
+
+    const { result, error } = await x8tAsync(
+      this.auditLogService.getAuditLogById(id),
+      { log: true }
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Audit log retrieved successfully",
+      data: result,
+    });
+  };
   downloadAuditLogs: IControllerFunction = async (req, res) => {
     const auditLogs = await x8tAsync(this.auditLogService.getAuditLogs(), {
       log: true,
@@ -75,6 +102,9 @@ export default class AuditLogController {
     res.header("Content-Type", "text/csv");
     res.attachment("audit-logs.csv");
 
+    if (error) {
+      return CustomResponse.sendError(res, customErrors.internalServerError);
+    }
     await x8tAsync(
       this.auditLogService.createAuditLog({
         ...req.auditLog!,
@@ -87,10 +117,6 @@ export default class AuditLogController {
         log: true,
       }
     );
-
-    if (error) {
-      return CustomResponse.sendError(res, customErrors.internalServerError);
-    }
 
     res.send(result);
   };

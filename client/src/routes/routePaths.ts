@@ -81,13 +81,13 @@ const routePaths: Record<string, RoutePath> = {
     path: "/audit-logs",
     name: "Audit Logs",
     element: lazy(() => import("../pages/AuditLogs")),
-    roles: [role.ADMIN, role.STAFF],
+    roles: [role.SUPER_ADMIN, role.ADMIN],
   },
   auditLog: {
     path: "/audit-logs/:auditLogId",
     name: "Audit Log",
     element: lazy(() => import("../pages/AuditLog")),
-    roles: [role.ADMIN, role.STAFF],
+    roles: [role.SUPER_ADMIN, role.ADMIN],
   },
   passwordReset: {
     path: "/password-reset/:verificationCode",

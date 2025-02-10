@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import useAuditLogs from "@/hooks/useAuditLogs";
 import AnimatedSpinner from "@/components/common/AnimatedSpinner";
 import { Link } from "react-router";
-import _ from "lodash";
 import { routePaths } from "@/routes";
 
 type Props = {
@@ -40,7 +39,7 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
   const totalPages = Math.ceil(auditLogs.length / pageSize);
 
   // Filter and paginate data based on search query and current page
-  const filteredLogs = auditLogs.filter(
+  const filteredLogs = auditLogs?.filter(
     (log) =>
       log.userId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.action.toLowerCase().includes(searchQuery.toLowerCase())
@@ -83,6 +82,7 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
               <TableHead>Target Entity</TableHead>
               <TableHead>User Email</TableHead>
               <TableHead>IP Address</TableHead>
+              <TableHead>Details</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -94,7 +94,7 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
                     {toDateTimeNumeric(new Date(log.timestamp))}
                   </TableCell>
                   <TableCell>{log.action.toUpperCase()}</TableCell>
-                  <TableCell>{_.startCase(_.toLower(log.entity))}</TableCell>
+                  <TableCell>{log.entity}</TableCell>
                   <TableCell>
                     {!log.userId ? (
                       "Unknown"
@@ -111,6 +111,7 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
                     )}
                   </TableCell>
                   <TableCell>{log.ipAddress}</TableCell>
+                  <TableCell>{log.details}</TableCell>
                   <TableCell>
                     <Link
                       to={routePaths.auditLog.path.replace(
