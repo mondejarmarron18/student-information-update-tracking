@@ -71,4 +71,8 @@ export default class YearLevelRepository {
       },
     });
   };
+
+  deleteYearLevelById = (id: YearLevel["_id"]) => {
+    return this.yearLevelModel.findByIdAndDelete(id);
+  };
 }

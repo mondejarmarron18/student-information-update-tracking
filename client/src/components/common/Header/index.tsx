@@ -1,42 +1,42 @@
-import { cn } from "@/lib/utils";
-import { MdNotifications } from "react-icons/md";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+// import { cn } from "@/lib/utils";
+// import { MdNotifications } from "react-icons/md";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
 import useActiveRoute from "@/hooks/useActiveRoute";
 
 const Header = () => {
   const activeRoute = useActiveRoute();
 
-  const notifications = [
-    {
-      id: 1,
-      title: "Update Request",
-      description: "New update request from John Doe. Please review.",
-      timestamp: "10:30 AM",
-    },
-    {
-      id: 2,
-      title: "Profile Update Approved",
-      description: "Your profile update has been approved.",
-      timestamp: "9:15 AM",
-    },
-    {
-      id: 3,
-      title: "Request Rejected",
-      description:
-        "Your request was rejected due to missing info.asdfasdfasdfasdf",
-      timestamp: "8:00 AM",
-    },
-  ];
+  // const notifications = [
+  //   {
+  //     id: 1,
+  //     title: "Update Request",
+  //     description: "New update request from John Doe. Please review.",
+  //     timestamp: "10:30 AM",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Profile Update Approved",
+  //     description: "Your profile update has been approved.",
+  //     timestamp: "9:15 AM",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Request Rejected",
+  //     description:
+  //       "Your request was rejected due to missing info.asdfasdfasdfasdf",
+  //     timestamp: "8:00 AM",
+  //   },
+  // ];
 
   return (
     <div className="flex items-center justify-between p-1 pb-0">
       <h1 className="text-xl font-bold">{activeRoute?.name}</h1>
 
-      <Popover>
+      {/* <Popover>
         <PopoverTrigger asChild>
           <button
             className={cn(
@@ -75,7 +75,7 @@ const Header = () => {
             ))
           )}
         </PopoverContent>
-      </Popover>
+      </Popover> */}
     </div>
   );
 };

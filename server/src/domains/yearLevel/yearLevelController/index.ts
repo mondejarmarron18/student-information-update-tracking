@@ -145,4 +145,48 @@ export default class YearLevelController {
       data: yearLevel.result,
     });
   };
+
+  deleteYearLevelById: IControllerFunction = async (req, res) => {
+    const { yearLevelId } = req.params;
+    const deleterId = req.user?._id;
+
+    if (!deleterId) {
+      return CustomResponse.sendError(res, customErrors.unauthorized);
+    }
+
+    const { id } = convertToObjectId(yearLevelId);
+
+    if (!id) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        description: "Invalid year level ID",
+      });
+    }
+
+    const yearLevel = await x8tAsync(
+      this.yearLevelService.deleteYearLevelById(id)
+    );
+
+    if (yearLevel.error)
+      return CustomResponse.sendHandledError(res, yearLevel.error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.DELETED,
+        details: "Deleted a year level",
+        entity: schemaName.YEAR_LEVEL,
+      }),
+      {
+        log: true,
+      }
+    );
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Year level deleted successfully",
+      data: yearLevel.result,
+    });
+  };
 }

@@ -3,14 +3,20 @@ import CustomError from "../../../utils/CustomError";
 import { ICourse } from "../courseModel";
 import CourseRepository from "../courseRepository";
 import UserService from "../../user/userService";
+import AcadProfileRepository from "../../acadProfile/acadProfileRepository";
+import SpecializationRepository from "../../specialization/specializationRepository";
 
 export default class CourseService {
   private courseRepository: CourseRepository;
   private userService: UserService;
+  private acadProfileRepository: AcadProfileRepository;
+  private specializationRepository: SpecializationRepository;
 
   constructor() {
     this.courseRepository = new CourseRepository();
     this.userService = new UserService();
+    this.acadProfileRepository = new AcadProfileRepository();
+    this.specializationRepository = new SpecializationRepository();
   }
 
   getCourses = async () => {
@@ -81,5 +87,28 @@ export default class CourseService {
     }
 
     return !!isCourseExist.result;
+  };
+
+  deleteCourseById = async (id: ICourse["_id"]) => {
+    const hasStudents = await this.acadProfileRepository.isCourseIdsExists([
+      id,
+    ]);
+
+    if (hasStudents) {
+      return CustomError.forbidden({
+        description: "Course has students, assign them to another course",
+      });
+    }
+
+    const hasSpecializations =
+      await this.specializationRepository.isCourseIdsExists([id]);
+
+    if (hasSpecializations) {
+      return CustomError.forbidden({
+        description: "Course has specializations, delete specializations first",
+      });
+    }
+
+    return await this.courseRepository.deleteCourseById(id);
   };
 }

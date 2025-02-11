@@ -98,4 +98,21 @@ export default class SpecializationMiddleware {
 
     next();
   };
+
+  deleteSpecializationById: IMiddleware = (req, res, next) => {
+    const validate = z.object({
+      specializationId: z.string().nonempty("Specialization ID is required"),
+    });
+
+    const { error } = validate.safeParse(req.params);
+
+    if (error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
+    }
+
+    next();
+  };
 }

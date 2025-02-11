@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
 import { SlOptionsVertical } from "react-icons/sl";
 
 type MenuItem = {
@@ -41,7 +41,16 @@ const PopupMenu = (props: Props) => {
           if (!item) return null;
 
           if (!(typeof item === "object" && "label" in item)) {
-            return <Fragment key={index}>{item}</Fragment>;
+            return (
+              <div
+                key={index}
+                className={cn("w-full min-w-[120px]", {
+                  "border-t": index !== 0,
+                })}
+              >
+                {item}
+              </div>
+            );
           }
 
           return (
@@ -50,7 +59,7 @@ const PopupMenu = (props: Props) => {
               key={item.label}
               onClick={item.onClick}
               className={cn(
-                "w-full min-w-[120px] rounded-none",
+                "w-full min-w-[120px] rounded-none justify-start",
                 item.className,
                 {
                   "border-t": index !== 0,

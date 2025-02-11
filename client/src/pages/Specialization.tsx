@@ -18,33 +18,50 @@ const Specialization = () => {
   const specialization = data?.data;
   const { decodedAccessToken } = useAccessToken();
   const roleName = decodedAccessToken()?.roleId?.name;
+  const { courseId } = useParams();
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-2 flex-wrap items-center">
-        <CustomBreadcrumb
-          links={[
-            { name: "Courses", href: routePaths.academicManagement.path },
-            {
-              name: specialization?.course?.name as string,
-              href: routePaths.course.path.replace(
-                ":courseId",
-                specialization?.course?._id as string
-              ),
-            },
-            {
-              name: "Specializations",
-              href: routePaths.specializations.path.replace(
-                ":courseId",
-                specialization?.course?._id as string
-              ),
-            },
-            {
-              name: specialization?.name as string,
-              href: "",
-            },
-          ]}
-        />
+        {!courseId ? (
+          <CustomBreadcrumb
+            links={[
+              {
+                name: "Specializations",
+                href:
+                  routePaths.academicManagement.path + "?tab=specializations",
+              },
+              {
+                name: specialization?.name as string,
+                href: "",
+              },
+            ]}
+          />
+        ) : (
+          <CustomBreadcrumb
+            links={[
+              { name: "Courses", href: routePaths.academicManagement.path },
+              {
+                name: specialization?.course?.name as string,
+                href: routePaths.course.path.replace(
+                  ":courseId",
+                  specialization?.course?._id as string
+                ),
+              },
+              {
+                name: "Specializations",
+                href: routePaths.specializations.path.replace(
+                  ":courseId",
+                  specialization?.course?._id as string
+                ),
+              },
+              {
+                name: specialization?.name as string,
+                href: "",
+              },
+            ]}
+          />
+        )}
       </div>
 
       <div>

@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { IMiddleware } from "../../../types/middleware";
+import CustomResponse from "../../../utils/CustomResponse";
+import customErrors from "../../../constants/customErrors";
 
 export default class YearLevelMiddleware {
   createYearLevel: IMiddleware = (req, res, next) => {
@@ -11,8 +13,10 @@ export default class YearLevelMiddleware {
     const { error } = validate.safeParse(req.body);
 
     if (error) {
-      res.status(400).send({ error: error.errors });
-      return;
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
     }
 
     next();
@@ -26,8 +30,10 @@ export default class YearLevelMiddleware {
     const { error } = validate.safeParse(req.params);
 
     if (error) {
-      res.status(400).send({ error: error.errors });
-      return;
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
     }
 
     next();
@@ -43,8 +49,27 @@ export default class YearLevelMiddleware {
     const { error } = validate.safeParse({ ...req.body, ...req.params });
 
     if (error) {
-      res.status(400).send({ error: error.errors });
-      return;
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
+    }
+
+    next();
+  };
+
+  deleteYearLevelById: IMiddleware = (req, res, next) => {
+    const validate = z.object({
+      yearLevelId: z.string().nonempty("Year Level ID is required"),
+    });
+
+    const { error } = validate.safeParse(req.params);
+
+    if (error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
     }
 
     next();

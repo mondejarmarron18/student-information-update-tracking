@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -25,6 +25,8 @@ import SpecializationDialog from "@/components/common/SpecializationDialog";
 import { routePaths } from "@/routes";
 import { useNavigate, useParams } from "react-router";
 import PopupMenu from "@/components/common/PopupMenu";
+import DeleteConfirmationDialog from "@/components/common/DeleteConfimationDialog";
+import useDeleteSpecialization from "@/hooks/useDeleteSpecialization";
 
 const SpecializationsTable = () => {
   const navigate = useNavigate();
@@ -33,22 +35,57 @@ const SpecializationsTable = () => {
     courseId,
   });
   const specilizationsList = specilizations.data?.data || [];
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Set how many items you want to display per page
+  const deleteSpecialization = useDeleteSpecialization();
 
-  const totalPages = Math.ceil(specilizationsList.length / itemsPerPage);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // Number of items per page
+  const totalPages = Math.ceil(specilizationsList.length / pageSize);
+
+  const filteredSpecializations = specilizationsList?.filter((yl) => {
+    const fieldsToSearch = [
+      yl.name,
+      yl.creatorProfile?.firstName,
+      yl.creatorProfile?.lastName,
+    ];
+    return fieldsToSearch.some((field) =>
+      field?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
+  const currentSpecializations = filteredSpecializations.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const handlerSeacrhQuery = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const viewSpecialization = (data: {
+    specializationId: string;
+    courseId: string;
+  }) => {
+    const specializationPath = routePaths.specialization.path
+      .replace(":specializationId", data.specializationId)
+      .replace(":courseId", data.courseId);
+
+    navigate(specializationPath);
+  };
 
   return (
-    <div className="flex flex-col gap-8 mt-4 p-1">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Search by requester, reviewer, or status..."
+          placeholder="Search by specialization name, creator name"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handlerSeacrhQuery}
           className="w-1/3 mr-4"
         />
-        <SpecializationDialog trigger={<Button>Add Specialization</Button>} />
+        <SpecializationDialog
+          courseId={courseId}
+          trigger={<Button>Add Specialization</Button>}
+        />
       </div>
 
       <Card>
@@ -58,23 +95,23 @@ const SpecializationsTable = () => {
               {!courseId && <TableHead>Course</TableHead>}
               <TableHead>Name</TableHead>
               <TableHead>Students</TableHead>
-              <TableHead>Updated By</TableHead>
+              <TableHead>Created By</TableHead>
               <TableHead>Date Updated</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {specilizationsList.length > 0 ? (
-              specilizationsList.map((specialization) => (
+            {currentSpecializations.length > 0 ? (
+              currentSpecializations.map((specialization) => (
                 <TableRow key={specialization._id}>
                   {!courseId && (
                     <TableCell>{specialization.course?.name}</TableCell>
                   )}
-                  <TableCell>{specialization.studentsCount}</TableCell>
                   <TableCell>{specialization.name}</TableCell>
+                  <TableCell>{specialization.studentsCount}</TableCell>
                   <TableCell>
-                    {specialization.updaterProfile?.firstName}{" "}
-                    {specialization.updaterProfile?.lastName}
+                    {specialization.creatorProfile?.firstName || "-"}{" "}
+                    {specialization.creatorProfile?.lastName}
                   </TableCell>
                   <TableCell>
                     {toDateTimeNumeric(specialization.updatedAt)}
@@ -85,23 +122,38 @@ const SpecializationsTable = () => {
                         {
                           label: "View",
                           onClick: () =>
-                            navigate(
-                              routePaths.specialization.path
-                                .replace(
-                                  ":specializationId",
-                                  specialization._id
-                                )
-                                .replace(":courseId", courseId as string)
-                            ),
+                            viewSpecialization({
+                              specializationId: specialization._id,
+                              courseId: specialization.courseId,
+                            }),
                         },
-                        {
-                          label: "Edit",
-                          onClick: () => {},
-                        },
-                        {
-                          label: "Delete",
-                          onClick: () => {},
-                        },
+                        <SpecializationDialog
+                          specializationId={specialization._id}
+                          courseId={specialization.courseId}
+                          trigger={
+                            <Button
+                              variant={"ghost"}
+                              className="w-full rounded-none justify-start"
+                            >
+                              Update
+                            </Button>
+                          }
+                        />,
+                        <DeleteConfirmationDialog
+                          isCompleted={deleteSpecialization.isSuccess}
+                          title="Delete Specialization"
+                          onConfirm={() =>
+                            deleteSpecialization.mutate(specialization._id)
+                          }
+                          trigger={
+                            <Button
+                              variant={"ghost"}
+                              className="w-full rounded-none justify-start"
+                            >
+                              Delete
+                            </Button>
+                          }
+                        />,
                       ]}
                     />
                   </TableCell>

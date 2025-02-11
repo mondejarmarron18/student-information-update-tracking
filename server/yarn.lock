@@ -3878,9 +3878,9 @@ write-file-atomic@^4.0.2:
     imurmurhash "^0.1.4"
     signal-exit "^3.0.7"
 
-x8t@^2.1.0:
+x8t@2.1.0:
   version "2.1.0"
-  resolved "https://registry.npmjs.org/x8t/-/x8t-2.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/x8t/-/x8t-2.1.0.tgz#9f6c599d9894e25556a653623c7729f0b0a59f8c"
   integrity sha512-9wvzXG3ODes7o4vDDcz6VlqvjHtvzdIWPVmqHz+HT5UzsEgzkt5de3BewS7Ut9cJ30sZEpla6z+3bPzSPE7jpQ==
 
 y18n@^5.0.5:

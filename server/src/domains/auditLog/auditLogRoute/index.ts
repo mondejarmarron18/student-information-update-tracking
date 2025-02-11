@@ -14,6 +14,11 @@ auditLogRoute.get(
   auditLogController.getAuditLogs
 );
 auditLogRoute.get(
+  "/download",
+  [authMiddleware, authRole().isSuperAdmin().isAdmin().apply],
+  auditLogController.downloadAuditLogs
+);
+auditLogRoute.get(
   "/:auditLogId",
   [
     authMiddleware,
@@ -21,11 +26,6 @@ auditLogRoute.get(
     authRole().isSuperAdmin().isAdmin().apply,
   ],
   auditLogController.getAuditLogById
-);
-auditLogRoute.get(
-  "/download",
-  [authMiddleware, authRole().isSuperAdmin().isAdmin().apply],
-  auditLogController.downloadAuditLogs
 );
 
 export default auditLogRoute;

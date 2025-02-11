@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -27,6 +27,7 @@ import UpdateRequestStatus from "@/components/common/UpdateRequestStatus";
 import UpdateRequestType from "@/components/common/UpdateRequestType";
 import useAccessToken from "@/hooks/useAccessToken";
 import { role } from "@/constants/role";
+import { updateRequestStatusString } from "@/constants/updateRequest";
 
 const UpdateRequestsTable = () => {
   const { data } = useUpdateRequests();
@@ -34,28 +35,45 @@ const UpdateRequestsTable = () => {
   const { decodedAccessToken } = useAccessToken();
   const userRoleName = decodedAccessToken()?.roleId?.name;
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Set how many items you want to display per page
+  const pageSize = 10; // Number of items per page
+  const totalPages = Math.ceil(updateRequests.length / pageSize);
 
-  // Filter the data based on search query
+  const filteredUpdateRequests = updateRequests?.filter((ur) => {
+    const fieldsToSearch = [
+      ur.requesterProfile?.firstName,
+      ur.requesterProfile?.middleName,
+      ur.requesterProfile?.lastName,
+      ur.reviewerProfile?.firstName,
+      ur.reviewerProfile?.middleName,
+      ur.reviewerProfile?.lastName,
+      ur.contentType,
+      updateRequestStatusString[
+        ur.reviewStatus as keyof typeof updateRequestStatusString
+      ],
+    ];
+    return fieldsToSearch.some((field) =>
+      field?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
-  // Paginate data
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentRequests = updateRequests.slice(
-    startIndex,
-    startIndex + itemsPerPage
+  const currentUpdateRequests = filteredUpdateRequests.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
-  const totalPages = Math.ceil(updateRequests.length / itemsPerPage);
+  const handlerSeacrhQuery = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
-    <div className="flex flex-col gap-8 mt-4">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center">
         <Input
-          placeholder="Search by requester, reviewer, or status..."
+          placeholder="Search by requester, reviewer, content type, or status..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handlerSeacrhQuery}
           className="w-1/3 mr-4"
         />
       </div>
@@ -78,8 +96,8 @@ const UpdateRequestsTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentRequests.length > 0 ? (
-              currentRequests.map((request) => (
+            {currentUpdateRequests.length > 0 ? (
+              currentUpdateRequests.map((request) => (
                 <TableRow key={request._id}>
                   {userRoleName !== role.STUDENT && (
                     <TableCell>
@@ -110,7 +128,7 @@ const UpdateRequestsTable = () => {
                         ":updateRequestId",
                         request._id
                       )}
-                      className="hover:text-primary"
+                      className="text-primary"
                     >
                       View
                     </Link>

@@ -37,7 +37,9 @@ const DeleteConfirmationDialog = (props: Props) => {
       <DialogTrigger asChild>{props.trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{props.title || "Delete Action"}</DialogTitle>
+          <DialogTitle className="mb-2">
+            {props.title || "Delete Entry"}
+          </DialogTitle>
           <DialogDescription>
             {props.description ||
               "This action will delete the record. Please check and verify before proceeding. Do you still want to continue?"}

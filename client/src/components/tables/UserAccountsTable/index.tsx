@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -30,19 +30,40 @@ const UserAccountsTable = () => {
   const userAccounts = useUserAccounts();
   const userAccountsData = userAccounts.data?.data || [];
 
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Set how many items you want to display per page
+  const pageSize = 10; // Number of items per page
+  const totalPages = Math.ceil(userAccountsData.length / pageSize);
 
-  const totalPages = Math.ceil(userAccountsData.length / itemsPerPage);
+  const filteredUserAccounts = userAccountsData?.filter((uc) => {
+    const fieldsToSearch = [
+      uc.email,
+      uc.profile?.firstName,
+      uc.profile?.middleName,
+      uc.profile?.lastName,
+      uc.role?.name,
+    ];
+    return fieldsToSearch.some((field) =>
+      field?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
+
+  const currentUserAccounts = filteredUserAccounts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const handlerSeacrhQuery = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
-    <div className="flex flex-col gap-8 mt-4">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Search by requester, reviewer, or status..."
+          placeholder="Search by name, email, role"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handlerSeacrhQuery}
           className="w-1/3 mr-4"
         />
         <UserAccountDialog trigger={<Button>Create User Account</Button>} />
@@ -62,15 +83,13 @@ const UserAccountsTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {userAccountsData.length > 0 ? (
-              userAccountsData.map((useAccount) => (
+            {currentUserAccounts.length > 0 ? (
+              currentUserAccounts.map((useAccount) => (
                 <TableRow key={useAccount._id}>
                   <TableCell>
                     {!useAccount.profile
                       ? "-"
-                      : useAccount.profile.firstName +
-                        " " +
-                        useAccount.profile.lastName}
+                      : `${useAccount.profile.firstName} ${useAccount.profile.middleName} ${useAccount.profile.lastName}`}
                   </TableCell>
                   <TableCell>{useAccount.email}</TableCell>
                   <TableCell>

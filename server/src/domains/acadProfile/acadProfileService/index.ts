@@ -150,4 +150,8 @@ export default class AcadProfileService {
 
     return isAcadProfileExists.result;
   };
+
+  isCourseIdsExists = async (courseIds: IAcadProfile["courseId"][]) => {
+    return this.acadProfileRepository.isCourseIdsExists(courseIds);
+  };
 }

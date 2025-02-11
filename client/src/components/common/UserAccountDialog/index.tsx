@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,7 +24,7 @@ const UserAccountDialog = (props: Props) => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "User Account",
+        title: "User Account Created",
         description: "Email verification link has been sent to user's email.",
       });
 
@@ -40,7 +41,8 @@ const UserAccountDialog = (props: Props) => {
       <DialogTrigger asChild>{props.trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle></DialogTitle>
+          <DialogTitle>Create User Account</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         <UserAccountForm
           className="overflow-y-auto max-h-[700px] p-1"

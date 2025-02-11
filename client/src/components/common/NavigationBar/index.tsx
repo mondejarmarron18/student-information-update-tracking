@@ -121,7 +121,7 @@ const NavigationBar = () => {
         trigger={
           <button
             onClick={toggleNavCollapsed}
-            className="rounded-lg bg-gray-500/40 opacity-50 hover:opacity-100 transition-colors p-3 hidden lg:flex items-center"
+            className="rounded-lg bg-gray-500/40 opacity-70 hover:opacity-100 transition-colors p-3 hidden lg:flex items-center"
           >
             <div
               className={cn("rotate-180 transition-transform", {
@@ -149,7 +149,7 @@ const NavigationBar = () => {
                 <button
                   name={navItem.name}
                   className={cn(
-                    "rounded-lg flex bg-gray-500/40 items-center opacity-50 hover:bg-gray-500/70 transition-colors p-3",
+                    "rounded-lg flex bg-gray-500/40 items-center opacity-70 hover:bg-gray-500/70 transition-colors p-3",
                     {
                       "opacity-100 bg-gray-500/80":
                         activeRoute?.path === navItem.path,
@@ -170,7 +170,7 @@ const NavigationBar = () => {
         trigger={
           <button
             className={cn(
-              "rounded-lg bg-gray-500/40 hover:opacity-100 transition-all p-3 flex items-center opacity-50"
+              "rounded-lg bg-gray-500/40 hover:opacity-100 transition-all p-3 flex items-center opacity-70"
             )}
           >
             <div

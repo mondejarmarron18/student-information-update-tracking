@@ -13,6 +13,7 @@ import useCreateCourse from "@/hooks/useCreateCourse";
 import { toast } from "@/hooks/use-toast";
 import useUpdateCourse from "@/hooks/useUpdateCourse";
 import useCourse from "@/hooks/useCourse";
+import { toDateTimeString } from "@/utils/fomatter";
 
 type Props = {
   courseId?: string;
@@ -30,11 +31,11 @@ const CourseDialog = (props: Props) => {
 
   useEffect(() => {
     if (createCourse.isSuccess || updateCourse.isSuccess) {
+      console.log({ courseId: props.courseId });
+
       toast({
-        title: "Success",
-        description: `Course ${
-          props.courseId ? "updated" : "created"
-        } successfully`,
+        title: props.courseId ? "Course Updated" : "New Course Created",
+        description: toDateTimeString(new Date()),
       });
       setIsOpen(false);
     }

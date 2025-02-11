@@ -94,19 +94,7 @@ export default class CourseRepository {
       .lean();
   };
 
-  deleteCourse = (id: ICourse["_id"]) => {
-    return this.courseModel
-      .findByIdAndUpdate(
-        id,
-        {
-          $set: {
-            deletedAt: new Date(),
-          },
-        },
-        {
-          new: true,
-        }
-      )
-      .lean();
+  deleteCourseById = (id: ICourse["_id"]) => {
+    return this.courseModel.findByIdAndDelete(id);
   };
 }

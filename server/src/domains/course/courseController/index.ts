@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
-import { IControllerFunction } from "../../../types/controller";
 import CustomResponse from "../../../utils/CustomResponse";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
 import customErrors from "../../../constants/customErrors";
-import { ICourse } from "../courseModel";
-import { x8tAsync, x8tSync } from "x8t";
+import { x8tAsync } from "x8t";
 import CourseService from "../courseService";
 import AuditLogService from "../../auditLog/auditLogService";
 import { auditLogAction } from "../../../constants/auditLog";
@@ -161,6 +159,44 @@ export default class CourseController {
       status: 200,
       message: "Course updated successfully",
       data: updatedCourse.result,
+    });
+  };
+
+  deleteCourseById = async (req: Request, res: Response) => {
+    const { courseId } = req.params;
+    const { id } = convertToObjectId(courseId);
+
+    if (!id) {
+      return CustomResponse.sendHandledError(res, {
+        ...customErrors.badRequest,
+        description: "Invalid course ID",
+      });
+    }
+
+    const deletedCourse = await x8tAsync(
+      this.courseService.deleteCourseById(id)
+    );
+
+    if (deletedCourse.error)
+      return CustomResponse.sendHandledError(res, deletedCourse.error);
+
+    await x8tAsync(
+      this.auditLogService.createAuditLog({
+        ...req.auditLog!,
+        userId: req.user?._id,
+        action: auditLogAction.DELETED,
+        details: "Deleted a course",
+        entity: schemaName.COURSE,
+      }),
+      {
+        log: true,
+      }
+    );
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Course deleted successfully",
+      data: deletedCourse.result,
     });
   };
 }

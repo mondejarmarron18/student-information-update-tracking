@@ -1,20 +1,26 @@
-import { apiWithoutInterceptors } from "@/utils/api";
-import cookie from "@/utils/cookie";
+import { ApiResponseSuccess } from "@/types/apiResponse.type";
+import api from "@/utils/api";
 import { reactQueryError } from "@/utils/errorHandler";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "./use-toast";
+import { toDateTimeString } from "@/utils/fomatter";
+import { YearLevel } from "@/types/yearLevel.type";
 
-const useExportAuditLogs = () => {
+const useDeleteYearLevel = () => {
   const queryClient = useQueryClient();
   const { error, ...rest } = useMutation({
-    mutationFn: async () =>
-      apiWithoutInterceptors.get("/audit-logs/download", {
-        headers: {
-          Authorization: `Bearer ${cookie.accessToken.get()}`,
-        },
-      }),
+    mutationFn: (yearLevelId: string) => {
+      return api.delete<ApiResponseSuccess<YearLevel>>(
+        `/year-levels/${yearLevelId}`
+      );
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["audit-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["year-levels"] });
+
+      toast({
+        title: "Year Level Deleted",
+        description: toDateTimeString(new Date()),
+      });
     },
     onError: (error) => {
       const apiError = reactQueryError(error);
@@ -35,4 +41,4 @@ const useExportAuditLogs = () => {
   };
 };
 
-export default useExportAuditLogs;
+export default useDeleteYearLevel;

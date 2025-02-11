@@ -128,4 +128,24 @@ export default class AcadProfileRepository {
       )
       .lean();
   };
+
+  isCourseIdsExists = (courseIds: IAcadProfile["courseId"][]) => {
+    return this.acadProfileModel
+      .exists({ courseId: { $in: courseIds } })
+      .lean();
+  };
+
+  isSpecializationIdsExists = (
+    specializationIds: IAcadProfile["specializationId"][]
+  ) => {
+    return this.acadProfileModel
+      .exists({ specializationId: { $in: specializationIds } })
+      .lean();
+  };
+
+  isYearLevelIdsExists = (yearLevelIds: IAcadProfile["yearLevelId"][]) => {
+    return this.acadProfileModel
+      .exists({ yearLevelId: { $in: yearLevelIds } })
+      .lean();
+  };
 }

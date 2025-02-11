@@ -22,9 +22,9 @@ const PageWrapper = () => {
   return (
     <div className="flex gap-2 lg:gap-4 flex-col-reverse lg:flex-row h-full p-2 lg:p-4">
       <NavigationBar />
-      <div className="flex-1 flex flex-col gap-2 lg:gap-4 overflow-hidden">
+      <div className="flex-1 flex flex-col gap-2 lg:gap-4 overflow-hidden pt-2 lg:pt-4">
         <Header />
-        <div className="flex-1 h-full overflow-auto px-1">
+        <div className="flex-1 h-full overflow-auto px-1 pt-2">
           {isAccessible ? <Outlet /> : <ResourceForbidden />}
         </div>
       </div>

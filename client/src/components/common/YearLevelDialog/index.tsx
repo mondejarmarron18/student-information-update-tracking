@@ -13,6 +13,7 @@ import useCreateYearLevel from "@/hooks/useCreateYearLevel";
 import YearLevelForm from "@/components/forms/YearLevelForm";
 import useUpdateYearLevel from "@/hooks/useUpdateYearLevel";
 import { YearLevelFormProps } from "@/components/forms/YearLevelForm/schema";
+import { toDateTimeString } from "@/utils/fomatter";
 
 type Props = {
   yearLevelId?: string;
@@ -31,10 +32,10 @@ const YearLevelDialog = (props: Props) => {
   useEffect(() => {
     if (createYearLevel.isSuccess || updateYearLevel.isSuccess) {
       toast({
-        title: "Success",
-        description: `Year level ${
-          props.yearLevelId ? "updated" : "created"
-        } successfully`,
+        title: props.yearLevelId
+          ? "Year Level Updated"
+          : "New Year Level Created",
+        description: toDateTimeString(new Date()),
       });
       setIsOpen(false);
     }

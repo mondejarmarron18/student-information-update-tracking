@@ -13,8 +13,10 @@ import useCreateSpecialization from "@/hooks/useCreateSpecialization";
 import { SpecializationFormProps } from "@/components/forms/SpecializationForm/schema";
 import useSpecialization from "@/hooks/useSpecialization";
 import useUpdateSpecialization from "@/hooks/useUpdateSpecialization";
+import { toDateTimeString } from "@/utils/fomatter";
 
 type Props = {
+  courseId?: string;
   specializationId?: string;
   trigger: ReactNode;
 };
@@ -32,11 +34,12 @@ const SpecializationDialog = (props: Props) => {
 
   useEffect(() => {
     if (createSpecialization.isSuccess || updateSpecialization.isSuccess) {
+      console.log(props.specializationId);
       toast({
-        title: "Success",
-        description: `Specialization ${
-          props.specializationId ? "updated" : "created"
-        } successfully`,
+        title: props.specializationId
+          ? "Specialization Updated"
+          : "New Specialization Created",
+        description: toDateTimeString(new Date()),
       });
       setIsOpen(false);
     }
@@ -68,7 +71,7 @@ const SpecializationDialog = (props: Props) => {
           </DialogTitle>
           <DialogDescription>
             {props.specializationId
-              ? "Update specialization details"
+              ? "Make changes to specialization details"
               : "Create a new specialization for your institution"}
           </DialogDescription>
         </DialogHeader>

@@ -12,18 +12,18 @@ import { cn } from "@/lib/utils";
 import formFields from "./formFields";
 import { FormProps } from "@/types/form.type";
 import { SpecializationFormProps } from "./schema";
-import useCourseForm from "./useCourseForm";
+import useCourseForm from "./useSpecializationForm";
 import { Textarea } from "@/components/ui/textarea";
 import FormError from "@/components/common/FormError";
 import RichText from "@/components/common/RichText";
-import useCourseValues from "./useCourseValues";
+import useSpecializationValues from "./useSpecializationValues";
 import AnimatedSpinner from "@/components/common/AnimatedSpinner";
 import SelectCourse from "@/components/common/SelectCourse";
 
 const SpecializationForm = (props: FormProps<SpecializationFormProps>) => {
   const { form } = useCourseForm();
 
-  useCourseValues({
+  useSpecializationValues({
     values: props.values,
     form,
   });
@@ -43,40 +43,42 @@ const SpecializationForm = (props: FormProps<SpecializationFormProps>) => {
             key={formField.name}
             control={form.control}
             name={formField.name}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{formField.label}</FormLabel>
-                {formField.type !== "select" ? (
-                  <FormControl>
-                    {formField.type === "textarea" ? (
-                      <Textarea
-                        placeholder={formField.placeholder}
-                        {...field}
-                      />
-                    ) : formField.type === "richtext" ? (
-                      <RichText
-                        value={field.value}
-                        onChange={field.onChange}
-                        placeholder={formField.placeholder}
-                      />
-                    ) : (
-                      <Input
-                        type={formField.type}
-                        placeholder={formField.placeholder}
-                        {...field}
-                      />
-                    )}
-                  </FormControl>
-                ) : (
-                  <SelectCourse
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  />
-                )}
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>{formField.label}</FormLabel>
+                  {formField.type !== "select" ? (
+                    <FormControl>
+                      {formField.type === "textarea" ? (
+                        <Textarea
+                          placeholder={formField.placeholder}
+                          {...field}
+                        />
+                      ) : formField.type === "richtext" ? (
+                        <RichText
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={formField.placeholder}
+                        />
+                      ) : (
+                        <Input
+                          type={formField.type}
+                          placeholder={formField.placeholder}
+                          {...field}
+                        />
+                      )}
+                    </FormControl>
+                  ) : (
+                    <SelectCourse
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    />
+                  )}
 
-                <FormMessage />
-              </FormItem>
-            )}
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         ))}
 

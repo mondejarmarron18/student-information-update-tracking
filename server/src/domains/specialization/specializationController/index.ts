@@ -141,14 +141,15 @@ export default class SpecializationController {
   };
 
   updateSpecialization: IControllerFunction = async (req, res) => {
-    const { id, error: idError } = convertToObjectId(req.params.id);
     const userId = req.user?._id;
 
     if (!userId) {
       return CustomResponse.sendHandledError(res, customErrors.unauthorized);
     }
 
-    if (idError || !id) {
+    const { id } = convertToObjectId(req.params.specializationId);
+
+    if (!id) {
       return CustomResponse.sendHandledError(res, {
         ...customErrors.badRequest,
         description: "Invalid specialization ID",
@@ -172,7 +173,7 @@ export default class SpecializationController {
         ...req.auditLog!,
         userId: req.user?._id,
         action: auditLogAction.UPDATED,
-        details: "Updated an specialization",
+        details: "Updated a specialization",
         entity: schemaName.SPECIALIZATION,
       }),
       {
@@ -187,10 +188,11 @@ export default class SpecializationController {
     });
   };
 
-  deleteSpecialization: IControllerFunction = async (req, res) => {
-    const { id, error: idError } = convertToObjectId(req.params.id);
+  deleteSpecializationById: IControllerFunction = async (req, res) => {
+    const { specializationId } = req.params;
+    const { id } = convertToObjectId(specializationId);
 
-    if (idError || !id) {
+    if (!id) {
       return CustomResponse.sendHandledError(res, {
         ...customErrors.badRequest,
         description: "Invalid specialization ID",
@@ -198,7 +200,7 @@ export default class SpecializationController {
     }
 
     const { result, error } = await x8tAsync(
-      this.specializationService.deleteSpecialization(id)
+      this.specializationService.deleteSpecializationById(id)
     );
 
     if (error || !result) return CustomResponse.sendHandledError(res, error);
@@ -208,7 +210,7 @@ export default class SpecializationController {
         ...req.auditLog!,
         userId: req.user?._id,
         action: auditLogAction.DELETED,
-        details: "Deleted an specialization",
+        details: "Deleted a specialization",
         entity: schemaName.SPECIALIZATION,
       }),
       {

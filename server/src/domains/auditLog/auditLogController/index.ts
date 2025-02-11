@@ -62,6 +62,7 @@ export default class AuditLogController {
       data: result,
     });
   };
+
   downloadAuditLogs: IControllerFunction = async (req, res) => {
     const auditLogs = await x8tAsync(this.auditLogService.getAuditLogs(), {
       log: true,

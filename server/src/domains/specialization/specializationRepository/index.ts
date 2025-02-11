@@ -118,18 +118,13 @@ export default class SpecializationRepository {
     );
   };
 
-  deleteSpecialization = (id: ISpecialization["_id"]) => {
-    return this.specializationModel.updateOne(
-      { _id: id },
-      {
-        $set: {
-          deletedAt: new Date(),
-        },
-      }
-    );
+  delateHardSpecializationById = (id: ISpecialization["_id"]) => {
+    return this.specializationModel.findByIdAndDelete(id);
   };
 
-  delateHardSpecialization = (id: ISpecialization["_id"]) => {
-    return this.specializationModel.deleteOne({ _id: id });
+  isCourseIdsExists = async (courseIds: ISpecialization["courseId"][]) => {
+    return await this.specializationModel.exists({
+      courseId: { $in: courseIds },
+    });
   };
 }

@@ -1,11 +1,15 @@
+import CustomError from "../../../utils/CustomError";
+import AcadProfileRepository from "../../acadProfile/acadProfileRepository";
 import { YearLevel } from "../yearLevelModel";
-import yearLevelRepository from "../yearLevelRepository";
+import YearLevelRepository from "../yearLevelRepository";
 
 export default class YearLevelService {
-  private yearLevelRepository: yearLevelRepository;
+  private yearLevelRepository: YearLevelRepository;
+  private acadProfileRepository: AcadProfileRepository;
 
   constructor() {
-    this.yearLevelRepository = new yearLevelRepository();
+    this.yearLevelRepository = new YearLevelRepository();
+    this.acadProfileRepository = new AcadProfileRepository();
   }
 
   createYearLevel = (
@@ -27,5 +31,20 @@ export default class YearLevelService {
     params: Pick<YearLevel, "name" | "description" | "updaterId">
   ) => {
     return this.yearLevelRepository.updateYearLevel(id, params);
+  };
+
+  deleteYearLevelById = async (id: YearLevel["_id"]) => {
+    const hasStudents = await this.acadProfileRepository.isYearLevelIdsExists([
+      id,
+    ]);
+
+    if (hasStudents) {
+      return CustomError.forbidden({
+        description:
+          "Year level has students, assign them to another year level first",
+      });
+    }
+
+    return this.yearLevelRepository.deleteYearLevelById(id);
   };
 }

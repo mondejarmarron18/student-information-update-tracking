@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/popover";
 import { ReactNode } from "react";
 import LogoutDialog from "../LogoutDialog";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import ChangePasswordDialog from "../ChangePasswordDialog";
 import { useNavigate } from "react-router";
 import { routePaths } from "@/routes";
@@ -54,13 +54,13 @@ const UserAccountMenu = (props: Props) => {
           }
         />
 
-        <Button
+        {/* <Button
           variant="ghost"
           size="sm"
           className="flex items-center justify-start"
         >
           Activity Logs <Badge variant="outline">Coming soon</Badge>
-        </Button>
+        </Button> */}
 
         {/* Logout */}
         <LogoutDialog

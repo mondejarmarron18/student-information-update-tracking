@@ -39,11 +39,18 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
   const totalPages = Math.ceil(auditLogs.length / pageSize);
 
   // Filter and paginate data based on search query and current page
-  const filteredLogs = auditLogs?.filter(
-    (log) =>
-      log.userId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.action.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredLogs = auditLogs?.filter((log) => {
+    const fieldsToSearch = [
+      log.action,
+      log.entity,
+      log.userEmail,
+      log.ipAddress,
+      log.details,
+    ];
+    return fieldsToSearch.some((field) =>
+      field.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
 
   const currentLogs = filteredLogs.slice(
     (currentPage - 1) * pageSize,
@@ -55,10 +62,10 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
   };
 
   return (
-    <div className="flex flex-col gap-8 mt-4">
+    <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between gap-4">
         <Input
-          placeholder="Search by action or user..."
+          placeholder="Search by action, target entity, user email, IP address, or details..."
           value={searchQuery}
           onChange={handlerSeacrhQuery}
           className="w-1/3 mr-4"
@@ -128,7 +135,7 @@ const AuditLogTable = ({ onExport, isExporting }: Props) => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="h-24 text-center text-gray-500"
                 >
                   No audit logs found.

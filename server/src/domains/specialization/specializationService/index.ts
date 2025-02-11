@@ -4,14 +4,17 @@ import CourseService from "../../course/courseService";
 import { ISpecialization } from "../specializationModel";
 import SpecializationRepository from "../specializationRepository";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import AcadProfileRepository from "../../acadProfile/acadProfileRepository";
 
 export default class SpecializationService {
   private specializationRepository: SpecializationRepository;
   private courseService: CourseService;
+  private acadProfileRepository: AcadProfileRepository;
 
   constructor() {
     this.specializationRepository = new SpecializationRepository();
     this.courseService = new CourseService();
+    this.acadProfileRepository = new AcadProfileRepository();
   }
 
   createSpecialization = async (
@@ -98,11 +101,20 @@ export default class SpecializationService {
     return specialization;
   };
 
-  deleteSpecialization = (id: ISpecialization["_id"]) => {
-    return this.specializationRepository.deleteSpecialization(id);
+  deleteSpecializationById = async (id: ISpecialization["_id"]) => {
+    const hasStudents =
+      await this.acadProfileRepository.isSpecializationIdsExists([id]);
+
+    if (hasStudents) {
+      return CustomError.badRequest({
+        description: "Specialization has students",
+      });
+    }
+
+    return this.specializationRepository.delateHardSpecializationById(id);
   };
 
-  deleteHardSpecialization = (id: ISpecialization["_id"]) => {
-    return this.specializationRepository.deleteSpecialization(id);
+  isCourseIdsExists = (courseIds: ISpecialization["courseId"][]) => {
+    return this.specializationRepository.isCourseIdsExists(courseIds);
   };
 }

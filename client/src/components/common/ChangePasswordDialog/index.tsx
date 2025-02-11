@@ -12,12 +12,13 @@ import { UpdatePasswordFormProps } from "@/components/forms/UpdatePasswordForm/s
 import useUpdatePassword from "@/hooks/useUpdatePassword";
 import _ from "lodash";
 import { toast } from "@/hooks/use-toast";
+import { toDateTimeString } from "@/utils/fomatter";
 
 type Props = {
   trigger: ReactNode;
 };
 
-const RejectUpdateRequestDialog = (props: Props) => {
+const ChangePasswordDialog = (props: Props) => {
   const { trigger } = props;
   const { mutate, isPending, isSuccess, error } = useUpdatePassword();
   const [isOpen, setIsOpen] = useState(false);
@@ -25,8 +26,8 @@ const RejectUpdateRequestDialog = (props: Props) => {
   useEffect(() => {
     if (isSuccess) {
       toast({
-        title: "Success",
-        description: "Your password has been updated successfully.",
+        title: "Password Updated",
+        description: toDateTimeString(new Date()),
       });
       setIsOpen(false);
     }
@@ -60,4 +61,4 @@ const RejectUpdateRequestDialog = (props: Props) => {
   );
 };
 
-export default RejectUpdateRequestDialog;
+export default ChangePasswordDialog;
