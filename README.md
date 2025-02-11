@@ -1,4 +1,4 @@
-# Student Personal Information Update Tracking System
+# Information Update Tracking System
 
 This system would allow the college administration to track and manage updates to student personal information in real-time. It ensures that the college always has accurate data and can track changes such as contact information, addresses, and emergency contacts. The system would also ensure students regularly update their details and notify the administration when these updates occur.
 
