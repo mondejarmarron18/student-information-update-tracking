@@ -1,7 +1,5 @@
-import { uniqueId } from "lodash";
 import { IControllerFunction } from "../../../types/controller";
 import CustomResponse from "../../../utils/CustomResponse";
-import { faker } from "@faker-js/faker";
 import { parse } from "json2csv";
 import { x8tAsync, x8tSync } from "x8t";
 import customErrors from "../../../constants/customErrors";
@@ -9,8 +7,8 @@ import AuditLogService from "../auditLogService";
 import { auditLogAction } from "../../../constants/auditLog";
 import { AuditLog } from "../auditLogModel";
 import { schemaName } from "../../../constants/schemaName";
-import { IUserProfile } from "../../userProfile/userProfileModel";
 import { convertToObjectId } from "../../../utils/mongooseUtil";
+import isRole from "../../../utils/isRole";
 
 export default class AuditLogController {
   private auditLogService: AuditLogService;
@@ -20,8 +18,13 @@ export default class AuditLogController {
   }
 
   getAuditLogs: IControllerFunction = async (req, res) => {
+    const userRoleName = req.user?.roleId.name;
+    const isAdmin = isRole(`${userRoleName}`).isAdmin().isSuperAdmin().apply();
+
+    const userId = isAdmin ? undefined : req.user?._id;
+
     const { result, error } = await x8tAsync(
-      this.auditLogService.getAuditLogs(),
+      this.auditLogService.getAuditLogs(userId),
       { log: true }
     );
 
@@ -40,6 +43,11 @@ export default class AuditLogController {
     const { auditLogId } = req.params;
     const { id } = convertToObjectId(auditLogId);
 
+    const userRoleName = req.user?.roleId.name;
+    const isAdmin = isRole(`${userRoleName}`).isAdmin().isSuperAdmin().apply();
+
+    const userId = isAdmin ? undefined : req.user?._id;
+
     if (!id) {
       return CustomResponse.sendHandledError(res, {
         ...customErrors.badRequest,
@@ -48,7 +56,7 @@ export default class AuditLogController {
     }
 
     const { result, error } = await x8tAsync(
-      this.auditLogService.getAuditLogById(id),
+      this.auditLogService.getAuditLogById(id, userId),
       { log: true }
     );
 
@@ -64,9 +72,17 @@ export default class AuditLogController {
   };
 
   downloadAuditLogs: IControllerFunction = async (req, res) => {
-    const auditLogs = await x8tAsync(this.auditLogService.getAuditLogs(), {
-      log: true,
-    });
+    const userRoleName = req.user?.roleId.name;
+    const isAdmin = isRole(`${userRoleName}`).isAdmin().isSuperAdmin().apply();
+
+    const userId = isAdmin ? undefined : req.user?._id;
+
+    const auditLogs = await x8tAsync(
+      this.auditLogService.getAuditLogs(userId),
+      {
+        log: true,
+      }
+    );
 
     if (auditLogs.error) {
       return CustomResponse.sendHandledError(res, auditLogs.error);

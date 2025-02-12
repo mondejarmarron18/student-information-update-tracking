@@ -13,6 +13,8 @@ import VerificationCodeService from "../../verificationCode/verificationCodeServ
 import CustomError from "../../../utils/CustomError";
 import { Request } from "express";
 import { passwordCompare } from "../../../utils/password";
+import { SendMailOptions } from "nodemailer";
+import { UserRoles } from "../../../constants/userRoles";
 
 export default class UserService {
   userRepository: UserRepository;
@@ -301,5 +303,54 @@ export default class UserService {
     );
 
     return user;
+  };
+
+  sendEmailToUserIds = async (
+    userIds: IUser["_id"][],
+    mailOptions: SendMailOptions
+  ) => {
+    const users = await x8tAsync(this.userRepository.getUsersByIds(userIds));
+
+    if (users.error || !users.result) {
+      return CustomError.internalServerError({
+        details: users.error || "Failed to get users",
+      });
+    }
+    const usersEmails = users.result.map((user) => user.email);
+
+    const { error: sendMailError } = await sendMail({
+      to: usersEmails,
+      ...mailOptions,
+    });
+
+    if (sendMailError) {
+      return CustomError.internalServerError({ details: sendMailError });
+    }
+  };
+
+  sentEmailToUserRoles = async (
+    roleNames: UserRoles[],
+    mailOptions: SendMailOptions
+  ) => {
+    const { result: users, error: usersError } = await x8tAsync(
+      this.userRepository.getUsersByRoleNames(roleNames)
+    );
+
+    if (usersError || !users) {
+      return CustomError.internalServerError({
+        details: usersError || "Failed to get users",
+      });
+    }
+
+    const usersEmails = users.map((user) => user.email);
+
+    const { error: sendMailError } = await sendMail({
+      to: usersEmails,
+      ...mailOptions,
+    });
+
+    if (sendMailError) {
+      return CustomError.internalServerError({ details: sendMailError });
+    }
   };
 }

@@ -2,8 +2,6 @@ import { Router } from "express";
 import UpdateRequestController from "../updateRequestController";
 import authMiddleware from "../../../middlewares/authMiddleware";
 import UpdateRequestMiddleware from "../updateRequestMiddleware";
-import isRole from "../../../utils/isRole";
-import authRole from "../../../middlewares/authRole";
 
 const updateRequestRoute = Router();
 const updateRequestController = new UpdateRequestController();
@@ -16,20 +14,12 @@ updateRequestRoute.get(
 );
 updateRequestRoute.get(
   "/passed-days",
-  [
-    authMiddleware,
-    authRole().isStaff().isAdmin().isSuperAdmin().apply,
-    updateRequestMiddleware.getUpdateRequestsPassedDays,
-  ],
+  [authMiddleware, updateRequestMiddleware.getUpdateRequestsPassedDays],
   updateRequestController.getUpdateRequestsPassedDays
 );
 updateRequestRoute.get(
   "/passed-months",
-  [
-    authMiddleware,
-    authRole().isStaff().isAdmin().isSuperAdmin().apply,
-    updateRequestMiddleware.getUpdateRequestsPassedMonths,
-  ],
+  [authMiddleware, updateRequestMiddleware.getUpdateRequestsPassedMonths],
   updateRequestController.getUpdateRequestsPassedMonths
 );
 

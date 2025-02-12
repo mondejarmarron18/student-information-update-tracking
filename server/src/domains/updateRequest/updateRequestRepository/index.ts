@@ -139,10 +139,12 @@ export default class updateRequestRepository {
     days: number,
     userId: IUpdateRequest["requesterId"]
   ) => {
+    const requesterId = userId ? new Types.ObjectId(userId) : undefined;
+
     const updateRequests = await this.updateRequestModel.aggregate([
       {
         $match: {
-          requesterId: userId,
+          requesterId,
         },
       },
       ...updateRequestsPassedDays(days),
@@ -161,8 +163,10 @@ export default class updateRequestRepository {
     months: number,
     userId: IUpdateRequest["requesterId"]
   ) => {
+    const requesterId = userId ? new Types.ObjectId(userId) : undefined;
+
     return this.updateRequestModel.aggregate([
-      { $match: { requesterId: userId } },
+      { $match: { requesterId } },
       ...updateRequestsPassedMonths(months),
     ]);
   };

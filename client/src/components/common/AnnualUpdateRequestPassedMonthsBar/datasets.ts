@@ -2,10 +2,10 @@ import { updateRequestStatusString } from "@/constants/updateRequest";
 
 const datasets = [
   {
-    label: updateRequestStatusString[1],
+    label: updateRequestStatusString[4],
     data: [0],
-    borderColor: "rgb(234, 179, 8)",
-    backgroundColor: "rgba(234, 179, 8, 0.6)",
+    borderColor: "rgb(100, 149, 237)",
+    backgroundColor: "rgba(100, 149, 237, 0.6)",
   },
   {
     label: updateRequestStatusString[2],

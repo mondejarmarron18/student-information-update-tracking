@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { schemaName } from "../../../constants/schemaName";
 import AuditLogModel, { AuditLog } from "../auditLogModel";
 import { userAccount } from "./auditLogPipelines";
@@ -9,8 +10,13 @@ export default class AuditLogRepository {
     this.auditLogModel = AuditLogModel;
   }
 
-  getAuditLogs = async () => {
+  getAuditLogs = async (userId?: AuditLog["userId"]) => {
     return this.auditLogModel.aggregate([
+      {
+        $match: {
+          ...(userId && { userId: new Types.ObjectId(userId) }),
+        },
+      },
       ...userAccount,
       {
         $addFields: {
@@ -30,11 +36,15 @@ export default class AuditLogRepository {
     ]);
   };
 
-  getAuditLogById = async (id: AuditLog["_id"]) => {
+  getAuditLogById = async (
+    id: AuditLog["_id"],
+    userId?: AuditLog["userId"]
+  ) => {
     const auditLogs = await this.auditLogModel.aggregate([
       {
         $match: {
           _id: id,
+          ...(userId && { userId: new Types.ObjectId(userId) }),
         },
       },
       ...userAccount,

@@ -18,6 +18,7 @@ import { useEffect, useMemo } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import _ from "lodash";
 import useAddressValues from "./useAddressValues";
+import AnimatedSpinner from "@/components/common/AnimatedSpinner";
 
 type AddressKey = keyof Omit<AddressFormProps, "isAddressSame">;
 
@@ -26,7 +27,7 @@ const RegisterForm = (
 ) => {
   const { form } = useAddressForm();
   const isAddressSame = form.watch("isAddressSame");
-  
+
   useAddressValues({
     values: props.values,
     form,
@@ -144,8 +145,16 @@ const RegisterForm = (
             </Button>
           )}
 
-          <Button type="submit" className="flex-1">
-            {props.onSubmitLabel || "Submit"}
+          <Button
+            disabled={props.onSubmitLoading}
+            type="submit"
+            className="flex-1"
+          >
+            {props.onSubmitLoading ? (
+              <AnimatedSpinner />
+            ) : (
+              props.onSubmitLabel || "Submit"
+            )}
           </Button>
         </div>
       </form>

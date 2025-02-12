@@ -84,7 +84,7 @@ const AcademicProfileDialog = (props: Props) => {
               setAcademicProfile(val as IAcademicProfile);
               setFormIndex((prev) => prev + 1);
             }}
-            onSubmitLabel="Next"
+            onSubmitLabel="Proceed to Student Guardian"
             className={cn({
               hidden: formIndex !== 0,
             })}
@@ -98,8 +98,10 @@ const AcademicProfileDialog = (props: Props) => {
               } as IAcademicProfile);
             }}
             onCancel={() => setFormIndex((prev) => prev - 1)}
-            onSubmitLoading={registerAcademicProfile.isPending}
-            onSubmitLabel={isSuccess ? "Submit" : "Save"}
+            onSubmitLoading={
+              registerAcademicProfile.isPending || createUpdateRequest.isPending
+            }
+            onSubmitLabel={isSuccess ? "Submit for Approval" : "Save Changes"}
             className={cn({
               hidden: formIndex !== 1,
             })}

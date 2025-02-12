@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { toDateString } from "./fomatter";
 import { isArray, isDate, isObject } from "./validator";
 
@@ -41,7 +42,7 @@ const getContentChanges = (
     }
   });
 
-  return changes;
+  return _.omit(changes, "contactMethods");
 };
 
 export default getContentChanges;

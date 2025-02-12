@@ -58,7 +58,7 @@ const AnnualUpdateRequestsPassedMonthsBar = ({ months }: Props) => {
             <AnimatedSpinner />
           </div>
         ) : updateRequestsData?.length === 0 ? (
-          <div className="text-center flex justify-center items-center h-full text-gray-500">
+          <div className="text-center flex justify-center text-sm items-center h-full text-gray-500">
             No update requests found
           </div>
         ) : (
@@ -71,6 +71,11 @@ const AnnualUpdateRequestsPassedMonthsBar = ({ months }: Props) => {
                   beginAtZero: true,
                   ticks: {
                     stepSize: 1,
+                  },
+                },
+                x: {
+                  grid: {
+                    display: false,
                   },
                 },
               },

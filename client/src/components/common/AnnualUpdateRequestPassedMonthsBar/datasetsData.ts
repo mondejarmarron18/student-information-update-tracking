@@ -16,13 +16,11 @@ const datasetsData = (
     const monthIndex = monthRange.findIndex((month) => month === date);
 
     updateRequest.reviews.forEach((review) => {
-      const statusIndex = newDatasets.findIndex(
-        ({ label }) =>
-          label ===
-          updateRequestStatusString[
-            review.status as keyof typeof updateRequestStatusString
-          ]
-      );
+      const statusIndex = newDatasets.findIndex(({ label }) => {
+        const reviewStatus = review.status === 1 ? 4 : review.status;
+
+        return label === updateRequestStatusString[reviewStatus];
+      });
 
       newDatasets[statusIndex].data[monthIndex] = review.count;
     });

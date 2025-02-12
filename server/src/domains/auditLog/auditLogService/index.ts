@@ -11,12 +11,12 @@ export default class AuditLogService {
     this.auditLogRepository = new AuditLogRepository();
   }
 
-  getAuditLogs() {
-    return this.auditLogRepository.getAuditLogs();
+  getAuditLogs(userId?: AuditLog["userId"]) {
+    return this.auditLogRepository.getAuditLogs(userId);
   }
 
-  getAuditLogById(auditLogId: AuditLog["_id"]) {
-    return this.auditLogRepository.getAuditLogById(auditLogId);
+  getAuditLogById(auditLogId: AuditLog["_id"], userId?: AuditLog["userId"]) {
+    return this.auditLogRepository.getAuditLogById(auditLogId, userId);
   }
 
   createAuditLog(params: Omit<AuditLog, "_id" | "timestamp">) {

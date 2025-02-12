@@ -48,7 +48,9 @@ const StudentGuardianForm = (props: FormProps<StudentGuardianFormProps>) => {
             name={formField.name}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{formField.label}</FormLabel>
+                <FormLabel>
+                  {formField.label} <i>{formField.optional && "(Optional)"}</i>
+                </FormLabel>
 
                 {formField.type !== "select" ? (
                   <FormControl>

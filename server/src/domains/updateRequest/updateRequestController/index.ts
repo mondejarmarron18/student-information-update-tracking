@@ -12,14 +12,18 @@ import { auditLogAction } from "../../../constants/auditLog";
 import { schemaName } from "../../../constants/schemaName";
 import { sendMail } from "../../../utils/email";
 import isRole from "../../../utils/isRole";
+import UserService from "../../user/userService";
+import CustomError from "../../../utils/CustomError";
 
 export default class UpdateRequestController {
   private updateRequestService: UpdateRequestService;
   private auditLogService: AuditLogService;
+  private userService: UserService;
 
   constructor() {
     this.updateRequestService = new UpdateRequestService();
     this.auditLogService = new AuditLogService();
+    this.userService = new UserService();
   }
 
   createUpdateRequest: IControllerFunction = async (req, res) => {
@@ -48,6 +52,19 @@ export default class UpdateRequestController {
         details: "Requested an update",
         entity: schemaName.UPDATE_REQUEST,
       }),
+      {
+        log: true,
+      }
+    );
+
+    await x8tAsync(
+      this.userService.sentEmailToUserRoles(
+        [userRoles.STAFF, userRoles.ADMIN],
+        {
+          subject: "Update Request",
+          text: "A new update request has been submitted by a student and requires your review. Please log in to your account to review the details and take the necessary action. \n\nIf you have any questions or need further assistance, feel free to reach out to the support team.",
+        }
+      ),
       {
         log: true,
       }
@@ -147,8 +164,14 @@ export default class UpdateRequestController {
       })
     );
 
-    if (updateRequest.error) {
-      return CustomResponse.sendHandledError(res, updateRequest.error);
+    if (updateRequest.error || !updateRequest.result) {
+      return CustomResponse.sendHandledError(
+        res,
+        updateRequest.error ||
+          CustomError.notFound({
+            description: "Update request not found",
+          })
+      );
     }
 
     await x8tAsync(
@@ -164,11 +187,15 @@ export default class UpdateRequestController {
       }
     );
 
-    await sendMail({
-      to: req.user?.email,
-      subject: "Update Request Status - Approved",
-      text: "We're pleased to inform you that your update request has been approved. Please log in to your account to review the changes. If you have any questions, feel free to contact our support team.",
-    });
+    await x8tAsync(
+      this.userService.sendEmailToUserIds([updateRequest.result.requesterId], {
+        subject: "Update Request Status - Approved",
+        text: "We're pleased to inform you that your update request has been approved. Please log in to your account to review the changes. If you have any questions, feel free to contact our support team.",
+      }),
+      {
+        log: true,
+      }
+    );
 
     return CustomResponse.sendSuccess(res, {
       status: 200,
@@ -261,10 +288,8 @@ export default class UpdateRequestController {
   getUpdateRequestsPassedMonths: IControllerFunction = async (req, res) => {
     const months = toInteger(req.query.months) || 12;
     const roleName = req.user?.roleId.name;
-
-    const userId = isRole(`${roleName}`).isStudent().apply()
-      ? req.user?._id
-      : undefined;
+    const isStudent = isRole(`${roleName}`).isStudent().apply();
+    const userId = isStudent ? req.user?._id : undefined;
 
     const { result, error } = await x8tAsync(
       this.updateRequestService.getUpdateRequestsPassedMonths(months, userId),

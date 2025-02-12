@@ -8,23 +8,15 @@ const auditLogRoute = Router();
 const auditLogController = new AuditLogController();
 const auditLogMiddleware = new AuditLogMiddleware();
 
-auditLogRoute.get(
-  "/",
-  [authMiddleware, authRole().isSuperAdmin().isAdmin().apply],
-  auditLogController.getAuditLogs
-);
+auditLogRoute.get("/", [authMiddleware], auditLogController.getAuditLogs);
 auditLogRoute.get(
   "/download",
-  [authMiddleware, authRole().isSuperAdmin().isAdmin().apply],
+  [authMiddleware],
   auditLogController.downloadAuditLogs
 );
 auditLogRoute.get(
   "/:auditLogId",
-  [
-    authMiddleware,
-    auditLogMiddleware.getAuditLogById,
-    authRole().isSuperAdmin().isAdmin().apply,
-  ],
+  [authMiddleware, auditLogMiddleware.getAuditLogById],
   auditLogController.getAuditLogById
 );
 

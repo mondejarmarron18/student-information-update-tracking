@@ -116,4 +116,33 @@ export default class UserRepository {
       }
     );
   };
+
+  getUsersByIds = (ids: IUser["_id"][]) => {
+    return this.userModel.find({ _id: { $in: ids } });
+  };
+
+  getUsersByRoleIds = (roleId: IUser["roleId"][]) => {
+    return this.userModel.find({ roleId: { $in: roleId } });
+  };
+
+  getUsersByRoleNames = (roleNames: string[]) => {
+    return this.userModel.aggregate([
+      {
+        $lookup: {
+          from: schemaName.ROLE,
+          localField: "roleId",
+          foreignField: "_id",
+          as: "role",
+        },
+      },
+      {
+        $unwind: "$role",
+      },
+      {
+        $match: {
+          "role.name": { $in: roleNames },
+        },
+      },
+    ]);
+  };
 }
