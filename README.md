@@ -11,7 +11,7 @@ This system would allow the college administration to track and manage updates t
 3. Data Change Notifications – Automated email or SMS alerts to college staff when critical changes (e.g., new address) are made.
 4. Periodic Update Reminders – Automatically send reminders to students to review and update their personal information at regular intervals (e.g., every semester).
 5. Audit Logs – Maintain a history of all changes made to student records, with details on what was changed and when.
-6. Reporting and Analytics – Generate reports on the frequency of updates and highlight students who have not updated their information over a certain period.
+6. Reporting and Analytics – Display update requests analytics on dashboard.
 7. Data Validation – Allow the administration to review and approve certain updates, ensuring that only valid information is accepted.
 8. Security and Privacy – Use secure protocols to protect sensitive student data, with role-based access control for administrative users.
 
