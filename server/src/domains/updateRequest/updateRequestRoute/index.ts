@@ -2,6 +2,7 @@ import { Router } from "express";
 import UpdateRequestController from "../updateRequestController";
 import authMiddleware from "../../../middlewares/authMiddleware";
 import UpdateRequestMiddleware from "../updateRequestMiddleware";
+import authIpAddress from "../../../middlewares/authIpAddress";
 
 const updateRequestRoute = Router();
 const updateRequestController = new UpdateRequestController();
@@ -34,6 +35,11 @@ updateRequestRoute.post(
   updateRequestController.createUpdateRequest
 );
 updateRequestRoute.post(
+  "/notify-stale-requests",
+  [updateRequestMiddleware.notifyStaleUpdateRequests, authIpAddress],
+  updateRequestController.notifyStaleUpdateRequests
+);
+updateRequestRoute.post(
   "/:id/approve",
   [authMiddleware],
   updateRequestController.approveUpdateRequest
@@ -42,10 +48,6 @@ updateRequestRoute.post(
   "/:id/reject",
   [authMiddleware],
   updateRequestController.rejectUpdateRequest
-);
-updateRequestRoute.post(
-  "/notify-stale-requests",
-  updateRequestController.notifyStaleUpdateRequests
 );
 
 export default updateRequestRoute;

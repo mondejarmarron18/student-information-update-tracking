@@ -5,10 +5,12 @@ import {
   replaceContentIdsWithData,
   requesterAccount,
   requesterProfile,
+  reviewerAccount,
   reviewerProfile,
   updateRequestsPassedDays,
   updateRequestsPassedMonths,
 } from "./updateRequestPipelines";
+import { subDays } from "date-fns";
 
 export default class updateRequestRepository {
   private updateRequestModel: typeof UpdateRequestModel;
@@ -69,14 +71,57 @@ export default class updateRequestRepository {
     return this.updateRequestModel.find({ reviewerId });
   };
 
-  getUpdateRequests = (pipelineStage?: PipelineStage[]) => {
-    const pipeline = pipelineStage || [];
-
+  getUpdateRequests = () => {
     return this.updateRequestModel.aggregate([
       ...requesterAccount,
       ...requesterProfile,
       ...reviewerProfile,
-      ...pipeline,
+      {
+        $sort: {
+          reviewdAt: -1,
+          requestedAt: 1,
+        },
+      },
+    ]);
+  };
+
+  getRequesterStaleUpdateRequests = (staleSince: Date) => {
+    return this.updateRequestModel.aggregate([
+      ...requesterAccount,
+      {
+        $match: {
+          requestedAt: {
+            $lte: staleSince,
+          },
+          requesterAccount: {
+            $ne: null,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$requesterId",
+          requests: { $push: "$$ROOT" },
+        },
+      },
+      {
+        $match: {
+          "requests.reviewStatus": {
+            $ne: updateRequestStatus.pending,
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          request: {
+            $arrayElemAt: ["$requests", 0],
+          },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$request" },
+      },
       {
         $sort: {
           requestedAt: -1,

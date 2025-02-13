@@ -2,10 +2,12 @@ import {
   validateCreateUpdateRequest,
   validateGetUpdateRequestsPassedDays,
   validateGetUpdateRequestsPassedMonths,
+  validateNotifyStaleUpdateRequests,
 } from "./validationSchema";
 import { IMiddleware } from "../../../types/middleware";
 import CustomResponse from "../../../utils/CustomResponse";
 import customErrors from "../../../constants/customErrors";
+import { z } from "zod";
 
 export default class UpdateRequestMiddleware {
   createUpdateRequest: IMiddleware = (req, res, next) => {
@@ -35,7 +37,7 @@ export default class UpdateRequestMiddleware {
   };
 
   getUpdateRequestsPassedMonths: IMiddleware = (req, res, next) => {
-    const { error } = validateGetUpdateRequestsPassedMonths.safeParse(
+    const { error, data } = validateGetUpdateRequestsPassedMonths.safeParse(
       req.query
     );
 
@@ -45,6 +47,25 @@ export default class UpdateRequestMiddleware {
         details: error.errors,
       });
     }
+
+    req.query = data as any;
+
+    next();
+  };
+
+  notifyStaleUpdateRequests: IMiddleware = (req, res, next) => {
+    const { error, data } = validateNotifyStaleUpdateRequests.safeParse(
+      req.body
+    );
+
+    if (error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
+    }
+
+    req.body = data;
 
     next();
   };

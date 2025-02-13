@@ -14,6 +14,7 @@ import { sendMail } from "../../../utils/email";
 import isRole from "../../../utils/isRole";
 import UserService from "../../user/userService";
 import CustomError from "../../../utils/CustomError";
+import config from "../../../utils/config";
 
 export default class UpdateRequestController {
   private updateRequestService: UpdateRequestService;
@@ -62,7 +63,7 @@ export default class UpdateRequestController {
         [userRoles.STAFF, userRoles.ADMIN],
         {
           subject: "Update Request",
-          text: "A new update request has been submitted by a student and requires your review. Please log in to your account to review the details and take the necessary action. \n\nIf you have any questions or need further assistance, feel free to reach out to the support team.",
+          text: `Hi there, A new update request has been submitted by a student and requires your review. Please log in to your account to review the details and take the necessary action. \n\nIf you have any questions or need further assistance, feel free to reach out to the support team.\n\nCheers,\n${config.appName}`,
         }
       ),
       {
@@ -190,7 +191,7 @@ export default class UpdateRequestController {
     await x8tAsync(
       this.userService.sendEmailToUserIds([updateRequest.result.requesterId], {
         subject: "Update Request Status - Approved",
-        text: "We're pleased to inform you that your update request has been approved. Please log in to your account to review the changes. If you have any questions, feel free to contact our support team.",
+        text: `Hi there,\n\nWe're pleased to inform you that your update request has been approved. Please log in to your account to review the changes. If you have any questions, feel free to contact our support team.\n\nCheers,\n${config.appName}`,
       }),
       {
         log: true,
@@ -249,7 +250,7 @@ export default class UpdateRequestController {
     await sendMail({
       to: req.user?.email,
       subject: "Update Request Status - Rejected",
-      text: "We regret to inform you that your update request has been rejected. Please log in to your account to review the details and take any necessary actions. If you have any questions, feel free to contact our support team.",
+      text: `Hi there,\n\nWe regret to inform you that your update request has been rejected. Please log in to your account to review the details and take any necessary actions. If you have any questions, feel free to contact our support team.\n\nCheers,\n${config.appName}`,
     });
 
     return CustomResponse.sendSuccess(res, {
@@ -310,27 +311,46 @@ export default class UpdateRequestController {
   };
 
   notifyStaleUpdateRequests: IControllerFunction = async (req, res) => {
-    const days = req.query.days || 30;
-
-    if (!days || !toInteger(days)) {
-      return CustomResponse.sendError(res, {
-        ...customErrors.badRequest,
-        description: "Days not provided",
-      });
-    }
+    const staleSince = req.body.staleSince;
 
     const { result, error } = await x8tAsync(
-      this.updateRequestService.notifyStaleUpdateRequests(+days)
+      this.updateRequestService.getRequesterStaleUpdateRequests(staleSince)
     );
 
     if (error) {
       return CustomResponse.sendHandledError(res, error);
     }
 
+    const emails = result?.map(({ requesterAccount }) => {
+      const email = requesterAccount?.email;
+
+      if (email) return email;
+    });
+
+    if (!emails?.length) {
+      return CustomResponse.sendSuccess(res, {
+        status: 200,
+        message: "No stale update requests found",
+        data: emails,
+      });
+    }
+
+    const { error: sendMailError } = await x8tAsync(
+      sendMail({
+        to: emails,
+        subject: "It’s Been a While – Time to Review Your Profile",
+        text: `Hi there,\n\nWe noticed that it’s been a while since you last updated your profile. Keeping your information up to date ensures you don’t miss any important updates or opportunities.\n\nTake a moment to review your details and make any necessary changes if needed.\n\nCheers,\n${config.appName}`,
+      })
+    );
+
+    if (sendMailError) {
+      return CustomResponse.sendHandledError(res, sendMailError);
+    }
+
     CustomResponse.sendSuccess(res, {
       status: 200,
-      message: "Stale Update Requests Notified",
-      data: result,
+      message: "Requesters with stale update requests notified",
+      data: emails,
     });
   };
 }

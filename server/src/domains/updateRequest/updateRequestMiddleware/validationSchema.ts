@@ -40,3 +40,7 @@ export const validateGetUpdateRequestsPassedDays = z.object({
 export const validateGetUpdateRequestsPassedMonths = z.object({
   months: z.coerce.number().nonnegative(),
 });
+
+export const validateNotifyStaleUpdateRequests = z.object({
+  staleSince: z.coerce.date(),
+});
