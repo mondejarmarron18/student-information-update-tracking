@@ -1,1 +1,5 @@
-* * * * * curl http://spius_api:5000/crontab
+#Don't forget to add the server IP address to env to be able for the endpoint to work
+#RUN notification every 2 AM exactly at 0 minute
+#state date will be every 60 days ago
+
+0 2 * * * curl -X POST -H "Content-Type: application/json" -d "{\"staleSince\":\"$(date -d '60 days ago' --iso-8601=seconds)\"}" http://localhost:5000/update-requests/notify-stale-requests
