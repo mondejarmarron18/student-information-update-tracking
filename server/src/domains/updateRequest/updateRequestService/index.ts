@@ -12,6 +12,7 @@ import UserProfileService from "../../userProfile/userProfileService";
 import { IUserProfile } from "../../userProfile/userProfileModel";
 import { IAcadProfile } from "../../acadProfile/acadProfileModel";
 import { sendMail } from "../../../utils/email";
+import { subDays } from "date-fns";
 
 export default class UpdateRequestService {
   private updateRequestRepository: updateRequestRepository;
@@ -295,5 +296,44 @@ export default class UpdateRequestService {
     }
 
     return updateRequests.result;
+  };
+
+  notifyStaleUpdateRequests = async (days: number) => {
+    const date = subDays(new Date(), days);
+
+    const { error: updateRequestsError, result: updateRequests } =
+      await x8tAsync(
+        this.updateRequestRepository.getUpdateRequests([
+          {
+            $match: {
+              requesterAccount: { $ne: null },
+            },
+          },
+          {
+            $group: {
+              _id: "$requesterAccount.email",
+              doc: { $first: "$$ROOT" },
+            },
+          },
+          {
+            $replaceRoot: { newRoot: "$doc" },
+          },
+        ])
+      );
+
+    if (updateRequestsError || !updateRequests?.length) {
+      CustomError.badRequest({
+        description: "Failed to get update requests",
+        details: updateRequestsError,
+      });
+    }
+
+    const emails = updateRequests?.map(({ requesterAccount }) => {
+      const email = requesterAccount?.email;
+
+      if (email) return email;
+    });
+
+    return emails;
   };
 }

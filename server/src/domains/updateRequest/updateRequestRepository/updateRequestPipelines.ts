@@ -1,6 +1,50 @@
 import { PipelineStage } from "mongoose";
 import { schemaName } from "../../../constants/schemaName";
 
+export const requesterAccount: PipelineStage[] = [
+  {
+    $lookup: {
+      from: "user",
+      localField: "requesterId",
+      foreignField: "_id",
+      as: "requesterAccount",
+    },
+  },
+  {
+    $unwind: {
+      path: "$requesterAccount",
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $project: {
+      "requesterAccount.password": 0,
+    },
+  },
+];
+
+export const reviewerAccount: PipelineStage[] = [
+  {
+    $lookup: {
+      from: schemaName.USER,
+      localField: "reviewerId",
+      foreignField: "_id",
+      as: "reviewerAccount",
+    },
+  },
+  {
+    $unwind: {
+      path: "$reviewerAccount",
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+  {
+    $project: {
+      "reviewerAccount.password": 0,
+    },
+  },
+];
+
 export const requesterProfile: PipelineStage[] = [
   {
     $lookup: {

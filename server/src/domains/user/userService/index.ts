@@ -118,8 +118,45 @@ export default class UserService {
     return this.userRepository.getUserById(id);
   };
 
-  getUsers = () => {
-    return this.userRepository.getUsers();
+  getUsers = (
+    filter?: Partial<{
+      q: string;
+      updatedAt: [IUser["updatedAt"], IUser["updatedAt"]];
+      createdAt: [IUser["createdAt"], IUser["createdAt"]];
+    }>
+  ) => {
+    const { updatedAt, createdAt, q } = filter || {};
+
+    const userFilter: Record<string, any> = {};
+
+    if (q) {
+      userFilter.$or = [
+        { email: { $regex: q, $options: "i" } },
+        { firstName: { $regex: q, $options: "i" } },
+        { middleName: { $regex: q, $options: "i" } },
+        { lastName: { $regex: q, $options: "i" } },
+        { nameExtension: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    if (updatedAt)
+      userFilter.updatedAt = {
+        $gte: new Date(updatedAt[0]),
+        $lte: new Date(updatedAt[1]),
+      };
+
+    if (createdAt)
+      userFilter.createdAt = {
+        $gte: new Date(createdAt[0]),
+        $lte: new Date(createdAt[1]),
+      };
+
+    console.log(filter);
+
+    return this.userRepository.getUsers({
+      deletedAt: null,
+      ...userFilter,
+    });
   };
 
   isUserExists = (email: IUser["email"]) => {

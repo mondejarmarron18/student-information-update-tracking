@@ -13,6 +13,7 @@ const config = {
   dbUrl: _("DB_URL"),
   clientUrl: _("CLIENT_URL"),
   recaptchaSecretKey: _("RECAPTCHA_SECRET_KEY"),
+  accessIps: _("ACCESS_IPS")?.split(",") || [],
   smtp: {
     host: _("SMTP_HOST"),
     port: Number(_("SMTP_PORT")) || 587,

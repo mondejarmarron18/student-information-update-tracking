@@ -308,4 +308,29 @@ export default class UpdateRequestController {
       data: result,
     });
   };
+
+  notifyStaleUpdateRequests: IControllerFunction = async (req, res) => {
+    const days = req.query.days || 30;
+
+    if (!days || !toInteger(days)) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        description: "Days not provided",
+      });
+    }
+
+    const { result, error } = await x8tAsync(
+      this.updateRequestService.notifyStaleUpdateRequests(+days)
+    );
+
+    if (error) {
+      return CustomResponse.sendHandledError(res, error);
+    }
+
+    CustomResponse.sendSuccess(res, {
+      status: 200,
+      message: "Stale Update Requests Notified",
+      data: result,
+    });
+  };
 }

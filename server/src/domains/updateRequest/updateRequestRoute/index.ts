@@ -43,5 +43,9 @@ updateRequestRoute.post(
   [authMiddleware],
   updateRequestController.rejectUpdateRequest
 );
+updateRequestRoute.post(
+  "/notify-stale-requests",
+  updateRequestController.notifyStaleUpdateRequests
+);
 
 export default updateRequestRoute;

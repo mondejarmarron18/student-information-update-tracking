@@ -1,9 +1,10 @@
-import { Router } from "express";
+import { Response, Router } from "express";
 import UserController from "../userController";
 import UserMiddleware from "../userMiddleware";
 import authMiddleware from "../../../middlewares/authMiddleware";
 import authReCaptcha from "../../../middlewares/authCaptcha";
 import authRole from "../../../middlewares/authRole";
+import authIpAddress from "../../../middlewares/authIpAddress";
 
 const userRoute = Router();
 const userController = new UserController();
@@ -12,7 +13,11 @@ const userMiddleware = new UserMiddleware();
 //Get all users
 userRoute.get(
   "/",
-  [authMiddleware, authRole().isAdmin().isStaff().apply],
+  [
+    authMiddleware,
+    authRole().isAdmin().isStaff().apply,
+    userMiddleware.getUsers,
+  ],
   userController.getUsers
 );
 userRoute.get(

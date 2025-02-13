@@ -1,8 +1,9 @@
-import { Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
 import { updateRequestStatus } from "../../../constants/updateRequest";
 import UpdateRequestModel, { IUpdateRequest } from "../updateRequestModel";
 import {
   replaceContentIdsWithData,
+  requesterAccount,
   requesterProfile,
   reviewerProfile,
   updateRequestsPassedDays,
@@ -68,10 +69,14 @@ export default class updateRequestRepository {
     return this.updateRequestModel.find({ reviewerId });
   };
 
-  getUpdateRequests = () => {
+  getUpdateRequests = (pipelineStage?: PipelineStage[]) => {
+    const pipeline = pipelineStage || [];
+
     return this.updateRequestModel.aggregate([
+      ...requesterAccount,
       ...requesterProfile,
       ...reviewerProfile,
+      ...pipeline,
       {
         $sort: {
           requestedAt: -1,

@@ -1,3 +1,4 @@
+import { PipelineStage } from "mongoose";
 import { schemaName } from "../../../constants/schemaName";
 import { passwordEncrypt } from "../../../utils/password";
 import userModel, { IUser } from "../userModel";
@@ -21,8 +22,11 @@ export default class UserRepository {
     return this.userModel.findById(id).populate("roleId").lean();
   };
 
-  getUsers = () => {
+  getUsers = (filter?: PipelineStage.Match["$match"]) => {
     return this.userModel.aggregate([
+      {
+        $match: { ...filter },
+      },
       {
         $lookup: {
           from: schemaName.ROLE,

@@ -113,4 +113,25 @@ export default class UserMiddleware {
 
     next();
   };
+
+  getUsers: IMiddleware = (req, res, next) => {
+    const validateQueryParams = z
+      .object({
+        q: z.string().optional(),
+        updatedAt: z.array(z.coerce.date()).length(2).optional(),
+        createdAt: z.array(z.coerce.date()).length(2).optional(),
+      })
+      .strict();
+
+    const { error } = validateQueryParams.safeParse(req.query);
+
+    if (error) {
+      return CustomResponse.sendError(res, {
+        ...customErrors.badRequest,
+        details: error.errors,
+      });
+    }
+
+    next();
+  };
 }

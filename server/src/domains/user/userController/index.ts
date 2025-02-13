@@ -15,6 +15,7 @@ import _ from "lodash";
 import AuditLogService from "../../auditLog/auditLogService";
 import { auditLogAction } from "../../../constants/auditLog";
 import { schemaName } from "../../../constants/schemaName";
+import { subDays, subMonths } from "date-fns";
 
 export default class UserController {
   private userService: UserService;
@@ -79,7 +80,9 @@ export default class UserController {
   };
 
   getUsers = async (req: Request, res: Response) => {
-    const { result, error } = await x8tAsync(this.userService.getUsers());
+    const { result, error } = await x8tAsync(
+      this.userService.getUsers(req.query)
+    );
 
     if (error) return CustomResponse.sendHandledError(res, error);
 
@@ -348,5 +351,18 @@ export default class UserController {
     );
 
     CustomResponse.sendSuccess(res);
+  };
+
+  sendNotification = async (req: Request, res: Response) => {
+    console.log(subMonths(new Date(), 1));
+
+    this.userService.sendEmailToUserIds([],{});
+
+    CustomResponse.sendSuccess(res, {
+      message: "Notification sent successfully",
+      data: await this.userService.getUsers({
+        createdAt: [new Date("2023-01-01"), new Date("2025-01-31T23:59:59Z")],
+      }),
+    });
   };
 }
