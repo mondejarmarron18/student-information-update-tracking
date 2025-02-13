@@ -1,5 +1,6 @@
-#Don't forget to add the server IP address to env to be able for the endpoint to work
+#Don't forget to add the server IP address to env, and change the port number of api endpoint to be able for the endpoint to work
 #RUN notification every 2 AM exactly at 0 minute
 #state date will be every 60 days ago
+#This is a local api request, calling the API from other machine wont work unless you add the IP address of that machine which is is not recommended
 
 0 2 * * * curl -X POST -H "Content-Type: application/json" -d "{\"staleSince\":\"$(date -d '60 days ago' --iso-8601=seconds)\"}" http://localhost:5000/update-requests/notify-stale-requests
