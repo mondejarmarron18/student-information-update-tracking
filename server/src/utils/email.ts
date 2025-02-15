@@ -30,7 +30,7 @@ export const sendMail = async (
 ): Promise<TSendMail> => {
   const { result, error } = await x8tAsync(
     transporter.sendMail({
-      from: smtp.sender,
+      from: `${config.appName} <${smtp.sender}>`,
       ...options,
     })
   );
