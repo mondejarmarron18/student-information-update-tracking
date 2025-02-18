@@ -22,7 +22,12 @@ const ForgotPassword = () => {
     <div className="flex  flex-col items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-md border border-gray-500/30 space-y-6 shadow-md rounded-lg px-6 py-10">
         {email ? (
-          <ForgotPasswordSent email={email} onResubmit={handleResubmit} />
+          <ForgotPasswordSent
+            email={email}
+            onResubmit={handleResubmit}
+            onResubmitLoading={isPending}
+            error={isPending ? error?.description : undefined}
+          />
         ) : (
           <ForgotPasswordForm
             onSubmit={handleSubmit}

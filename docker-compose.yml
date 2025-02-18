@@ -26,6 +26,17 @@ services:
       - spius
     depends_on:
       - db
+  redis:
+    container_name: spius_redis
+    image: redis:alpine3.21
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - spius
+    # env_file:
+    #   - ./server/.env
+    # command:
+    #   - redis-server --requirepass ${REDIS_PASSWORD}
 networks:
   spius:
     driver: bridge

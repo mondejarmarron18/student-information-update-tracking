@@ -3,12 +3,14 @@ import { routePaths } from "@/routes";
 import { FC, useEffect, useState } from "react";
 import { Link } from "react-router";
 import AnimatedSpinner from "../AnimatedSpinner";
+import FormError from "../FormError";
 
 type ForgotPasswordSentProps = {
   email: string;
   onResubmit: () => void;
   resubmitTimer?: number;
   onResubmitLoading?: boolean;
+  error?: string;
 };
 
 const ForgotPasswordSent: FC<ForgotPasswordSentProps> = ({
@@ -16,6 +18,7 @@ const ForgotPasswordSent: FC<ForgotPasswordSentProps> = ({
   onResubmit,
   onResubmitLoading,
   resubmitTimer = 30,
+  error,
 }) => {
   const [timer, setTimer] = useState(resubmitTimer); // Countdown starts at 60 seconds
 
@@ -50,6 +53,7 @@ const ForgotPasswordSent: FC<ForgotPasswordSentProps> = ({
           password.
         </p>
       </div>
+      {error && <FormError description={error} />}
       <Button
         onClick={handleOnResubmit}
         disabled={timer > 0 || onResubmitLoading}

@@ -71,9 +71,11 @@ const SignInForm = (props: FormProps<SignInFormProps>) => {
         {props.error && <FormError {...props.error} />}
 
         <div className="flex flex-col gap-6">
-          <Button className="w-full">
+          <Button className="w-full" disabled={props.onSubmitLoading}>
             {props.onSubmitLoading ? (
-              <AiOutlineLoading className="animate-spin" />
+              <>
+                <AiOutlineLoading className="animate-spin" /> Signing in...
+              </>
             ) : (
               props.onSubmitLabel || "Sign In"
             )}

@@ -58,7 +58,11 @@ const ForgotPasswordForm = (props: Props) => {
         ))}
         {props.error && <FormError {...props.error} />}
         <div className="flex flex-col gap-4">
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={props.onSubmitLoading}
+          >
             {props.onSubmitLoading ? (
               <>
                 <AnimatedSpinner /> Sending...
