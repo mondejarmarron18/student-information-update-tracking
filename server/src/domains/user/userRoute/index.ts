@@ -5,6 +5,8 @@ import authMiddleware from "../../../middlewares/authMiddleware";
 import authReCaptcha from "../../../middlewares/authCaptcha";
 import authRole from "../../../middlewares/authRole";
 import authIpAddress from "../../../middlewares/authIpAddress";
+import cacheMiddleware from "../../../middlewares/cacheMiddleware";
+import apiLimiter from "../../../middlewares/apiLimiter";
 
 const userRoute = Router();
 const userController = new UserController();
@@ -58,7 +60,7 @@ userRoute.patch(
 );
 userRoute.post(
   "/forgot-password",
-  [userMiddleware.sendPasswordResetEmail],
+  [userMiddleware.sendPasswordResetEmail, apiLimiter(5, 3600 * 1000)],
   userController.sendPasswordResetEmail
 );
 userRoute.patch(

@@ -14,6 +14,11 @@ const config = {
   clientUrl: _("CLIENT_URL"),
   recaptchaSecretKey: _("RECAPTCHA_SECRET_KEY"),
   accessIps: _("ACCESS_IPS")?.split(",") || [],
+  redis: {
+    host: _("REDIS_HOST"),
+    port: Number(_("REDIS_PORT")) || 6379,
+    password: _("REDIS_PASSWORD"),
+  },
   smtp: {
     host: _("SMTP_HOST"),
     port: Number(_("SMTP_PORT")) || 587,

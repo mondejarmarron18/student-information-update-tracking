@@ -1,66 +1,38 @@
 import customErrors from "../constants/customErrors";
 import { IMiddleware } from "../types/middleware";
+import cache from "../utils/cache";
 import CustomResponse from "../utils/CustomResponse";
 
-export type ApiLimiterOptions = {
-  max: number;
-  windowMs: number;
-};
+export type ApiLimiter = (max: number, windowMs: number) => IMiddleware;
 
-export type ApiLimitRequest = Record<
-  string,
-  {
-    limitReset: number;
-    limitRemaining: number;
-  }
->;
-
-//Requests are stored in memory
-const requests: ApiLimitRequest = {};
-
-const clearExpiredRequests = () => {
-  Object.keys(requests).forEach((key) => {
-    if (Date.now() > requests[key].limitReset) {
-      delete requests[key];
-    }
-  });
-};
-
-const apiLimiter = ({ max, windowMs }: ApiLimiterOptions): IMiddleware => {
-  return (req, res, next) => {
+const apiLimiter: ApiLimiter = (max, windowMs): IMiddleware => {
+  return async (req, res, next) => {
     const ip = req.ip?.replace(/^::ffff:/, "");
 
     //If no ip, return error
     if (!ip) return CustomResponse.sendError(res, customErrors.unauthorized);
 
-    const currentTime = Date.now();
-    let request = requests[ip];
+    const cacheKey = `request:${ip}`;
+    let rateLimit = await cache.get(cacheKey);
 
-    //Clear expired requests
-    clearExpiredRequests();
+    res.set("Rate-Limit", max.toString());
+    res.set("Rate-Limit-WindowMs", (windowMs / 1000).toString());
 
-    //Initialize request or reset if expired
-    if (!request || currentTime > request.limitReset) {
-      request = {
-        limitReset: currentTime + windowMs,
-        limitRemaining: max - 1, //Start with max requests minus the current request
-      };
-
-      //Set headers for rate limit so front end can use them for UX purposes
-      res.set("Rate-Limit", request.limitRemaining.toString());
-      res.set("Rate-Limit-Remaining", request.limitRemaining.toString());
-      res.set("Rate-Limit-Reset", request.limitReset.toString());
+    if (!rateLimit) {
+      rateLimit = (max - 1).toString();
+      cache.setEx(cacheKey, windowMs, rateLimit);
+      res.set("Rate-Limit-Remaining", rateLimit);
 
       return next();
     }
 
-    if (request.limitRemaining <= 0) {
+    if (+rateLimit <= 0) {
       return CustomResponse.sendError(res, customErrors.tooManyRequests);
     }
 
-    //Decrement remaining requests and set headers
-    request.limitRemaining -= 1;
-    res.set("Rate-Limit-Remaining", request.limitRemaining.toString());
+    const newRateLimit = await cache.decr(cacheKey);
+
+    res.set("Rate-Limit-Remaining", newRateLimit.toString());
 
     next();
   };

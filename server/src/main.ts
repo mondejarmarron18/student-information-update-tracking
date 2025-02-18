@@ -7,12 +7,14 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import { dbConnect } from "./utils/config/database";
 import auditLog from "./middlewares/auditLog";
+import helmet from "helmet";
 
 const app = Express();
 const port = config.port;
 
 app.use(morgan("dev"));
 app.use(Express.json());
+app.use(helmet());
 app.use(
   cors({
     origin: config.clientUrl,
