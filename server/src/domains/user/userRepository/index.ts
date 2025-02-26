@@ -45,7 +45,7 @@ export default class UserRepository {
         $lookup: {
           from: schemaName.USER_PROFILE,
           localField: "_id",
-          foreignField: "roleId",
+          foreignField: "userId",
           as: "profile",
         },
       },
