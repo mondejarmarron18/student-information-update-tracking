@@ -1,16 +1,15 @@
 import customErrors from "../constants/customErrors";
 import { IMiddleware } from "../types/middleware";
 import cache from "../utils/cache";
-import CustomResponse from "../utils/CustomResponse";
+import Response from "../utils/CustomResponse";
 
 export type ApiLimiter = (max: number, windowMs: number) => IMiddleware;
 
-const apiLimiter: ApiLimiter = (max, windowMs): IMiddleware => {
+const apiLimiter: ApiLimiter = (max, windowMs) => {
   return async (req, res, next) => {
     const ip = req.ip?.replace(/^::ffff:/, "");
 
-    //If no ip, return error
-    if (!ip) return CustomResponse.sendError(res, customErrors.unauthorized);
+    if (!ip) return Response.sendError(res, customErrors.unauthorized);
 
     const cacheKey = `request:${ip}`;
     let rateLimit = await cache.get(cacheKey);
@@ -27,7 +26,7 @@ const apiLimiter: ApiLimiter = (max, windowMs): IMiddleware => {
     }
 
     if (+rateLimit <= 0) {
-      return CustomResponse.sendError(res, customErrors.tooManyRequests);
+      return Response.sendError(res, customErrors.tooManyRequests);
     }
 
     const newRateLimit = await cache.decr(cacheKey);

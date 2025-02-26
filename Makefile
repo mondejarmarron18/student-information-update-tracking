@@ -1,10 +1,19 @@
-dev-server:
+SERVER = "docker-compose.yml"
+SERVER_ENV = "server/.env"
+CLIENT = "docker-compose.client.yml"
+CLIENT_ENV = "client/.env"
+
+build-server:
+	@echo "Building server"
+	docker compose -f ${SERVER} --env-file ${SERVER_ENV} build
+
+dev-server: build-server
 	@echo "Running dev server"
-	docker compose --env-file ./server/.env up --build
+	docker compose -f ${SERVER} --env-file ${SERVER_ENV} up --build
 
 dev-client:
 	@echo "Running dev server"
-	docker compose -f docker-compose.client.yml --env-file ./client/.env up --build
+	docker compose -f ${CLIENT} --env-file ${CLIENT_ENV} up --build
 
 dev:
 	@echo "Running dev client and server"
@@ -12,15 +21,15 @@ dev:
 
 prod: 
 	@echo "Running production server"
-	docker compose --env-file ./server/.env up --build --detach
+	docker compose --env-file ${SERVER_ENV} up --build --detach
 
 down-server:
 	@echo "Stopping server"
-	docker compose --env-file ./server/.env down
+	docker compose --env-file ${SERVER_ENV} down
 
 down-client:
 	@echo "Stopping client"
-	docker compose -f docker-compose.client.yml --env-file ./client/.env down
+	docker compose -f ${CLIENT} --env-file ${CLIENT_ENV} down
 
 down:
 	@echo "Stopping server and client"
@@ -28,11 +37,11 @@ down:
 
 log-server:
 	@echo "Showing logs for server"
-	docker compose --env-file ./server/.env  logs -f api
+	docker compose -f ${SERVER} --env-file ${SERVER_ENV}  logs -f api
 
 log-client:
 	@echo "Showing logs for client"
-	docker compose -f docker-compose.client.yml --env-file ./client/.env  logs -f client
+	docker compose -f ${CLIENT} --env-file ${CLIENT_ENV}  logs -f client
 
 log:
 	@echo "Showing logs for server and client"
@@ -40,11 +49,11 @@ log:
 
 stop-server:
 	@echo "Stopping server "
-	docker compose --env-file ./server/.env stop api
+	docker compose --env-file ${SERVER_ENV} stop api
 
 stop-client:
 	@echo "Stopping client "
-	docker compose -f docker-compose.client.yml --env-file ./client/.env stop client
+	docker compose -f ${CLIENT} --env-file ${CLIENT_ENV} stop client
 
 stop:
 	@echo "Stopping server and client"
